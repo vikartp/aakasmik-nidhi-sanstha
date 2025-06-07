@@ -31,3 +31,6 @@ Also if a user is admin then show 'Remove Admin'.
     - If a new user has registered. That will require approval from Admin. So there would be a page/tab to approve/reject the registration.
     - Show current month contribution table: Two tables- paid and due
     - Export to Excel option for both table.
+
+- Test Push:
+   - version: 2
