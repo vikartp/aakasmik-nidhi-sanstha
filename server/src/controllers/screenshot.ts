@@ -23,3 +23,13 @@ export const uploadScreenshot = async (req: Request, res: Response): Promise<voi
     res.status(500).json({ error: "Upload failed" });
   }
 };
+
+export const getScreenshots = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const screenshots = await Screenshot.find();
+    res.status(200).json(screenshots);
+  } catch (err) {
+    console.error("Error fetching screenshots:", err);
+    res.status(500).json({ error: "Failed to fetch screenshots" });
+  }
+};

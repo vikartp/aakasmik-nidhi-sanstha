@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { UploadScreenshot } from "../UploadScreenshot"
+import { ScreenshotTable } from "../ScreenshotTable"
 
 export function Default() {
   const [users, setUsers] = useState<User[]>([])
@@ -50,6 +51,8 @@ export function Default() {
           </TableBody>
         </Table>
       </div>
+
+      <ScreenshotTable />
     </div>
   )
 }

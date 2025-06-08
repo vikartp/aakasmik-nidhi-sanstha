@@ -10,5 +10,10 @@ export async function uploadScreenshot(file: File): Promise<{ url: string }> {
     },
   })
 
-  return response.data // Expects { url: string } from backend
+  return response.data
+}
+
+export async function getAllScreenshots(): Promise<{ _id: string; url: string; uploadedAt: string }[]> {
+  const response = await api.get("/screenshots")
+  return response.data
 }
