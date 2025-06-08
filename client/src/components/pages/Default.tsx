@@ -1,58 +1,36 @@
-import { useEffect, useState } from "react"
-import { getUsers } from "@/services/user"
-import type { User } from "@/types/users"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { UploadScreenshot } from "../UploadScreenshot"
-import { ScreenshotTable } from "../ScreenshotTable"
+import { useNavigate } from "react-router-dom";
+import { Button } from "../ui/button";
 
 export function Default() {
-  const [users, setUsers] = useState<User[]>([])
-
-  useEffect(() => {
-    getUsers().then(setUsers).catch(console.error)
-  }, [])
-
+  const navigate = useNavigate();
   return (
-    <div className="max-w-4xl mx-auto px-4">
-      <UploadScreenshot/>
-      <h2 className="text-2xl font-bold mb-4">Member List</h2>
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[50px]">#</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {users.length > 0 ? (
-              users.map((user, index) => (
-                <TableRow key={user.id || index}>
-                  <TableCell>{index + 1}</TableCell>
-                  <TableCell>{user.name}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={3} className="text-center">
-                  No users found.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+    <>
+      <div className="flex items-center justify-end space-x-4 mb-4">
+        <Button onClick={() => navigate("/register")}>Register</Button>
+        <Button onClick={() => navigate("/login")}>Login</Button>
       </div>
-
-      <ScreenshotTable />
-    </div>
-  )
+      <div className="max-w-4xl px-4 flex flex-col items-center justify-center mx-4">
+        <h2 className="text-2xl font-semibold">
+          Welcome to Contingency Fund Youth Association, Barkangango
+        </h2>
+        <p className="mt-2">
+          At the heart of Barkangango village lies a strong spirit of unity,
+          compassion, and mutual support — values that form the foundation of
+          the Contingency Fund Youth Association, Barkangango. We are a
+          community-driven group made up of hundreds of dedicated individuals
+          who believe in standing by each other during times of crisis. Every
+          month, each member contributes a small amount to a shared fund. This
+          collective effort builds a financial safety net that can be used to
+          support any member facing an unexpected emergency — be it a medical
+          issue, natural disaster, or any urgent personal crisis. Our mission is
+          simple yet powerful: "Together, we are stronger." Through regular
+          contributions and transparent management, we ensure that help is
+          always available when someone in our community needs it the most. By
+          coming together, we not only share financial responsibility but also
+          foster a deep sense of belonging, solidarity, and hope among the youth
+          of our village.
+        </p>
+      </div>
+    </>
+  );
 }

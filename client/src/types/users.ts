@@ -1,7 +1,10 @@
 export interface User {
-    id?: string;
+    _id: string;
     name: string;
-    email: string;
+    fatherName: string;
+    mobile: string;
+    role: 'member' | 'admin' | 'superadmin';
+    email?: string;
+    occupation?: string;
     createdAt?: string; // ISO date string
-    updatedAt?: string; // ISO date string
 }

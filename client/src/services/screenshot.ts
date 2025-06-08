@@ -1,8 +1,12 @@
+import type { User } from "@/types/users"
 import { api } from "./api"
 
-export async function uploadScreenshot(file: File): Promise<{ url: string }> {
+export async function uploadScreenshot(file: File, user: User): Promise<{ url: string }> {
   const formData = new FormData()
   formData.append("screenshot", file)
+  formData.append("userId", user._id)
+  formData.append("userName", user.name)
+  
 
   const response = await api.post("/screenshots/upload", formData, {
     headers: {

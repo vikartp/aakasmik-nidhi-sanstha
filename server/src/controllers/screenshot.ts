@@ -10,8 +10,7 @@ export const uploadScreenshot = async (req: Request, res: Response): Promise<voi
         if (error) {
           return res.status(500).json({ error: "Cloudinary upload failed" });
         }
-        console.log("Upload result:", result);
-        const screenshot = new Screenshot({ url: result?.secure_url });
+        const screenshot = new Screenshot({ url: result?.secure_url, userId: req.body.userId, userName: req.body.userName });
         await screenshot.save();
         res.json({ url: result?.secure_url });
       }

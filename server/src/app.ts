@@ -1,5 +1,6 @@
 import express, { Application } from "express";
 import dotenv from "dotenv";
+import authRoutes from "./routes/auth";
 import connectDB from "./config/db";
 import userRoutes from "./routes/user";
 import screenshotRoutes from "./routes/screenshot";
@@ -10,8 +11,10 @@ dotenv.config();
 const app: Application = express();
 app.use(cors());
 app.use(express.json());
+app.use("/auth", authRoutes)
 app.use("/users", userRoutes);
 app.use("/screenshots", screenshotRoutes);
+
 app.get("/", (req, res) => {
   res.send("API is running...");
 });
