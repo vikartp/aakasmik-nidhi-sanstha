@@ -1,14 +1,14 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IScreenshot extends Document {
-  user: mongoose.Types.ObjectId;
-  imageUrl: string;
+  user?: mongoose.Types.ObjectId;
+  url: string;
   uploadedAt: Date;
 }
 
 const screenshotSchema: Schema<IScreenshot> = new Schema({
-  user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  imageUrl: { type: String, required: true },
+  user: { type: Schema.Types.ObjectId, ref: 'User', required: false },
+  url: { type: String, required: true },
   uploadedAt: { type: Date, default: Date.now },
 });
 

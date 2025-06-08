@@ -1,0 +1,33 @@
+import { useState } from "react"
+import { uploadScreenshot } from "@/services/screenshot"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+
+export function UploadScreenshot() {
+  const [file, setFile] = useState<File | null>(null)
+  const [uploading, setUploading] = useState(false)
+
+  const handleUpload = async () => {
+    if (!file) return alert("Please select a file first.")
+
+    setUploading(true)
+    try {
+      const response = await uploadScreenshot(file)
+      alert("Upload successful: " + response.url)
+    } catch (error) {
+      console.error("Upload failed:", error)
+      alert("Upload failed.")
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  return (
+    <div className="flex space-x-4 max-w-md mx-auto mt-10">
+      <Input className="cursor-pointer" type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+      <Button className="cursor-pointer" onClick={handleUpload} disabled={uploading || !file}>
+        {uploading ? "Uploading..." : "Upload Screenshot"}
+      </Button>
+    </div>
+  )
+}

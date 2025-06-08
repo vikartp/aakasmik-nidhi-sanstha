@@ -21,7 +21,7 @@ export function Navbar() {
         <a href="https://google.com" target="_blank">
           <img src={logo} className="h-8" alt="Aakasmik Nidhi logo" />
         </a>
-        <h1 className="text-xl font-bold text-gray-800 dark:text-white">
+        <h1 className="text-xl font-bold text-gray-800 dark:text-white ml-4">
           आकस्मिक निधि युवा संस्था बरकनगांगो
         </h1>
         <Button

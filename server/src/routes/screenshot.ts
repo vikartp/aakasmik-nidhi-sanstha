@@ -1,12 +1,10 @@
-import { Router } from 'express';
-// import multer from 'multer';
-const multer = require('multer');
-import { uploadScreenshot } from '../controllers/screenshot';
-import { storage } from '../utils/cloudinary';
+import { Router } from "express";
+import { uploadScreenshot } from "../controllers/screenshot";
+const multer = require("multer");
 
-const upload = multer({ storage });
+const upload = multer({ storage: multer.memoryStorage() });
 const router = Router();
 
-router.post('/upload', upload.single('image'), uploadScreenshot);
+router.post("/upload", upload.single("screenshot"), uploadScreenshot);
 
 export default router;
