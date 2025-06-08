@@ -3,10 +3,12 @@ import dotenv from 'dotenv';
 import connectDB from './config/db';
 import userRoutes from './routes/user';
 import screenshotRoutes from './routes/screenshot';
+import cors from 'cors';
 
 dotenv.config();
 
 const app: Application = express();
+app.use(cors());
 app.use(express.json());
 app.use('/users', userRoutes);
 app.use('/screenshots', screenshotRoutes);
