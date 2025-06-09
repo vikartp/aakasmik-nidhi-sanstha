@@ -5,12 +5,12 @@ export function Default() {
   const navigate = useNavigate();
   return (
     <>
-      <div className="flex items-center justify-end space-x-4 mb-4">
-        <Button onClick={() => navigate("/register")}>Register</Button>
-        <Button onClick={() => navigate("/login")}>Login</Button>
-      </div>
-      <div className="max-w-4xl px-4 flex flex-col items-center justify-center mx-4">
-        <h2 className="text-2xl font-semibold">
+      <div className="flex flex-col items-center justify-center -mt-2">
+        <div className="flex items-center space-x-4">
+          <Button onClick={() => navigate("/register")}>Register</Button>
+          <Button onClick={() => navigate("/login")}>Login</Button>
+        </div>
+        <h2 className="text-2xl font-semibold mt-1">
           Welcome to Contingency Fund Youth Association, Barkangango
         </h2>
         <p className="mt-2">
