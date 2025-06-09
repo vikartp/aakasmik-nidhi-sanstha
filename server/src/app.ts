@@ -7,6 +7,7 @@ import screenshotRoutes from "./routes/screenshot";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { IUser } from "./models/User";
+import './cronjob';
 
 dotenv.config();
 
