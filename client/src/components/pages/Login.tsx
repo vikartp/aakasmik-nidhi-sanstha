@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { api } from "@/services/api";
 import { useAuth } from "@/context/AuthContext";
+import api from "@/services/api";
 
 export function Login() {
   const [mobile, setMobile] = useState("");
