@@ -45,14 +45,3 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
   }
 }
 
-export const logoutUser = async (req: Request, res: Response): Promise<void> => {
-  try {
-    // On the client side, simply discard the JWT (e.g., remove it from local storage).
-    // Server-side invalidation typically involves maintaining a token blacklist,
-    // which is beyond the scope here.
-    // TODO: Implement refresh token logic if needed and keep the expiry less than 7 days.
-    res.status(200).json({ message: "Logged out successfully" });
-  } catch (err) {
-    res.status(500).json({ message: "Logout error" });
-  }
-}
