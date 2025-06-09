@@ -16,6 +16,7 @@ export function Login() {
     try {
       const res = await api.post("/auth/login", { mobile, password });
       localStorage.setItem("user", JSON.stringify(res.data.user));
+      alert(res.data.message);
       login(res.data.accessToken);
       navigate("/dashboard");
     } catch (err) {

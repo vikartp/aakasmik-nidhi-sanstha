@@ -5,12 +5,36 @@ import connectDB from "./config/db";
 import userRoutes from "./routes/user";
 import screenshotRoutes from "./routes/screenshot";
 import cors from "cors";
+import cookieParser from "cookie-parser";
+import { IUser } from "./models/User";
 
 dotenv.config();
 
 const app: Application = express();
-app.use(cors());
-app.use(express.json());
+
+// Extend Express Request interface to include 'user'
+declare global {
+  namespace Express {
+    interface Request {
+      user?: IUser;
+      file?: Express.Multer.File; // For file uploads
+    }
+  }
+}
+
+app.use(cors(
+  {
+    origin: process.env.CLIENT_URL,
+    credentials: true, // Allow cookies to be sent
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }
+));
+app.use(express.json())
+app.use(cookieParser())
+app.use(express.urlencoded({ extended: true }));
+
+// Routes
 app.use("/auth", authRoutes)
 app.use("/users", userRoutes);
 app.use("/screenshots", screenshotRoutes);

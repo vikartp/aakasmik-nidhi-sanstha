@@ -16,7 +16,7 @@ export const uploadScreenshot = async (req: Request, res: Response): Promise<voi
       }
     );
 
-    uploadResponse.end((<any>req).file.buffer); // Use the buffer from multer
+    uploadResponse.end((<Express.Multer.File>req.file).buffer); // Use the buffer from multer
   } catch (err) {
     console.error("Upload error:", err);
     res.status(500).json({ error: "Upload failed" });
