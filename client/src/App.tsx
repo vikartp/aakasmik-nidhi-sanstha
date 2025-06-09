@@ -5,25 +5,19 @@ import { Register } from "./components/pages/Register";
 import { Login } from "./components/pages/Login";
 import Dashboard from "./components/pages/Dashboard";
 import { Logout } from "./components/pages/Logout";
+import { useAuth } from "./context/AuthContext";
 
 function App() {
-  // const token = localStorage.getItem("token");
+  const { user } = useAuth()
   return (
     <Layout>
       <BrowserRouter>
         <Routes>
-          {/* ✅ Default route */}
-          <Route path="/" element={<Default />} />
-
-          {/* Auth routes */}
+          <Route path="/" element={user ? <Navigate to="/dashboard" /> : <Default />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
-
-          {/* Protected dashboard route */}
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard" element={user ? <Dashboard /> : <Navigate to="/" />} />
           <Route path="/logout" element={<Logout />} />
-
-          {/* Fallback route (optional) */}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </BrowserRouter>

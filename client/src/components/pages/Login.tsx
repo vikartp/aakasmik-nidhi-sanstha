@@ -1,24 +1,22 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { api } from "@/services/api";
+import { useAuth } from "@/context/AuthContext";
 
 export function Login() {
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth()
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) navigate("/dashboard");
-  }, [navigate]);
 
   const handleLogin = async () => {
     try {
       const res = await api.post("/auth/login", { mobile, password });
-      localStorage.setItem("token", res.data.accessToken);
       localStorage.setItem("user", JSON.stringify(res.data.user));
+      login(res.data.accessToken);
       navigate("/dashboard");
     } catch (err) {
       console.error(err);

@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import type { User } from "@/types/users";
 import { UploadScreenshot } from "../UploadScreenshot";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Admin from "./Admin";
 
 export default function Dashboard() {
@@ -11,10 +11,6 @@ export default function Dashboard() {
     const user = localStorage.getItem("user");
     return user ? JSON.parse(user) : null;
   });
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) navigate("/");
-  }, [navigate]);
 
   switch (loggedInUser?.role) {
     case "admin":
