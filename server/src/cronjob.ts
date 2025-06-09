@@ -17,7 +17,7 @@ interface ApiResponse {
 
 // Function to get the current time in IST
 const getTime = () =>
-  new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
+  new Date().toLocaleString("en-GB", { timeZone: "Asia/Kolkata" });
 
 // Function to make the API call
 const callApi = async (): Promise<void> => {
