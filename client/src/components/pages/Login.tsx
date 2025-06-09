@@ -39,7 +39,7 @@ export function Login() {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <Button className="cursor-pointer" onClick={handleLogin} disabled={!mobile || !password}>
+      <Button onClick={handleLogin} disabled={!mobile || !password}>
         Login
       </Button>
     </div>

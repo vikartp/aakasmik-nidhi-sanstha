@@ -30,7 +30,7 @@ export function UploadScreenshot() {
   return (
     <div className="flex space-x-4 max-w-md mx-auto">
       <Input className="cursor-pointer" type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] || null)} />
-      <Button className="cursor-pointer" onClick={handleUpload} disabled={uploading || !file}>
+      <Button onClick={handleUpload} disabled={uploading || !file}>
         {uploading ? "Uploading..." : "Upload Screenshot"}
       </Button>
     </div>

@@ -36,7 +36,7 @@ export function Register() {
           onChange={handleChange}
         />
       ))}
-      <Button className="cursor-pointer" onClick={handleSubmit}>Register</Button>
+      <Button onClick={handleSubmit}>Register</Button>
     </div>
   )
 }

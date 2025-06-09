@@ -18,7 +18,7 @@ export function Navbar() {
   return (
     <header className="bg-white dark:bg-gray-900 shadow sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 py-3 flex justify-center items-center">
-        <a href="https://google.com" target="_blank">
+        <a href="/">
           <img src={logo} className="h-8" alt="Aakasmik Nidhi logo" />
         </a>
         <h1 className="text-xl font-bold text-gray-800 dark:text-white ml-4">
