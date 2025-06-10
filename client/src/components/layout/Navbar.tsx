@@ -1,17 +1,17 @@
-import { Button } from "@/components/ui/button";
-import { Moon, Sun } from "lucide-react";
-import { useEffect, useState } from "react";
-import logo from "@/assets/aakasmik-nidhi-logo.png";
+import { Button } from '@/components/ui/button';
+import { Moon, Sun } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import logo from '@/assets/aakasmik-nidhi-logo.png';
 
-const UI_THEME_STORAGE_KEY = "aakasmik-ui-theme";
+const UI_THEME_STORAGE_KEY = 'aakasmik-ui-theme';
 
 export function Navbar() {
   const [darkMode, setDarkMode] = useState<boolean>(
-    () => localStorage.getItem(UI_THEME_STORAGE_KEY) === "true" || false
+    () => localStorage.getItem(UI_THEME_STORAGE_KEY) === 'true' || false
   );
 
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", darkMode);
+    document.documentElement.classList.toggle('dark', darkMode);
     localStorage.setItem(UI_THEME_STORAGE_KEY, String(darkMode));
   }, [darkMode]);
 

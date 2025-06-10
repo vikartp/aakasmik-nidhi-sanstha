@@ -1,6 +1,6 @@
-import { Navbar } from "./Navbar"
-import { Footer } from "./Footer"
-import type { ReactNode } from "react"
+import { Navbar } from './Navbar';
+import { Footer } from './Footer';
+import type { ReactNode } from 'react';
 
 export function Layout({ children }: { children: ReactNode }) {
   return (
@@ -9,5 +9,5 @@ export function Layout({ children }: { children: ReactNode }) {
       <main className="flex-grow px-4 py-6">{children}</main>
       <Footer />
     </div>
-  )
+  );
 }

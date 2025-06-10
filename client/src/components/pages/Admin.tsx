@@ -5,11 +5,11 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { ScreenshotTable } from "../ScreenshotTable";
-import { getUsers } from "@/services/user";
-import { useEffect, useState } from "react";
-import type { User } from "@/types/users";
+} from '@/components/ui/table';
+import { ScreenshotTable } from '../ScreenshotTable';
+import { getUsers } from '@/services/user';
+import { useEffect, useState } from 'react';
+import type { User } from '@/types/users';
 
 export default function Admin() {
   const [users, setUsers] = useState<User[]>([]);

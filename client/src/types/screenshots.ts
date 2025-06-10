@@ -1,5 +1,5 @@
 export type Screenshot = {
-  _id: string
-  url: string
-  uploadedAt: string
-}
+  _id: string;
+  url: string;
+  uploadedAt: string;
+};

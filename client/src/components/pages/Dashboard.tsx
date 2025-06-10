@@ -1,29 +1,29 @@
-import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
-import type { User } from "@/types/users";
-import { UploadScreenshot } from "../UploadScreenshot";
-import { useState } from "react";
-import Admin from "./Admin";
-import api from "@/services/api";
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
+import type { User } from '@/types/users';
+import { UploadScreenshot } from '../UploadScreenshot';
+import { useState } from 'react';
+import Admin from './Admin';
+import api from '@/services/api';
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [loggedInUser] = useState<User | null>(() => {
-    const user = localStorage.getItem("user");
+    const user = localStorage.getItem('user');
     return user ? JSON.parse(user) : null;
   });
   const handleLogout = async () => {
     try {
-      const res = await api.post("/auth/logout", { });
+      const res = await api.post('/auth/logout', {});
       alert(res.data.message);
     } catch (error) {
-      console.error("Logout failed:", error);
+      console.error('Logout failed:', error);
     }
-    navigate("/logout");
-  }
+    navigate('/logout');
+  };
 
   switch (loggedInUser?.role) {
-    case "admin":
+    case 'admin':
       return (
         <div>
           <div className="flex justify-between">
@@ -34,12 +34,12 @@ export default function Dashboard() {
           <Admin />
         </div>
       );
-    case "superadmin":
+    case 'superadmin':
       return (
         <div>
           <div className="flex justify-between">
             <h1 className="text-3xl font-bold mb-4">Superadmin Dashboard</h1>
-            <Button onClick={() => navigate("/logout")}>Logout</Button>
+            <Button onClick={() => navigate('/logout')}>Logout</Button>
           </div>
           <UploadScreenshot />
           <p className="text-gray-600 mb-6">Superadmin-specific content...</p>
@@ -53,11 +53,10 @@ export default function Dashboard() {
               <h1 className="text-3xl font-bold mb-4">
                 Hi {loggedInUser?.name}
               </h1>
-              <Button onClick={() => navigate("/logout")}>Logout</Button>
+              <Button onClick={() => navigate('/logout')}>Logout</Button>
             </div>
             <p className="text-gray-600 mb-6">
-              Welcome to the dashboard! Here you can upload
-              screenshots.
+              Welcome to the dashboard! Here you can upload screenshots.
             </p>
           </div>
           <UploadScreenshot />

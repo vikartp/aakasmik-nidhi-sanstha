@@ -1,5 +1,5 @@
-import { useNavigate } from "react-router-dom";
-import { Button } from "../ui/button";
+import { useNavigate } from 'react-router-dom';
+import { Button } from '../ui/button';
 
 export function Default() {
   const navigate = useNavigate();
@@ -7,8 +7,8 @@ export function Default() {
     <>
       <div className="flex flex-col items-center justify-center -mt-2">
         <div className="flex items-center space-x-4">
-          <Button onClick={() => navigate("/register")}>Register</Button>
-          <Button onClick={() => navigate("/login")}>Login</Button>
+          <Button onClick={() => navigate('/register')}>Register</Button>
+          <Button onClick={() => navigate('/login')}>Login</Button>
         </div>
         <h2 className="text-2xl font-semibold mt-1">
           Welcome to Contingency Fund Youth Association, Barkangango

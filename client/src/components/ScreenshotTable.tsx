@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react"
-import { getAllScreenshots } from "@/services/screenshot"
+import { useEffect, useState } from 'react';
+import { getAllScreenshots } from '@/services/screenshot';
 import {
   Table,
   TableBody,
@@ -7,15 +7,15 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import type { Screenshot } from "@/types/screenshots"
+} from '@/components/ui/table';
+import type { Screenshot } from '@/types/screenshots';
 
 export function ScreenshotTable() {
-  const [data, setData] = useState<Screenshot[]>([])
+  const [data, setData] = useState<Screenshot[]>([]);
 
   useEffect(() => {
-    getAllScreenshots().then(setData).catch(console.error)
-  }, [])
+    getAllScreenshots().then(setData).catch(console.error);
+  }, []);
 
   return (
     <div className="max-w-4xl mx-auto mt-10 px-4">
@@ -41,7 +41,9 @@ export function ScreenshotTable() {
                       className="w-32 h-auto rounded shadow"
                     />
                   </TableCell>
-                  <TableCell>{new Date(item.uploadedAt).toLocaleString()}</TableCell>
+                  <TableCell>
+                    {new Date(item.uploadedAt).toLocaleString()}
+                  </TableCell>
                 </TableRow>
               ))
             ) : (
@@ -55,5 +57,5 @@ export function ScreenshotTable() {
         </Table>
       </div>
     </div>
-  )
+  );
 }
