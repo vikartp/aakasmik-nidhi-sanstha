@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Moon, Sun } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import logo from '@/assets/aakasmik-nidhi-logo.png';
+import logo from '/aakasmik-nidhi-logo.png';
 
 const UI_THEME_STORAGE_KEY = 'aakasmik-ui-theme';
 
