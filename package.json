@@ -1,0 +1,16 @@
+{
+  "name": "aakasmik-nidhi",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "s:client": "npm run dev -w client",
+    "s:server": "npm run dev -w server",
+    "build:client": "npm run build -w client",
+    "build:server": "npm run build -w server"
+  },
+  "devDependencies": {}
+}

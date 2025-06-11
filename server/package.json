@@ -10,7 +10,7 @@
     "tsfmt-write": "tsfmt -r --useTsconfig ./tsconfig.json --useTsfmt ./tsfmt.json"
   },
   "keywords": [],
-  "author": "",
+  "author": "Vikash Kumar",
   "license": "ISC",
   "description": "",
   "dependencies": {
