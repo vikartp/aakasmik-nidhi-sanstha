@@ -1,7 +1,9 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { jwtDecode } from 'jwt-decode';
+import { getUserById } from '@/services/user';
+import type { User } from '@/types/users';
 
-type User = {
+type DecodedUser = {
   id: string;
   mobile: string;
   exp: number;
@@ -18,13 +20,20 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
+  const getLoggedInUser = async (id: string) => {
+    const response = await getUserById(id);
+    if (response) {
+      setUser(response);
+    }
+  };
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
       try {
-        const decoded: User = jwtDecode(token);
+        const decoded: DecodedUser = jwtDecode(token);
         if (decoded.exp * 1000 > Date.now()) {
-          setUser(decoded);
+          getLoggedInUser(decoded.id);
         } else {
           localStorage.removeItem('token');
         }
@@ -36,8 +45,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const login = (token: string) => {
     localStorage.setItem('token', token);
-    const decoded: User = jwtDecode(token);
-    setUser(decoded);
+    const decoded: DecodedUser = jwtDecode(token);
+    getLoggedInUser(decoded.id);
   };
 
   const logout = () => {

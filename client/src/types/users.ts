@@ -3,8 +3,10 @@ export interface User {
   name: string;
   fatherName: string;
   mobile: string;
-  role: 'member' | 'admin' | 'superadmin';
+  role: UserRole;
   email?: string;
   occupation?: string;
   createdAt?: string; // ISO date string
 }
+
+export type UserRole = 'member' | 'admin' | 'superadmin';

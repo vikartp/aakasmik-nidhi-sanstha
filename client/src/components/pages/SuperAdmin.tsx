@@ -1,0 +1,25 @@
+import { useAuth } from '@/context/AuthContext';
+import { useEffect } from 'react';
+import UserTable from './UserTable';
+
+/**
+ * Notes:
+ * SuperAdmin has the highest level of access.
+ * SuperAdmin can manage all types of users and delete screenshots in bulk.
+ */
+export default function SuperAdmin() {
+  const { user } = useAuth();
+  console.log('SuperAdmin user:', user);
+
+  useEffect(() => {
+
+  }, []);
+    
+  return (
+    <>
+      <h2 className="text-xl font-bold">User Management</h2>
+      <UserTable role={user?.role} />
+      <h2 className="text-xl font-bold">Screenshots Management</h2>
+    </>
+  );
+}

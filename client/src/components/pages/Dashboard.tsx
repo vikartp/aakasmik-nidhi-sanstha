@@ -1,17 +1,70 @@
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import type { User } from '@/types/users';
-import { UploadScreenshot } from '../UploadScreenshot';
+import { UploadScreenshot } from './UploadScreenshot';
 import { useState } from 'react';
 import Admin from './Admin';
 import api from '@/services/api';
+import SuperAdmin from './SuperAdmin';
+import Member from './Member';
+import { useAuth } from '@/context/AuthContext';
 
 export default function Dashboard() {
+  const { user } = useAuth();
+  const [loggedInUser] = useState<User | null>(user || null);
+
+  if (!loggedInUser) {
+    return (
+      <div className="max-w-4xl mx-auto mt-10 px-4">
+        <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
+        <p className="text-gray-600 mb-6">
+          You are not logged in. Please log in to access your dashboard.
+        </p>
+      </div>
+    );
+  }
+  if (!loggedInUser.role) {
+    return (
+      <div className="max-w-4xl mx-auto mt-10 px-4">
+        <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
+        <p className="text-gray-600 mb-6">
+          Your account does not have a role assigned. Please contact support.
+        </p>
+      </div>
+    );    
+  }
+
+  switch (loggedInUser?.role) {
+    case 'superadmin':
+      return (
+        <>
+          <DashboardHeader title="Super Admin Dashboard" name={loggedInUser?.name || 'Guest'} />
+          <UploadScreenshot />
+          <SuperAdmin />
+        </>
+      );
+    case 'admin':
+      return (
+        <>
+          <DashboardHeader title="Admin Dashboard" name={loggedInUser?.name || 'Guest'} />
+          <UploadScreenshot />
+          <Admin />
+        </>
+      );
+    default:
+      return (
+        <>
+          <DashboardHeader title="Member Dashboard" name={loggedInUser?.name || 'Guest'} />
+          <UploadScreenshot />
+          <Member />
+        </>
+      );
+  }
+}
+
+function DashboardHeader({title, name}: {title: string, name: string}) {
   const navigate = useNavigate();
-  const [loggedInUser] = useState<User | null>(() => {
-    const user = localStorage.getItem('user');
-    return user ? JSON.parse(user) : null;
-  });
+
   const handleLogout = async () => {
     try {
       const res = await api.post('/auth/logout', {});
@@ -22,45 +75,10 @@ export default function Dashboard() {
     navigate('/logout');
   };
 
-  switch (loggedInUser?.role) {
-    case 'admin':
-      return (
-        <div>
-          <div className="flex justify-between">
-            <h1 className="text-3xl font-bold mb-4">Admin Dashboard</h1>
-            <Button onClick={handleLogout}>Logout</Button>
-          </div>
-          <UploadScreenshot />
-          <Admin />
-        </div>
-      );
-    case 'superadmin':
-      return (
-        <div>
-          <div className="flex justify-between">
-            <h1 className="text-3xl font-bold mb-4">Superadmin Dashboard</h1>
-            <Button onClick={() => navigate('/logout')}>Logout</Button>
-          </div>
-          <UploadScreenshot />
-          <p className="text-gray-600 mb-6">Superadmin-specific content...</p>
-        </div>
-      );
-    default:
-      return (
-        <div>
-          <div>
-            <div className="flex justify-between">
-              <h1 className="text-3xl font-bold mb-4">
-                Hi {loggedInUser?.name}
-              </h1>
-              <Button onClick={() => navigate('/logout')}>Logout</Button>
-            </div>
-            <p className="text-gray-600 mb-6">
-              Welcome to the dashboard! Here you can upload screenshots.
-            </p>
-          </div>
-          <UploadScreenshot />
-        </div>
-      );
-  }
+  return (
+    <div className="flex justify-between items-center mb-6">
+      <h1 className="text-2xl font-bold">{title} ({name})</h1>
+      <Button onClick={handleLogout}>Logout</Button>
+    </div>
+  );
 }

@@ -10,13 +10,13 @@ const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || "access_secret"
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || "refresh_secret"
 
 // 🔐 Generate tokens
-const generateAccessToken = (user : IUser) =>
+const generateAccessToken = (user: IUser) =>
     jwt.sign({ id: user._id, mobile: user.mobile }, ACCESS_TOKEN_SECRET, { expiresIn: "15m" })
 
-const generateRefreshToken = (user : IUser) =>
+const generateRefreshToken = (user: IUser) =>
     jwt.sign({ id: user._id, mobile: user.mobile }, REFRESH_TOKEN_SECRET, { expiresIn: "7d" })
 
-export const registerUser = async (req : Request, res : Response) : Promise<void> => {
+export const registerUser = async (req: Request, res: Response): Promise<void> => {
     const { name, fatherName, email, mobile, occupation, password, role } = req.body
     try {
         const existing = await User.findOne({ mobile })
@@ -34,7 +34,7 @@ export const registerUser = async (req : Request, res : Response) : Promise<void
     }
 }
 
-export const loginUser = async (req : Request, res : Response) : Promise<void> => {
+export const loginUser = async (req: Request, res: Response): Promise<void> => {
     const { mobile, password } = req.body
     try {
         const user = await User.findOne({ mobile })
@@ -59,13 +59,13 @@ export const loginUser = async (req : Request, res : Response) : Promise<void> =
                 sameSite: "strict",
                 maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
             })
-            .json({ accessToken, user, message: "Login successful" })
+            .json({ accessToken, message: "Login successful" })
     } catch (err) {
         res.status(500).json({ message: "Login error" })
     }
 }
 
-export const refreshToken = async (req : Request, res : Response) : Promise<void> => {
+export const refreshToken = async (req: Request, res: Response): Promise<void> => {
     const token = req.cookies.refreshToken
     if (!token) {
         res.status(401).json({ message: "No refresh token" });
@@ -81,7 +81,7 @@ export const refreshToken = async (req : Request, res : Response) : Promise<void
     }
 }
 
-export const logoutUser = async (req : Request, res : Response) : Promise<void> => {
+export const logoutUser = async (req: Request, res: Response): Promise<void> => {
     res.clearCookie("refreshToken")
     res.json({ message: "Logged out" })
 }

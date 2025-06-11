@@ -11,14 +11,14 @@ import './cronjob';
 
 dotenv.config();
 
-const app : Application = express();
+const app: Application = express();
 
 // Extend Express Request interface to include 'user'
 declare global {
     namespace Express {
         interface Request {
-            user ?: IUser;
-            file ?: Express.Multer.File; // For file uploads
+            user?: IUser;
+            file?: Express.Multer.File; // For file uploads
         }
     }
 }

@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import Screenshot from '../models/Screenshot';
 import { cloudinary } from '../utils/cloudinary';
 
-export const uploadScreenshot = async (req : Request, res : Response) : Promise<void> => {
+export const uploadScreenshot = async (req: Request, res: Response): Promise<void> => {
     try {
         const uploadResponse = cloudinary.uploader.upload_stream(
             { folder: "screenshots" },
@@ -23,7 +23,7 @@ export const uploadScreenshot = async (req : Request, res : Response) : Promise<
     }
 };
 
-export const getScreenshots = async (req : Request, res : Response) : Promise<void> => {
+export const getScreenshots = async (req: Request, res: Response): Promise<void> => {
     try {
         const screenshots = await Screenshot.find();
         res.status(200).json(screenshots);

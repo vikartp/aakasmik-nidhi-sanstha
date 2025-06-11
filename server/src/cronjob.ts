@@ -10,9 +10,9 @@ const REQUEST_TIMEOUT = 30000; // 30 seconds timeout
 
 // Interface for API response (customize based on your API response structure)
 interface ApiResponse {
-    status : string;
-    data ?: any;
-    error ?: string;
+    status: string;
+    data?: any;
+    error?: string;
 }
 
 // Function to get the current time in IST
@@ -20,9 +20,9 @@ const getTime = () =>
     new Date().toLocaleString("en-GB", { timeZone: "Asia/Kolkata" });
 
 // Function to make the API call
-const callApi = async () : Promise<void> => {
+const callApi = async (): Promise<void> => {
     try {
-        const response : AxiosResponse<ApiResponse> = await axios.get(API_URL, {
+        const response: AxiosResponse<ApiResponse> = await axios.get(API_URL, {
             timeout: REQUEST_TIMEOUT,
             headers: {
                 "Content-Type": "application/json",
@@ -38,7 +38,7 @@ const callApi = async () : Promise<void> => {
 };
 
 // Schedule the cronjob to run every 2 minutes
-const startCronJob = () : void => {
+const startCronJob = (): void => {
     cron.schedule(
         "*/5 * * * *",
         () => {

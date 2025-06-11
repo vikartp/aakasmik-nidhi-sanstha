@@ -6,7 +6,7 @@ dotenv.config()
 
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || "access_secret"
 
-const authenticateToken = async (req : Request, res : Response, next : NextFunction) => {
+const authenticateToken = async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers["authorization"]
     const token = authHeader && authHeader.split(" ")[1]
 
