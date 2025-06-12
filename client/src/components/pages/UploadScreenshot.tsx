@@ -6,7 +6,7 @@ import type { User } from '@/types/users';
 import { useRef } from 'react';
 import { useAuth } from '@/context/AuthContext';
 
-export function UploadScreenshot() {
+export function UploadScreenshot({ isQrCode }: { isQrCode?: boolean }) {
   const { user } = useAuth();
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -23,7 +23,7 @@ export function UploadScreenshot() {
         alert('You must be logged in to upload a screenshot.');
         return;
       }
-      const response = await uploadScreenshot(file, loggedInUser);
+      const response = await uploadScreenshot(file, loggedInUser, isQrCode);
       alert('Upload successful: ' + response.url);
     } catch (error) {
       console.error('Upload failed:', error);
@@ -41,14 +41,15 @@ export function UploadScreenshot() {
   return (
     <>
       <div className="flex flex-col items-center gap-4">
-        <p>
-          You can upload screenshot of contribution for this month here. Click
-          below to choose a screenshot to upload
-          <br />
-          (आप इस महीने के योगदान का स्क्रीनशॉट यहाँ अपलोड कर सकते हैं। अपलोड
-          करने के लिए स्क्रीनशॉट चुनने के लिए नीचे क्लिक करें)
-        </p>
-
+        {!isQrCode && (
+          <p>
+            You can upload screenshot of contribution for this month here. Click
+            below to choose a screenshot to upload
+            <br />
+            (आप इस महीने के योगदान का स्क्रीनशॉट यहाँ अपलोड कर सकते हैं। अपलोड
+            करने के लिए स्क्रीनशॉट चुनने के लिए नीचे क्लिक करें)
+          </p>
+        )}
         <div className="flex space-x-4 max-w-md mx-auto">
           <Input
             className="cursor-pointer"
@@ -57,7 +58,7 @@ export function UploadScreenshot() {
             onChange={e => setFile(e.target.files?.[0] || null)}
           />
           <Button onClick={handleUpload} disabled={uploading || !file}>
-            {uploading ? 'Uploading...' : 'Upload Screenshot'}
+            {uploading ? 'Uploading...' : isQrCode ? 'Upload QR Code' : 'Upload Screenshot'}
           </Button>
         </div>
       </div>

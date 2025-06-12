@@ -1,19 +1,37 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../ui/button';
+import { useEffect, useState } from 'react';
+import type { Screenshot } from '@/types/screenshots';
+import { getScreenshotsByQrCode } from '@/services/screenshot';
 
 export function Default() {
   const navigate = useNavigate();
+  const [qrCode, setQrCode] = useState<Screenshot | null>(null);
+
+  useEffect(() => {
+    const fetchQrCode = async () => {
+      try {
+        const response = await getScreenshotsByQrCode();
+        setQrCode(response);
+      } catch (error) {
+        console.error('Error fetching QR code:', error);
+      }
+    };
+
+    fetchQrCode();
+  }, []);
+
   return (
     <>
-      <div className="flex flex-col items-center justify-center -mt-2">
+      <div className="flex flex-col items-center justify-center -mt-2 gap-4">
         <div className="flex items-center space-x-4">
           <Button onClick={() => navigate('/register')}>Register</Button>
           <Button onClick={() => navigate('/login')}>Login</Button>
         </div>
-        <h2 className="text-2xl font-semibold mt-1">
+        <h2 className="text-2xl font-semibold">
           Welcome to Contingency Fund Youth Association, Barkangango
         </h2>
-        <p className="mt-2">
+        <p className="">
           At the heart of Barkangango village lies a strong spirit of unity,
           compassion, and mutual support — values that form the foundation of
           the Contingency Fund Youth Association, Barkangango. We are a
@@ -29,6 +47,29 @@ export function Default() {
           coming together, we not only share financial responsibility but also
           foster a deep sense of belonging, solidarity, and hope among the youth
           of our village.
+        </p>
+
+        <h3>Want to contribute? Please scan 👇 and upload the screenshot 🙏</h3>
+        {qrCode ? (
+          <>
+            <img
+              src={qrCode.url}
+              alt="QR Code to scan and pay"
+              className="w-auto h-auto"
+            />
+            <a
+              href={qrCode.url}
+              download="qr-code.png"
+              className="mt-2 inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+              Download QR Code
+            </a>
+          </>
+        ) : (
+          <p className="text-gray-500">Loading QR Code...</p>
+        )}
+        <p className="text-gray-500">
+          (कृपया योगदान देने के लिए QR कोड स्कैन करें और स्क्रीनशॉट अपलोड करें)
         </p>
       </div>
     </>
