@@ -17,7 +17,7 @@ export default function UserTable({ role }: { role: UserRole | undefined }) {
     getUsers().then(setUsers).catch(console.error);
   }, []);
   const handleDeleteUser = (user: User) => async () => {
-    if (role !== 'superadmin') {  
+    if (role !== 'superadmin') {
       alert('You do not have permission to delete users.');
       return;
     }
@@ -32,7 +32,7 @@ export default function UserTable({ role }: { role: UserRole | undefined }) {
       console.error('Error deleting user:', error);
       alert('Failed to delete user. Please try again later.');
     }
-  }
+  };
 
   return (
     <div className="rounded-md border">
@@ -54,7 +54,10 @@ export default function UserTable({ role }: { role: UserRole | undefined }) {
                 <TableCell>{user.email}</TableCell>
                 {role === 'superadmin' && (
                   <TableCell>
-                    <Button onClick={handleDeleteUser(user)} className="text-red-500 hover:underline">
+                    <Button
+                      onClick={handleDeleteUser(user)}
+                      className="text-red-500 hover:underline"
+                    >
                       Delete
                     </Button>
                   </TableCell>

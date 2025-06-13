@@ -20,7 +20,7 @@ export async function uploadScreenshot(
   file: File,
   user: User,
   isQrCode = false,
-  uploadMonth?: Month,
+  uploadMonth?: Month
 ): Promise<{ url: string }> {
   const formData = new FormData();
   formData.append('screenshot', file);
@@ -44,9 +44,7 @@ export async function uploadScreenshot(
   return response.data;
 }
 
-export async function getAllScreenshots(): Promise<
-  Screenshot[]
-> {
+export async function getAllScreenshots(): Promise<Screenshot[]> {
   const response = await api.get('/screenshots');
   return response.data;
 }
@@ -56,21 +54,21 @@ export async function deleteScreenshot(id: string): Promise<void> {
 }
 
 export async function getScreenshotById(
-  id: string,
+  id: string
 ): Promise<{ _id: string; url: string; uploadedAt: string }> {
   const response = await api.get(`/screenshots/${id}`);
   return response.data;
 }
 
 export async function getScreenshotsByUserId(
-  userId: string,
+  userId: string
 ): Promise<{ _id: string; url: string; uploadedAt: string }[]> {
   const response = await api.get(`/screenshots/user/${userId}`);
   return response.data;
 }
 
 export async function getScreenshotsByMonth(
-  month: Month,
+  month: Month
 ): Promise<{ _id: string; url: string; uploadedAt: string }[]> {
   const response = await api.get(`/screenshots/month/${month}`);
   return response.data;
@@ -78,7 +76,7 @@ export async function getScreenshotsByMonth(
 
 export async function getScreenshotsByUserIdAndMonth(
   userId: string,
-  month: Month,
+  month: Month
 ): Promise<{ _id: string; url: string; uploadedAt: string }[]> {
   const response = await api.get(`/screenshots/user/${userId}/month/${month}`);
   return response.data;

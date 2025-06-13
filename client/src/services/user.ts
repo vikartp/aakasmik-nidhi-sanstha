@@ -15,7 +15,10 @@ export async function createUser(data: { name: string; email: string }) {
   return response.data;
 }
 
-export async function updateUser(userId: string, data: Partial<{ name: string; email: string; role: string }>) {
+export async function updateUser(
+  userId: string,
+  data: Partial<{ name: string; email: string; role: string }>
+) {
   const response = await api.put(`/users/${userId}`, data);
   return response.data;
 }

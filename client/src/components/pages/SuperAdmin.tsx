@@ -17,7 +17,7 @@ export default function SuperAdmin() {
   return (
     <>
       <div className="flex justify-center items-center gap-4 m-4">
-        <p className='text-green-400'>Upload QR Code</p>
+        <p className="text-green-400">Upload QR Code</p>
         <UploadScreenshot isQrCode={true} />
       </div>
       <h2 className="text-xl font-bold">User Management</h2>

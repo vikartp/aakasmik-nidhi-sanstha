@@ -58,7 +58,11 @@ export function UploadScreenshot({ isQrCode }: { isQrCode?: boolean }) {
             onChange={e => setFile(e.target.files?.[0] || null)}
           />
           <Button onClick={handleUpload} disabled={uploading || !file}>
-            {uploading ? 'Uploading...' : isQrCode ? 'Upload QR Code' : 'Upload Screenshot'}
+            {uploading
+              ? 'Uploading...'
+              : isQrCode
+                ? 'Upload QR Code'
+                : 'Upload Screenshot'}
           </Button>
         </div>
       </div>

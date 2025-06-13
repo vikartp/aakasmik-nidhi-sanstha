@@ -19,7 +19,7 @@ const screenshotSchema: Schema<IScreenshot> = new Schema({
     uploadedAt: { type: Date, default: Date.now },
     uploadMonth: { type: String, required: true, default: new Date().toLocaleString('default', { month: 'long' }) },
     type: { type: String, enum: ['payment', 'qrCode'], required: true, default: 'payment' },
-    verified: { type: Boolean,required: true, default: false },
+    verified: { type: Boolean, required: true, default: false },
 });
 
 export default mongoose.model<IScreenshot>('Screenshot', screenshotSchema);

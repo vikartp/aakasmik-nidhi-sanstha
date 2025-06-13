@@ -31,14 +31,17 @@ export default function Dashboard() {
           Your account does not have a role assigned. Please contact support.
         </p>
       </div>
-    );    
+    );
   }
 
   switch (loggedInUser?.role) {
     case 'superadmin':
       return (
         <>
-          <DashboardHeader title="Super Admin Dashboard" name={loggedInUser?.name || 'Guest'} />
+          <DashboardHeader
+            title="Super Admin Dashboard"
+            name={loggedInUser?.name || 'Guest'}
+          />
           <UploadScreenshot />
           <SuperAdmin />
         </>
@@ -46,7 +49,10 @@ export default function Dashboard() {
     case 'admin':
       return (
         <>
-          <DashboardHeader title="Admin Dashboard" name={loggedInUser?.name || 'Guest'} />
+          <DashboardHeader
+            title="Admin Dashboard"
+            name={loggedInUser?.name || 'Guest'}
+          />
           <UploadScreenshot />
           <Admin />
         </>
@@ -54,7 +60,10 @@ export default function Dashboard() {
     default:
       return (
         <>
-          <DashboardHeader title="Member Dashboard" name={loggedInUser?.name || 'Guest'} />
+          <DashboardHeader
+            title="Member Dashboard"
+            name={loggedInUser?.name || 'Guest'}
+          />
           <UploadScreenshot />
           <Member />
         </>
@@ -62,7 +71,7 @@ export default function Dashboard() {
   }
 }
 
-function DashboardHeader({title, name}: {title: string, name: string}) {
+function DashboardHeader({ title, name }: { title: string; name: string }) {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -77,7 +86,9 @@ function DashboardHeader({title, name}: {title: string, name: string}) {
 
   return (
     <div className="flex justify-between items-center mb-6">
-      <h1 className="text-2xl font-bold">{title} ({name})</h1>
+      <h1 className="text-2xl font-bold">
+        {title} ({name})
+      </h1>
       <Button onClick={handleLogout}>Logout</Button>
     </div>
   );
