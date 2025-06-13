@@ -45,7 +45,7 @@ export async function uploadScreenshot(
 }
 
 export async function getAllScreenshots(): Promise<
-  { _id: string; url: string; uploadedAt: string }[]
+  Screenshot[]
 > {
   const response = await api.get('/screenshots');
   return response.data;
