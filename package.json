@@ -9,8 +9,8 @@
   "scripts": {
     "s:client": "npm run dev -w client",
     "s:server": "npm run dev -w server",
-    "build:client": "npm run build -w client",
-    "build:server": "npm run build -w server"
+    "b:client": "npm run build -w client",
+    "b:server": "npm run build -w server"
   },
   "devDependencies": {}
 }
