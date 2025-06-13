@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import api from '@/services/api';
+import { toast } from 'react-toastify';
 
 export function Login() {
   const [mobile, setMobile] = useState('');
@@ -14,12 +15,12 @@ export function Login() {
   const handleLogin = async () => {
     try {
       const res = await api.post('/auth/login', { mobile, password });
-      alert(res.data.message);
+      toast(res.data.message);
       login(res.data.accessToken);
       navigate('/dashboard');
     } catch (err) {
       console.error(err);
-      alert('Invalid credentials');
+      toast('Invalid credentials');
     }
   };
 

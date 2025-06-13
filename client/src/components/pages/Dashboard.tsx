@@ -8,6 +8,7 @@ import api from '@/services/api';
 import SuperAdmin from './SuperAdmin';
 import Member from './Member';
 import { useAuth } from '@/context/AuthContext';
+import { toast } from 'react-toastify';
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -77,7 +78,7 @@ function DashboardHeader({ title, name }: { title: string; name: string }) {
   const handleLogout = async () => {
     try {
       const res = await api.post('/auth/logout', {});
-      alert(res.data.message);
+      toast(res.data.message);
     } catch (error) {
       console.error('Logout failed:', error);
     }

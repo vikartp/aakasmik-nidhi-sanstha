@@ -1,6 +1,7 @@
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
 import type { ReactNode } from 'react';
+import { ToastContainer } from 'react-toastify';
 
 export function Layout({ children }: { children: ReactNode }) {
   return (
@@ -8,6 +9,7 @@ export function Layout({ children }: { children: ReactNode }) {
       <Navbar />
       <main className="flex-grow px-4 py-6">{children}</main>
       <Footer />
+      <ToastContainer />
     </div>
   );
 }

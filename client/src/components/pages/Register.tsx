@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import api from '@/services/api';
-
+import { toast } from 'react-toastify';
 export function Register() {
   const [form, setForm] = useState({
     name: '',
@@ -21,11 +21,11 @@ export function Register() {
   const handleSubmit = async () => {
     try {
       await api.post('/auth/register', form);
-      alert('Registered! Please login.');
+      toast('Registered! Please login.');
       navigate('/');
     } catch (err) {
       console.error(err);
-      alert('Registration failed');
+      toast('Registration failed');
     }
   };
 

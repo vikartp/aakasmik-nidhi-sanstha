@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import type { User } from '@/types/users';
 import { useRef } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { toast } from 'react-toastify';
 
 export function UploadScreenshot({ isQrCode }: { isQrCode?: boolean }) {
   const { user } = useAuth();
@@ -15,19 +16,19 @@ export function UploadScreenshot({ isQrCode }: { isQrCode?: boolean }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleUpload = async () => {
-    if (!file) return alert('Please select a file first.');
+    if (!file) return toast('Please select a file first.');
 
     setUploading(true);
     try {
       if (!loggedInUser) {
-        alert('You must be logged in to upload a screenshot.');
+        toast('You must be logged in to upload a screenshot.');
         return;
       }
       const response = await uploadScreenshot(file, loggedInUser, isQrCode);
-      alert('Upload successful: ' + response.url);
+      toast('Upload successful: ' + response.url);
     } catch (error) {
       console.error('Upload failed:', error);
-      alert('Upload failed.');
+      toast('Upload failed.');
     } finally {
       setUploading(false);
       setFile(null);

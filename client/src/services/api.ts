@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const isLocalhost = window.location.hostname === 'localhost';
 
@@ -51,7 +52,7 @@ api.interceptors.response.use(
 
         return api(originalRequest); // retry original request
       } catch (refreshError) {
-        alert('Session expired. Please log in again.');
+        toast('Session expired. Please log in again.');
         return Promise.reject(refreshError);
       }
     }

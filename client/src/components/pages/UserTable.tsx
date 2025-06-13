@@ -10,6 +10,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '../ui/button';
+import { toast } from 'react-toastify';
+
 export default function UserTable({ role }: { role: UserRole | undefined }) {
   console.log('role:', role);
   const [users, setUsers] = useState<User[]>([]);
@@ -18,7 +20,7 @@ export default function UserTable({ role }: { role: UserRole | undefined }) {
   }, []);
   const handleDeleteUser = (user: User) => async () => {
     if (role !== 'superadmin') {
-      alert('You do not have permission to delete users.');
+      toast('You do not have permission to delete users.');
       return;
     }
     if (!confirm(`Are you sure you want to delete user ${user.name}?`)) {
@@ -27,10 +29,10 @@ export default function UserTable({ role }: { role: UserRole | undefined }) {
     try {
       await deleteUser(user._id);
       setUsers(users.filter(u => u._id !== user._id));
-      alert(`User ${user.name} deleted successfully.`);
+      toast(`User ${user.name} deleted successfully.`);
     } catch (error) {
       console.error('Error deleting user:', error);
-      alert('Failed to delete user. Please try again later.');
+      toast('Failed to delete user. Please try again later.');
     }
   };
 
