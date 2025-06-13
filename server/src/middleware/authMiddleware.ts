@@ -11,7 +11,8 @@ const authenticateToken = async (req: Request, res: Response, next: NextFunction
     const token = authHeader && authHeader.split(" ")[1]
 
     if (!token) {
-        return res.status(401).json({ message: "Access token missing" })
+        res.status(401).json({ message: "Access token missing" });
+        return;
     }
 
     try {
@@ -28,13 +29,15 @@ const authenticateToken = async (req: Request, res: Response, next: NextFunction
         // Check user existence
         const userObject = await User.findById((decoded as any).id)
         if (!userObject) {
-            return res.status(401).json({ message: "User not found" })
+            res.status(401).json({ message: "User not found" });
+            return;
         }
 
         req.user = userObject as IUser
         next()
     } catch (error) {
-        return res.status(401).json({ message: (error === "Invalid token payload") ? error : "Invalid or expired token" })
+        res.status(401).json({ message: (error === "Invalid token payload") ? error : "Invalid or expired token" })
+        return;
     }
 }
 

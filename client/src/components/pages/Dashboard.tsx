@@ -85,10 +85,11 @@ function DashboardHeader({ title, name }: { title: string; name: string }) {
   };
 
   return (
-    <div className="flex justify-between items-center mb-6">
-      <h1 className="text-2xl font-bold">
-        {title} ({name})
-      </h1>
+    <div className="flex justify-between items-center mb-4">
+      <div className="text-2xl font-bold">
+        <p>{title}</p>
+        <p>({name})</p>
+      </div>
       <Button onClick={handleLogout}>Logout</Button>
     </div>
   );
