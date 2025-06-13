@@ -4,6 +4,7 @@ export interface User {
   fatherName: string;
   mobile: string;
   role: UserRole;
+  verified: boolean;
   email?: string;
   occupation?: string;
   createdAt?: string; // ISO date string

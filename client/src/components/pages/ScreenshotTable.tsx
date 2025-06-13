@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getAllScreenshots } from '@/services/screenshot';
+import { deleteScreenshot, getAllScreenshots } from '@/services/screenshot';
 import {
   Table,
   TableBody,
@@ -11,17 +11,40 @@ import {
 import type { Screenshot } from '@/types/screenshots';
 import { Button } from '../ui/button';
 import { downloadImage } from '@/lib/utils';
+import type { UserRole } from '@/types/users';
+import { toast } from 'react-toastify';
 
-export function ScreenshotTable() {
+export function ScreenshotTable({ role }: { role: UserRole | undefined }) {
   const [data, setData] = useState<Screenshot[]>([]);
 
   useEffect(() => {
     getAllScreenshots().then(setData).catch(console.error);
   }, []);
 
+  const handleDeleteScreenshot = (id: string, type: 'payment' | 'qrCode') => async () => {
+    if (role !== 'superadmin') {
+      toast('You do not have permission to delete screenshots.');
+      return;
+    }
+    if (!confirm('Are you sure you want to delete this screenshot?')) {
+      return;
+    }
+    if (type === 'qrCode') {
+      toast.info('You cannot delete the QR Code screenshot.');
+      return;
+    }
+    try {
+      await deleteScreenshot(id);
+      setData(data.filter(item => item._id !== id));
+      toast.success('Screenshot deleted successfully.');
+    } catch (error) {
+      console.error('Error deleting screenshot:', error);
+      toast.error('Failed to delete screenshot. Please try again later.');
+    }
+  }
+
   return (
-    <div className="max-w-4xl mx-auto mt-10 px-4">
-      <h2 className="text-2xl font-bold mb-4">Uploaded Screenshots</h2>
+    <div className="max-w-4xl mx-auto px-4">
       <div className="rounded-md border overflow-auto">
         <Table>
           <TableHeader>
@@ -31,7 +54,8 @@ export function ScreenshotTable() {
               <TableHead>Uploaded At</TableHead>
               <TableHead className="text-right">Actions</TableHead>
               <TableHead className="w-24">Download</TableHead>
-              <TableHead className="w-24">Delete</TableHead>
+              {/* Only show Delete column for superadmin */}
+              {role === 'superadmin' && <TableHead className="w-24">Delete</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -69,23 +93,17 @@ export function ScreenshotTable() {
                       Download
                     </Button>
                   </TableCell>
-                  <TableCell className="text-center">
-                    <Button
-                      variant="destructive"
-                      onClick={() => {
-                        if (
-                          window.confirm(
-                            'Are you sure you want to delete this screenshot?'
-                          )
-                        ) {
-                          // Call delete API here
-                          console.log(`Delete screenshot with ID: ${item._id}`);
-                        }
-                      }}
-                    >
-                      Delete
-                    </Button>
-                  </TableCell>
+                  {/* Only show Delete button for superadmin */}
+                  {role === 'superadmin' && (
+                    <TableCell className="text-center">
+                      <Button
+                        variant="destructive"
+                        onClick={handleDeleteScreenshot(item._id, item.type)}
+                      >
+                        Delete
+                      </Button>
+                    </TableCell>
+                  )}
                 </TableRow>
               ))
             ) : (

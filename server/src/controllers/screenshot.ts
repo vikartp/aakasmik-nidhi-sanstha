@@ -15,6 +15,7 @@ export const uploadScreenshot = async (
                 }
                 const screenshot = new Screenshot({
                     url: result?.secure_url,
+                    publicId: result?.public_id,
                     userId: req.body.userId,
                     userName: req.body.userName,
                     fatherName: req.body.fatherName,
@@ -82,7 +83,7 @@ export const deleteScreenshot = async (
         }
 
         // Delete from Cloudinary
-        const publicId = screenshot.url.split("/").pop()?.split(".")[0];
+        const publicId = screenshot.publicId ?? screenshot.url.split("/").pop()?.split(".")[0];
         await cloudinary.uploader.destroy(`screenshots/${publicId}`, {
             resource_type: "image",
         });
@@ -94,3 +95,32 @@ export const deleteScreenshot = async (
         res.status(500).json({ error: "Failed to delete screenshot" });
     }
 };
+
+export const deleteScreenshotByMonth = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    try {
+        const { month } = req.params;
+        const screenshots = await Screenshot.find({ uploadMonth: month });
+
+        if (screenshots.length === 0) {
+            res.status(404).json({ error: "No screenshots found for this month" });
+            return;
+        }
+
+        for (const screenshot of screenshots) {
+            // Delete from Cloudinary
+            const publicId = screenshot.publicId ?? screenshot.url.split("/").pop()?.split(".")[0];
+            await cloudinary.uploader.destroy(`screenshots/${publicId}`, {
+                resource_type: "image",
+            });
+        }
+
+        const response = await Screenshot.deleteMany({ uploadMonth: month });
+        res.status(200).json({ message: "Screenshots deleted successfully", count: response.deletedCount });
+    } catch (err) {
+        console.error("Error deleting screenshots by month:", err);
+        res.status(500).json({ error: "Failed to delete screenshots" });
+    }
+}

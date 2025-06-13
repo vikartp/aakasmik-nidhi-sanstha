@@ -9,6 +9,7 @@ import { useAuth } from './context/AuthContext';
 
 function App() {
   const { user } = useAuth();
+  console.log('App user:', user);
   return (
     <Layout>
       <BrowserRouter>
@@ -16,10 +17,7 @@ function App() {
           <Route path="/" element={<Default />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
-          <Route
-            path="/dashboard"
-            element={user ? <Dashboard /> : <Navigate to="/" />}
-          />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/logout" element={<Logout />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>

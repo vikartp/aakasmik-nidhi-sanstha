@@ -13,8 +13,13 @@ export default function Admin() {
   useEffect(() => {});
   return (
     <>
-      <UserTable role={user?.role} />
-      <ScreenshotTable />
+      <div className="flex flex-col items-center justify-center gap-6">
+        <h2 className='text-2xl font-bold mt-2'>Manage Your Users here</h2>
+        <UserTable role={user?.role} />
+        <h2 className='text-2xl font-bold mt-2'>Manage Screenshots here</h2>
+        <p className='text-lg'>You can click on <strong>View</strong> to see the details.</p>
+        <ScreenshotTable role={user?.role} />
+      </div>
     </>
   );
 }

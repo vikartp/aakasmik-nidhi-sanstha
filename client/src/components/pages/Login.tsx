@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import api from '@/services/api';
 import { toast } from 'react-toastify';
+import type { AxiosError } from 'axios';
 
 export function Login() {
   const [mobile, setMobile] = useState('');
@@ -15,12 +16,27 @@ export function Login() {
   const handleLogin = async () => {
     try {
       const res = await api.post('/auth/login', { mobile, password });
-      toast(res.data.message);
+      toast.success(res.data.message);
       login(res.data.accessToken);
       navigate('/dashboard');
-    } catch (err) {
+    } catch (err: unknown) {
       console.error(err);
-      toast('Invalid credentials');
+      let errorMessage = 'Login failed. Please try again.';
+      if (err && typeof err === 'object' && 'isAxiosError' in err) {
+        const axiosError = err as AxiosError<{ message?: string }>;
+        const status = axiosError.response?.status;
+        if (status === 401) {
+          toast.error(axiosError.response?.data?.message ?? errorMessage);
+        } else if (status === 403) {
+          toast.info(axiosError.response?.data?.message ?? 'You do not have permission to access this resource.');
+        } else if (status === 500) {
+          errorMessage = 'Server error. Please try again later.';
+        } else if (axiosError.response?.data?.message) {
+          errorMessage = axiosError.response.data.message;
+        } else {
+          toast.error(errorMessage);
+        }
+      }
     }
   };
 

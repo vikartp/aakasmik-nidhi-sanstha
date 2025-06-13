@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import type { User } from '@/types/users';
 import { UploadScreenshot } from './UploadScreenshot';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Admin from './Admin';
 import api from '@/services/api';
 import SuperAdmin from './SuperAdmin';
@@ -12,7 +12,15 @@ import { toast } from 'react-toastify';
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const [loggedInUser] = useState<User | null>(user || null);
+  const [loggedInUser, setLoggedInUser] = useState<User | null>(user || null);
+
+  useEffect(() => {
+    if (user) {
+      setLoggedInUser(user);
+    } else {
+      setLoggedInUser(null);
+    }
+  }, [user]);
 
   if (!loggedInUser) {
     return (

@@ -5,6 +5,7 @@ export interface IScreenshot extends Document {
     userName: string;
     fatherName: string;
     url: string;
+    publicId: string;
     uploadedAt: Date;
     uploadMonth: string;
     type: 'payment' | 'qrCode',
@@ -16,6 +17,7 @@ const screenshotSchema: Schema<IScreenshot> = new Schema({
     userName: { type: String, required: true },
     fatherName: { type: String, required: true },
     url: { type: String, required: true },
+    publicId: { type: String, required: true },
     uploadedAt: { type: Date, default: Date.now },
     uploadMonth: { type: String, required: true, default: new Date().toLocaleString('default', { month: 'long' }) },
     type: { type: String, enum: ['payment', 'qrCode'], required: true, default: 'payment' },

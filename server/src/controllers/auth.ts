@@ -11,7 +11,7 @@ const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || "refresh_secret
 
 // 🔐 Generate tokens
 const generateAccessToken = (user: IUser) =>
-    jwt.sign({ id: user._id, mobile: user.mobile }, ACCESS_TOKEN_SECRET, { expiresIn: "15m" })
+    jwt.sign({ id: user._id, mobile: user.mobile }, ACCESS_TOKEN_SECRET, { expiresIn: "1d" })
 
 const generateRefreshToken = (user: IUser) =>
     jwt.sign({ id: user._id, mobile: user.mobile }, REFRESH_TOKEN_SECRET, { expiresIn: "7d" })
@@ -46,6 +46,11 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
         const match = await bcrypt.compare(password, user.password)
         if (!match) {
             res.status(401).json({ message: "Invalid password" })
+            return;
+        }
+
+        if (!user.verified) {
+            res.status(403).json({ message: "Please wait or contact admin to verify your account" })
             return;
         }
 
