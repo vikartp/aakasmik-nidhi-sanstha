@@ -22,7 +22,7 @@ export function Register() {
     try {
       await api.post('/auth/register', form);
       alert('Registered! Please login.');
-      navigate('/login');
+      navigate('/');
     } catch (err) {
       console.error(err);
       alert('Registration failed');

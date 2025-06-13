@@ -9,6 +9,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import type { Screenshot } from '@/types/screenshots';
+import { Button } from '../ui/button';
+import { downloadImage } from '@/lib/utils';
 
 export function ScreenshotTable() {
   const [data, setData] = useState<Screenshot[]>([]);
@@ -27,6 +29,9 @@ export function ScreenshotTable() {
               <TableHead>#</TableHead>
               <TableHead>Preview</TableHead>
               <TableHead>Uploaded At</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+              <TableHead className="w-24">Download</TableHead>
+              <TableHead className="w-24">Delete</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -43,6 +48,43 @@ export function ScreenshotTable() {
                   </TableCell>
                   <TableCell>
                     {new Date(item.uploadedAt).toLocaleString()}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        // Handle view details action
+                      }}
+                    >
+                      View
+                    </Button>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <Button
+                      variant="outline"
+                      onClick={() =>
+                        downloadImage(item.url, `screenshot-${item._id}.png`)
+                      }
+                    >
+                      Download
+                    </Button>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <Button
+                      variant="destructive"
+                      onClick={() => {
+                        if (
+                          window.confirm(
+                            'Are you sure you want to delete this screenshot?'
+                          )
+                        ) {
+                          // Call delete API here
+                          console.log(`Delete screenshot with ID: ${item._id}`);
+                        }
+                      }}
+                    >
+                      Delete
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))

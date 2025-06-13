@@ -13,10 +13,7 @@ function App() {
     <Layout>
       <BrowserRouter>
         <Routes>
-          <Route
-            path="/"
-            element={user ? <Navigate to="/dashboard" /> : <Default />}
-          />
+          <Route path="/" element={<Default />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route
