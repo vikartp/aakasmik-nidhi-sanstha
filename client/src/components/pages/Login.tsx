@@ -28,7 +28,10 @@ export function Login() {
         if (status === 401) {
           toast.error(axiosError.response?.data?.message ?? errorMessage);
         } else if (status === 403) {
-          toast.info(axiosError.response?.data?.message ?? 'You do not have permission to access this resource.');
+          toast.info(
+            axiosError.response?.data?.message ??
+              'You do not have permission to access this resource.'
+          );
         } else if (status === 500) {
           errorMessage = 'Server error. Please try again later.';
         } else if (axiosError.response?.data?.message) {
@@ -41,7 +44,14 @@ export function Login() {
   };
 
   return (
-    <div className="max-w-md mx-auto space-y-4">
+    <div
+      className="max-w-md mx-auto space-y-4"
+      onKeyDown={e => {
+        if (e.key === 'Enter' && mobile && password) {
+          handleLogin();
+        }
+      }}
+    >
       <Input
         placeholder="Mobile Number"
         value={mobile}

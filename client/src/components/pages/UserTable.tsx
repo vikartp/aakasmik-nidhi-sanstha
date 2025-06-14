@@ -13,7 +13,13 @@ import { Button } from '../ui/button';
 import { toast } from 'react-toastify';
 import { makeAdminReq, verifyMemberReq } from '@/services/approval';
 
-export default function UserTable({ role, defaultPage }: { role?: UserRole | undefined; defaultPage?: boolean }) {
+export default function UserTable({
+  role,
+  defaultPage,
+}: {
+  role?: UserRole | undefined;
+  defaultPage?: boolean;
+}) {
   console.log('role:', role);
   const [users, setUsers] = useState<User[]>([]);
   useEffect(() => {
@@ -26,7 +32,6 @@ export default function UserTable({ role, defaultPage }: { role?: UserRole | und
         } else {
           setUsers(response);
         }
-        
       } catch (error) {
         console.error('Error fetching users:', error);
         toast.error('Failed to fetch users. Please try again later.');
@@ -103,7 +108,9 @@ export default function UserTable({ role, defaultPage }: { role?: UserRole | und
             <TableHead>Father Name</TableHead>
             {role === 'superadmin' && <TableHead>Delete</TableHead>}
             {role === 'superadmin' && <TableHead>Make Admin</TableHead>}
-            {role === 'admin' && !defaultPage && <TableHead>Verify Member</TableHead>}
+            {role === 'admin' && !defaultPage && (
+              <TableHead>Verify Member</TableHead>
+            )}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -136,19 +143,17 @@ export default function UserTable({ role, defaultPage }: { role?: UserRole | und
                     </Button>
                   </TableCell>
                 )}
-                {
-                  role === 'admin' && !user.verified && (
-                    <TableCell>
-                      <Button
-                        onClick={verifyMember(user)}
-                        variant={'default'}
-                        className="hover:underline text-blue-500"
-                      >
-                        Verify Member
-                      </Button>
-                    </TableCell>
-                  )
-                }
+                {role === 'admin' && !user.verified && (
+                  <TableCell>
+                    <Button
+                      onClick={verifyMember(user)}
+                      variant={'default'}
+                      className="hover:underline text-blue-500"
+                    >
+                      Verify Member
+                    </Button>
+                  </TableCell>
+                )}
               </TableRow>
             ))
           ) : (

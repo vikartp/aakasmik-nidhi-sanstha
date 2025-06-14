@@ -29,9 +29,11 @@ export default function SuperAdmin() {
       toast.success(`Screenshots for month ${month} deleted successfully`);
     } catch (error) {
       console.error('Error deleting screenshots by month:', error);
-      toast.error('Failed to delete screenshots for this month. Please try again later.');
+      toast.error(
+        'Failed to delete screenshots for this month. Please try again later.'
+      );
     }
-  }
+  };
 
   return (
     <>
@@ -44,8 +46,12 @@ export default function SuperAdmin() {
         <UserTable role={user?.role} />
         <h2 className="text-xl font-bold">Screenshots Management</h2>
         <Button
-          onClick={() => deleteScreenshotByMonth(new Date().toLocaleString('default', { month: 'long' }))}
-          variant={"destructive"}
+          onClick={() =>
+            deleteScreenshotByMonth(
+              new Date().toLocaleString('default', { month: 'long' })
+            )
+          }
+          variant={'destructive'}
         >
           Delete this month's screenshots
         </Button>

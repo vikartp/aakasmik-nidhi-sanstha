@@ -13,6 +13,6 @@ const userSecretSchema: Schema<UserSecret> = new Schema({
     createdBy: { type: String, required: true } // User ID of the creator
 }, {
     timestamps: true // Automatically manage createdAt and updatedAt fields
-}); 
+});
 
 export default mongoose.model<UserSecret>('UserSecret', userSecretSchema);

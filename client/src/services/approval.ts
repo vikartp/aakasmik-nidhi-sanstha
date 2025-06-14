@@ -1,4 +1,4 @@
-import api from "./api";
+import api from './api';
 
 export const makeAdminReq = async (userId: string) => {
   const response = await api.put(`/users/make-admin/${userId}`);
@@ -7,7 +7,7 @@ export const makeAdminReq = async (userId: string) => {
     throw new Error('Failed to make user admin');
   }
   return response.data;
-}
+};
 
 export const verifyMemberReq = async (userId: string) => {
   const response = await api.put(`/users/verify-member/${userId}`);
@@ -16,4 +16,4 @@ export const verifyMemberReq = async (userId: string) => {
     throw new Error('Failed to verify member');
   }
   return response.data;
-}
+};
