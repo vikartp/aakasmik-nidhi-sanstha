@@ -91,7 +91,7 @@ export default function UserSecret() {
             onClick={handleCopy}
           >
             {copied ? 'Copied!' : 'Copy'}
-            <Copy color="red" size={48} />;
+            <Copy color="red" size={48} />
           </Button>
         </div>
       )}

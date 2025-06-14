@@ -17,7 +17,7 @@ export function Login() {
     try {
       const res = await api.post('/auth/login', { mobile, password });
       toast.success(res.data.message);
-      login(res.data.accessToken);
+      login();
       navigate('/dashboard');
     } catch (err: unknown) {
       console.error(err);

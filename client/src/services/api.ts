@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { toast } from 'react-toastify';
+// import { toast } from 'react-toastify';
 
 const isLocalhost = window.location.hostname === 'localhost';
 
@@ -15,36 +15,36 @@ const api = axios.create({
 });
 
 // Handle expired token
-api.interceptors.response.use(
-  res => res,
-  async error => {
-    const originalRequest = error.config;
+// api.interceptors.response.use(
+//   res => res,
+//   async error => {
+//     const originalRequest = error.config;
 
-    // If token expired and it's the first retry
-    if (
-      error.response?.status === 401 &&
-      !originalRequest._retry &&
-      error.response?.data?.message?.includes('token')
-    ) {
-      originalRequest._retry = true;
-      try {
-        const res = await axios.get(`${API_BASE_URL}/auth/refresh-token`, {
-          withCredentials: true,
-        });
+//     // If token expired and it's the first retry
+//     if (
+//       error.response?.status === 401 &&
+//       !originalRequest._retry &&
+//       error.response?.data?.message?.includes('token')
+//     ) {
+//       originalRequest._retry = true;
+//       try {
+//         const res = await axios.get(`${API_BASE_URL}/auth/refresh-token`, {
+//           withCredentials: true,
+//         });
 
-        const newAccessToken = res.data.token;
-        localStorage.setItem('token', newAccessToken);
-        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+//         const newAccessToken = res.data.token;
+//         localStorage.setItem('token', newAccessToken);
+//         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 
-        return api(originalRequest); // retry original request
-      } catch (refreshError) {
-        toast('Session expired. Please log in again.');
-        return Promise.reject(refreshError);
-      }
-    }
+//         return api(originalRequest); // retry original request
+//       } catch (refreshError) {
+//         toast('Session expired. Please log in again.');
+//         return Promise.reject(refreshError);
+//       }
+//     }
 
-    return Promise.reject(error);
-  }
-);
+//     return Promise.reject(error);
+//   }
+// );
 
 export default api;

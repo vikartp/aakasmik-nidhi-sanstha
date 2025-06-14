@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { loginUser, logoutUser, refreshToken, registerUser } from '../controllers/auth';
+import { loginUser, logoutUser, registerUser } from '../controllers/auth';
 
 const router = Router()
 
@@ -10,7 +10,7 @@ router.post('/register', registerUser)
 router.post("/login", loginUser)
 
 // Refresh Token
-router.get("/refresh-token", refreshToken)
+// router.get("/refresh-token", refreshToken)
 
 // Logout
 router.post("/logout", logoutUser)

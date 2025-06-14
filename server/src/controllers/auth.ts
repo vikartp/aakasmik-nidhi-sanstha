@@ -91,12 +91,12 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
     const refreshToken = generateRefreshToken(user);
 
     res
-      .cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      })
+      // .cookie("refreshToken", refreshToken, {
+      //   httpOnly: true,
+      //   secure: process.env.NODE_ENV === "production",
+      //   sameSite: "strict",
+      //   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      // })
       .cookie("accessToken", accessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
@@ -109,29 +109,30 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const refreshToken = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  const token = req.cookies.refreshToken;
-  if (!token) {
-    res.status(401).json({ message: "No refresh token" });
-    return;
-  }
+// export const refreshToken = async (
+//   req: Request,
+//   res: Response
+// ): Promise<void> => {
+//   const token = req.cookies.refreshToken;
+//   if (!token) {
+//     res.status(401).json({ message: "No refresh token" });
+//     return;
+//   }
 
-  try {
-    const payload = jwt.verify(token, REFRESH_TOKEN_SECRET);
-    const accessToken = generateAccessToken(payload as IUser);
-    res.json({ accessToken });
-  } catch (err) {
-    res.status(403).json({ message: "Invalid refresh token" });
-  }
-};
+//   try {
+//     const payload = jwt.verify(token, REFRESH_TOKEN_SECRET);
+//     const accessToken = generateAccessToken(payload as IUser);
+//     res.json({ accessToken });
+//   } catch (err) {
+//     res.status(403).json({ message: "Invalid refresh token" });
+//   }
+// };
 
 export const logoutUser = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  res.clearCookie("refreshToken");
+  // res.clearCookie("refreshToken");
+  res.clearCookie("accessToken");
   res.json({ message: "Logged out" });
 };

@@ -80,7 +80,7 @@ export function Default() {
       <p className="text-gray-500">
         (कृपया योगदान देने के लिए QR कोड स्कैन करें और स्क्रीनशॉट अपलोड करें)
       </p>
-      <h1 className="text-2xl"> Our Lovely Members ❤️</h1>
+      <h1 className="text-2xl text-center"> Our Lovely Members ❤️</h1>
       <UserTable role={user?.role} defaultPage={true} />
     </div>
   );
