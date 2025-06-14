@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from 'clsx';
+import { toast } from 'react-toastify';
 import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
@@ -19,6 +20,7 @@ export async function downloadImage(url: string, filename = 'image.png') {
     link.remove();
 
     window.URL.revokeObjectURL(blobUrl);
+    toast.success('Image downloaded successfully!');
   } catch (error) {
     console.error('Failed to download image:', error);
   }

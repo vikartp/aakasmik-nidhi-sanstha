@@ -13,6 +13,7 @@ import { toast } from 'react-toastify';
 export default function Dashboard() {
   const { user } = useAuth();
   const [loggedInUser, setLoggedInUser] = useState<User | null>(user || null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user) {
@@ -29,6 +30,7 @@ export default function Dashboard() {
         <p className="text-gray-600 mb-6">
           You are not logged in. Please log in to access your dashboard.
         </p>
+        <Button onClick={() => navigate('/login')}>Login</Button>
       </div>
     );
   }

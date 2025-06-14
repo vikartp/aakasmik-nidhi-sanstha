@@ -7,8 +7,7 @@ dotenv.config()
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || "access_secret"
 
 const authenticateToken = async (req: Request, res: Response, next: NextFunction) => {
-    const authHeader = req.headers["authorization"]
-    const token = authHeader && authHeader.split(" ")[1]
+    const token = req.cookies.accessToken as string | undefined;
 
     if (!token) {
         res.status(401).json({ message: "Access token missing" });

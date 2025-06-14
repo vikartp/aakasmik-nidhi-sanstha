@@ -15,14 +15,13 @@ export default function Admin() {
   return (
     <>
       <div className="flex flex-col gap-6">
-        <h2 className="text-2xl font-bold mt-2">Manage Your Users here</h2>
+        <h2 className="text-2xl font-bold mt-2">Manage Your Users</h2>
         <UserTable role={user?.role} />
-        <h2 className="text-2xl font-bold mt-2">Manage Screenshots here</h2>
+        <h2 className="text-2xl font-bold mt-2">Manage Screenshots</h2>
         <p className="text-lg">
           You can click on <strong>View</strong> to see the details.
         </p>
         <ScreenshotTable role={user?.role} />
-        <p className="text-lg">Manage User Secret</p>
         <UserSecret />
       </div>
     </>

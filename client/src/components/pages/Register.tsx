@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import api from '@/services/api';
 import { toast } from 'react-toastify';
+import type { AxiosError } from 'axios';
 export function Register() {
   const [form, setForm] = useState({
     name: '',
@@ -21,11 +22,18 @@ export function Register() {
   const handleSubmit = async () => {
     try {
       await api.post('/auth/register', form);
-      toast('Registered! Please login.');
+      toast.success('Registered! Please login.');
       navigate('/');
     } catch (err) {
       console.error(err);
-      toast('Registration failed');
+      let errorMessage = 'Registration failed. Please try again.';
+      if (err && typeof err === 'object' && 'isAxiosError' in err) {
+        const axiosError = err as AxiosError<{ message?: string }>;
+        if (axiosError.response?.data?.message) {
+          errorMessage = axiosError.response.data.message;
+        }
+        toast.error(errorMessage);
+      }
     }
   };
 

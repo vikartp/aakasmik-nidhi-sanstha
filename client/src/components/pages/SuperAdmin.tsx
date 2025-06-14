@@ -6,6 +6,7 @@ import { ScreenshotTable } from './ScreenshotTable';
 import { Button } from '../ui/button';
 import api from '@/services/api';
 import { toast } from 'react-toastify';
+import UserSecret from './UserSecret';
 
 /**
  * Notes:
@@ -37,7 +38,7 @@ export default function SuperAdmin() {
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center m-2 gap-4">
+      <div className="flex flex-col justify-center m-2 gap-4">
         <div className="flex justify-center items-center gap-4 m-4">
           <p className="text-green-400">Upload QR Code</p>
           <UploadScreenshot isQrCode={true} />
@@ -56,6 +57,7 @@ export default function SuperAdmin() {
           Delete this month's screenshots
         </Button>
         <ScreenshotTable role={user?.role} />
+                <UserSecret />
       </div>
     </>
   );
