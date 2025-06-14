@@ -66,6 +66,17 @@ export function Login() {
       <Button onClick={handleLogin} disabled={!mobile || !password}>
         Login
       </Button>
+      <div className="text-center">
+        <p className="text-sm text-gray-500">
+          Don't have an account?{' '}
+          <span
+            className="text-blue-600 cursor-pointer hover:underline"
+            onClick={() => navigate('/register')}
+          >
+            Register here
+          </span>
+        </p>
+        </div>
     </div>
   );
 }

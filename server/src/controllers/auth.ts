@@ -16,10 +16,10 @@ const generateAccessToken = (user: IUser) =>
     expiresIn: "1d",
   });
 
-const generateRefreshToken = (user: IUser) =>
-  jwt.sign({ id: user._id, mobile: user.mobile }, REFRESH_TOKEN_SECRET, {
-    expiresIn: "7d",
-  });
+// const generateRefreshToken = (user: IUser) =>
+//   jwt.sign({ id: user._id, mobile: user.mobile }, REFRESH_TOKEN_SECRET, {
+//     expiresIn: "7d",
+//   });
 
 export const registerUser = async (
   req: Request,
@@ -88,19 +88,19 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
     }
 
     const accessToken = generateAccessToken(user);
-    const refreshToken = generateRefreshToken(user);
+    // const refreshToken = generateRefreshToken(user);
+    // .cookie("refreshToken", refreshToken, {
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === "production",
+    //   sameSite: "none",
+    //   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    // })
 
     res
-      // .cookie("refreshToken", refreshToken, {
-      //   httpOnly: true,
-      //   secure: process.env.NODE_ENV === "production",
-      //   sameSite: "strict",
-      //   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      // })
       .cookie("accessToken", accessToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        secure: true,
+        sameSite: "none",
         maxAge: 24 * 60 * 60 * 1000, // 1 day
       })
       .json({ accessToken, message: "Login successful" });
