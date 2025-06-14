@@ -57,7 +57,7 @@ export default function SuperAdmin() {
           Delete this month's screenshots
         </Button>
         <ScreenshotTable role={user?.role} />
-                <UserSecret />
+        <UserSecret />
       </div>
     </>
   );

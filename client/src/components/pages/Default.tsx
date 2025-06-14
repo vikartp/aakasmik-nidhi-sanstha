@@ -28,7 +28,9 @@ export function Default() {
   return (
     <div className="flex flex-col justify-center -mt-2 gap-4">
       {user ? (
-        <Button onClick={() => navigate('/dashboard')}>Go to your Dashboard</Button>
+        <Button onClick={() => navigate('/dashboard')}>
+          Go to your Dashboard
+        </Button>
       ) : (
         <div className="flex items-center justify-end space-x-4">
           <Button onClick={() => navigate('/register')}>Register</Button>

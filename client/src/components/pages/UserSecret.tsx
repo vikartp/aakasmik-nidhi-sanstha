@@ -1,34 +1,35 @@
-import { useAuth } from "@/context/AuthContext";
-import { useState } from "react";
-import api from "@/services/api";
-import { Button } from "../ui/button";
+import { useAuth } from '@/context/AuthContext';
+import { useState } from 'react';
+import api from '@/services/api';
+import { Button } from '../ui/button';
+import { Copy } from 'lucide-react';
 
 export default function UserSecret() {
   const { user } = useAuth();
-  const [mobile, setMobile] = useState("");
-  const [secret, setSecret] = useState("");
+  const [mobile, setMobile] = useState('');
+  const [secret, setSecret] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
 
   const handleGetSecret = async () => {
-    if (user?.role !== "admin" && user?.role !== "superadmin") {
-      setError("Only admins can access user secrets.");
+    if (user?.role !== 'admin' && user?.role !== 'superadmin') {
+      setError('Only admins can access user secrets.');
       return;
     }
     setLoading(true);
-    setError("");
-    setSecret("");
+    setError('');
+    setSecret('');
     setCopied(false);
     try {
       const res = await api.get(`/users/secret/${mobile}`);
       setSecret(res.data.secret);
     } catch (err: unknown) {
-      if (err && typeof err === "object" && "response" in err) {
+      if (err && typeof err === 'object' && 'response' in err) {
         const errorObj = err as { response?: { data?: { message?: string } } };
-        setError(errorObj.response?.data?.message || "Failed to fetch secret");
+        setError(errorObj.response?.data?.message || 'Failed to fetch secret');
       } else {
-        setError("Failed to fetch secret");
+        setError('Failed to fetch secret');
       }
     } finally {
       setLoading(false);
@@ -49,10 +50,19 @@ export default function UserSecret() {
       <div className="mb-2">
         <h3 className="text-lg font-semibold mb-1">Important Guidelines:</h3>
         <ul className="list-disc list-inside text-lg">
-          <li>You can generate or retrieve a secret key for any user by entering their mobile number.</li>
+          <li>
+            You can generate or retrieve a secret key for any user by entering
+            their mobile number.
+          </li>
           <li>Please ensure the mobile number belongs to our member.</li>
-          <li>This key is used for secure operations and should be kept confidential.</li>
-          <li>Our members need this secret key to register them with the Aakasmik Nidhi online portal.</li>
+          <li>
+            This key is used for secure operations and should be kept
+            confidential.
+          </li>
+          <li>
+            Our members need this secret key to register them with the Aakasmik
+            Nidhi online portal.
+          </li>
           <li>They can use this key to change their password as well.</li>
         </ul>
       </div>
@@ -69,7 +79,7 @@ export default function UserSecret() {
           onClick={handleGetSecret}
           disabled={!mobile || loading}
         >
-          {loading ? "Fetching..." : "Get Secret Key"}
+          {loading ? 'Fetching...' : 'Get Secret Key'}
         </Button>
       </div>
       {error && <div className="text-red-600">{error}</div>}
@@ -80,7 +90,8 @@ export default function UserSecret() {
             className="px-2 py-1 rounded hover:bg-gray-400"
             onClick={handleCopy}
           >
-            {copied ? "Copied!" : "Copy"}
+            {copied ? 'Copied!' : 'Copy'}
+            <Copy color="red" size={48} />;
           </Button>
         </div>
       )}

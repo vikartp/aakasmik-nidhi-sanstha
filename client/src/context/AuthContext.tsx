@@ -24,8 +24,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const fetchLoggedInUser = async () => {
-          await getLoggedInUser();
-    }
+      await getLoggedInUser();
+    };
     fetchLoggedInUser();
   }, []);
 
