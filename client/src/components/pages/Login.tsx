@@ -63,9 +63,17 @@ export function Login() {
         value={password}
         onChange={e => setPassword(e.target.value)}
       />
-      <Button onClick={handleLogin} disabled={!mobile || !password}>
-        Login
-      </Button>
+      <div className="flex items-center">
+        <Button onClick={handleLogin} disabled={!mobile || !password}>
+          Login
+        </Button>
+        <span
+          className="ml-4 text-blue-600 cursor-pointer hover:underline align-middle"
+          onClick={() => navigate('/forgot-password')}
+        >
+          Forgot password?
+        </span>
+      </div>
       <div className="text-center">
         <p className="text-sm text-gray-500">
           Don't have an account?{' '}
@@ -76,7 +84,7 @@ export function Login() {
             Register here
           </span>
         </p>
-        </div>
+      </div>
     </div>
   );
 }

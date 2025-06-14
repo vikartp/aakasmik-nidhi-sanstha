@@ -13,6 +13,7 @@ export function Register() {
     mobile: '',
     occupation: '',
     password: '',
+    secretKey: '',
   });
   const navigate = useNavigate();
 
@@ -39,29 +40,45 @@ export function Register() {
 
   return (
     <div className="max-w-md mx-auto space-y-4">
-      {['name', 'fatherName', 'email', 'mobile', 'occupation', 'password'].map(
-        key => (
-          <Input
-            key={key}
-            type={key === 'password' ? 'password' : 'text'}
-            placeholder={key.replace(/([A-Z])/g, ' $1').toUpperCase()}
-            name={key}
-            value={form[key as keyof typeof form]}
-            onChange={handleChange}
-          />
-        )
-      )}
+      {[
+        'name',
+        'fatherName',
+        'email',
+        'mobile',
+        'occupation',
+        'password',
+        'secretKey',
+      ].map(key => (
+        <Input
+          key={key}
+          type={key === 'password' ? 'password' : 'text'}
+          placeholder={key.replace(/([A-Z])/g, ' $1').toUpperCase()}
+          name={key}
+          value={form[key as keyof typeof form]}
+          onChange={handleChange}
+        />
+      ))}
       <Button
         onClick={handleSubmit}
         disabled={
           !form['mobile'] ||
           !form['name'] ||
           !form['fatherName'] ||
-          !form['password']
+          !form['password'] ||
+          !form['secretKey']
         }
       >
         Register
       </Button>
+      <div className="text-center text-sm text-gray-500">
+        Already have an account?{' '}
+        <span
+          onClick={() => navigate('/login')}
+          className="text-blue-500 hover:underline"
+        >
+          Login
+        </span>
+      </div>
     </div>
   );
 }

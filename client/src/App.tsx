@@ -6,6 +6,7 @@ import { Login } from './components/pages/Login';
 import Dashboard from './components/pages/Dashboard';
 import { Logout } from './components/pages/Logout';
 import { useAuth } from './context/AuthContext';
+import ForgotPassword from './components/pages/ForgotPassword';
 
 function App() {
   const { user } = useAuth();
@@ -17,6 +18,7 @@ function App() {
           <Route path="/" element={<Default />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/logout" element={<Logout />} />
           <Route path="*" element={<Navigate to="/" />} />
