@@ -6,15 +6,18 @@ import { useAuth } from '@/context/AuthContext';
 import api from '@/services/api';
 import { toast } from 'react-toastify';
 import type { AxiosError } from 'axios';
+import Loader from './Loader';
 
 export function Login() {
   const [mobile, setMobile] = useState('');
   const [password, setPassword] = useState('');
+  const [isWaiting, setIsWaiting] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
 
   const handleLogin = async () => {
     try {
+      setIsWaiting(true);
       const res = await api.post('/auth/login', { mobile, password });
       toast.success(res.data.message);
       login();
@@ -40,6 +43,8 @@ export function Login() {
           toast.error(errorMessage);
         }
       }
+    } finally {
+      setIsWaiting(false);
     }
   };
 
@@ -52,6 +57,7 @@ export function Login() {
         }
       }}
     >
+      {isWaiting && <Loader text="Logging in..." />}
       <Input
         placeholder="Mobile Number"
         value={mobile}
@@ -64,7 +70,10 @@ export function Login() {
         onChange={e => setPassword(e.target.value)}
       />
       <div className="flex items-center">
-        <Button onClick={handleLogin} disabled={!mobile || !password}>
+        <Button
+          onClick={handleLogin}
+          disabled={!mobile || !password || isWaiting}
+        >
           Login
         </Button>
         <span

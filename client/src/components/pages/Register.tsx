@@ -5,7 +5,10 @@ import { Button } from '@/components/ui/button';
 import api from '@/services/api';
 import { toast } from 'react-toastify';
 import type { AxiosError } from 'axios';
+import Loader from './Loader';
+
 export function Register() {
+  const [isWaiting, setIsWaiting] = useState(false);
   const [form, setForm] = useState({
     name: '',
     fatherName: '',
@@ -22,6 +25,7 @@ export function Register() {
 
   const handleSubmit = async () => {
     try {
+      setIsWaiting(true);
       await api.post('/auth/register', form);
       toast.success('Registered! Please login.');
       navigate('/');
@@ -35,11 +39,18 @@ export function Register() {
         }
         toast.error(errorMessage);
       }
+    } finally {
+      setIsWaiting(false);
     }
   };
 
   return (
     <div className="max-w-md mx-auto space-y-4">
+      {isWaiting && (
+        <div className="flex justify-center">
+          <Loader text="Trying to register 🏃‍♂️. Please wait..." />
+        </div>
+      )}
       {[
         'name',
         'fatherName',
@@ -65,7 +76,8 @@ export function Register() {
           !form['name'] ||
           !form['fatherName'] ||
           !form['password'] ||
-          !form['secretKey']
+          !form['secretKey'] ||
+          isWaiting
         }
       >
         Register

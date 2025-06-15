@@ -6,6 +6,7 @@ import { getScreenshotsByQrCode } from '@/services/screenshot';
 import { downloadImage } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import UserTable from './UserTable';
+import Loader from './Loader';
 
 export function Default() {
   const navigate = useNavigate();
@@ -76,7 +77,7 @@ export function Default() {
             </button>
           </>
         ) : (
-          <p className="text-gray-500">Loading QR Code...</p>
+          <Loader text="Loading QR Code..." />
         )}
         <p className="text-gray-500">
           (कृपया योगदान देने के लिए QR कोड स्कैन करें और स्क्रीनशॉट अपलोड करें)

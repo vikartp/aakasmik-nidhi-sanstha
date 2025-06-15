@@ -12,6 +12,7 @@ import {
 import { Button } from '../ui/button';
 import { toast } from 'react-toastify';
 import { makeAdminReq, verifyMemberReq } from '@/services/approval';
+import Loader from './Loader';
 
 export default function UserTable({
   role,
@@ -22,6 +23,7 @@ export default function UserTable({
 }) {
   console.log('role:', role);
   const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -35,6 +37,8 @@ export default function UserTable({
       } catch (error) {
         console.error('Error fetching users:', error);
         toast.error('Failed to fetch users. Please try again later.');
+      } finally {
+        setLoading(false);
       }
     };
     fetchUsers();
@@ -99,75 +103,79 @@ export default function UserTable({
 
   return (
     <div className="rounded-md border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-[50px]">#</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Father Name</TableHead>
-            {role === 'superadmin' && <TableHead>Delete</TableHead>}
-            {role === 'superadmin' && <TableHead>Make Admin</TableHead>}
-            {role === 'admin' && !defaultPage && (
-              <TableHead>Verify Member</TableHead>
-            )}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {users.length > 0 ? (
-            users.map((user, index) => (
-              <TableRow key={user._id || index}>
-                <TableCell>{index + 1}</TableCell>
-                <TableCell>{user.name}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>{user.fatherName || '-'}</TableCell>
-                {role === 'superadmin' && (
-                  <TableCell>
-                    <Button
-                      onClick={handleDeleteUser(user)}
-                      variant={'destructive'}
-                      className="hover:underline"
-                    >
-                      Delete
-                    </Button>
-                  </TableCell>
-                )}
-                {role === 'superadmin' && isMakeAdminRequired(user) && (
-                  <TableCell>
-                    <Button
-                      onClick={makeAdmin(user)}
-                      variant={'default'}
-                      className="hover:underline text-green-500"
-                    >
-                      Make Admin
-                    </Button>
-                  </TableCell>
-                )}
-                {role === 'admin' && !user.verified && (
-                  <TableCell>
-                    <Button
-                      onClick={verifyMember(user)}
-                      variant={'default'}
-                      className="hover:underline text-blue-500"
-                    >
-                      Verify Member
-                    </Button>
-                  </TableCell>
-                )}
-              </TableRow>
-            ))
-          ) : (
+      {loading ? (
+        <Loader />
+      ) : (
+        <Table>
+          <TableHeader>
             <TableRow>
-              <TableCell
-                colSpan={role === 'superadmin' ? 6 : 4}
-                className="text-center"
-              >
-                No users found.
-              </TableCell>
+              <TableHead className="w-[50px]">#</TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Father Name</TableHead>
+              {role === 'superadmin' && <TableHead>Delete</TableHead>}
+              {role === 'superadmin' && <TableHead>Make Admin</TableHead>}
+              {role === 'admin' && !defaultPage && (
+                <TableHead>Verify Member</TableHead>
+              )}
             </TableRow>
-          )}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {users.length > 0 ? (
+              users.map((user, index) => (
+                <TableRow key={user._id || index}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{user.name}</TableCell>
+                  <TableCell>{user.email}</TableCell>
+                  <TableCell>{user.fatherName || '-'}</TableCell>
+                  {role === 'superadmin' && (
+                    <TableCell>
+                      <Button
+                        onClick={handleDeleteUser(user)}
+                        variant={'destructive'}
+                        className="hover:underline"
+                      >
+                        Delete
+                      </Button>
+                    </TableCell>
+                  )}
+                  {role === 'superadmin' && isMakeAdminRequired(user) && (
+                    <TableCell>
+                      <Button
+                        onClick={makeAdmin(user)}
+                        variant={'default'}
+                        className="hover:underline text-green-500"
+                      >
+                        Make Admin
+                      </Button>
+                    </TableCell>
+                  )}
+                  {role === 'admin' && !user.verified && (
+                    <TableCell>
+                      <Button
+                        onClick={verifyMember(user)}
+                        variant={'default'}
+                        className="hover:underline text-blue-500"
+                      >
+                        Verify Member
+                      </Button>
+                    </TableCell>
+                  )}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={role === 'superadmin' ? 6 : 4}
+                  className="text-center"
+                >
+                  No users found.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      )}
     </div>
   );
 }
