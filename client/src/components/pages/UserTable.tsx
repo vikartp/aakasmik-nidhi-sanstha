@@ -109,7 +109,7 @@ export default function UserTable({
             <TableRow>
               <TableHead className="w-[50px]">#</TableHead>
               <TableHead>Name</TableHead>
-              {!defaultPage && <TableHead>Email</TableHead>}
+              {!defaultPage && <TableHead>Phone Number</TableHead>}
               <TableHead>Father Name</TableHead>
               <TableHead>Member From</TableHead>
               {role === 'superadmin' && <TableHead>Delete</TableHead>}
@@ -125,7 +125,7 @@ export default function UserTable({
                 <TableRow key={user._id || index}>
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{user.name}</TableCell>
-                  {!defaultPage && <TableCell>{user.email}</TableCell>}
+                  {!defaultPage && <TableCell>{user.mobile}</TableCell>}
                   <TableCell>{user.fatherName || '-'}</TableCell>
                   <TableCell>
                     {user.createdAt

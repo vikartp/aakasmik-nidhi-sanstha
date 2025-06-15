@@ -37,8 +37,6 @@ Also if a user is admin then show 'Remove Admin'.
 
 
 ## TODO
-- One user should upload one screenshot per month. If screenshot exists in database/cloudinary just delete and then create a new one.
-- Add loader in upload screenshot comp
 - Validate uploaded file before keeping in databse- size and type
 - Create a view screenshot page for admin/superadmin. They can verify the payment and then create the contribution.
 - Create table for user contribution for member page( fetch contribution by userid)
