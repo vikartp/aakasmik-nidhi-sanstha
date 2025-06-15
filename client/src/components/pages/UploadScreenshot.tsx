@@ -63,7 +63,7 @@ export function UploadScreenshot({ isQrCode }: { isQrCode?: boolean }) {
               ? 'Uploading...'
               : isQrCode
                 ? 'Upload QR Code'
-                : 'Upload Screenshot'}
+                : 'Upload Screenshot for this Month'}
           </Button>
         </div>
       </div>
