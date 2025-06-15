@@ -25,14 +25,12 @@ export async function uploadScreenshot(
   const formData = new FormData();
   formData.append('screenshot', file);
   formData.append('userId', user._id);
-  formData.append('userName', user.name);
-  formData.append('fatherName', user.fatherName);
+  formData.append(
+    'uploadMonth',
+    uploadMonth ?? new Date().toLocaleString('default', { month: 'long' })
+  );
   if (isQrCode) {
     formData.append('type', 'qrCode');
-  }
-
-  if (uploadMonth) {
-    formData.append('uploadMonth', uploadMonth);
   }
 
   const response = await api.post('/screenshots/upload', formData, {

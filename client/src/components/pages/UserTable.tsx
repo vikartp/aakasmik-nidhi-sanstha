@@ -100,7 +100,7 @@ export default function UserTable({
   };
 
   return (
-    <div className="rounded-md border">
+    <div className="rounded-md border overflow-y-auto max-h-80 sm:max-h-[500px]">
       {loading ? (
         <Loader />
       ) : (

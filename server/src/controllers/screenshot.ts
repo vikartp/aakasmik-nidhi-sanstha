@@ -1,12 +1,28 @@
 import { Request, Response } from "express";
-import Screenshot from "../models/Screenshot";
+import Screenshot, { IScreenshot } from "../models/Screenshot";
 import { cloudinary } from "../utils/cloudinary";
+import { Document } from "mongoose";
 
 export const uploadScreenshot = async (
     req: Request,
     res: Response
 ): Promise<void> => {
+    const userId = req.body.userId;
+    const uploadMonth =
+        req.body.uploadMonth ||
+        new Date().toLocaleString("default", { month: "long" });
     try {
+        // Check for existing screenshot for this user and month
+        const existing = await Screenshot.findOne({ userId, uploadMonth, type: 'payment' });
+        if (existing) {
+            // Delete from Cloudinary
+            await cloudinary.uploader.destroy(getPublicIdForCloudinaryImage(existing), {
+                resource_type: "image",
+            });
+            // Delete from MongoDB
+            await Screenshot.deleteOne({ _id: existing._id });
+        }
+
         const uploadResponse = cloudinary.uploader.upload_stream(
             { folder: "screenshots", secure: true, resource_type: "image" },
             async (error, result) => {
@@ -17,12 +33,8 @@ export const uploadScreenshot = async (
                     url: result?.secure_url,
                     publicId: result?.public_id,
                     userId: req.body.userId,
-                    userName: req.body.userName,
-                    fatherName: req.body.fatherName,
                     type: req.body.type || "payment",
-                    uploadMonth:
-                        req.body.uploadMonth ||
-                        new Date().toLocaleString("default", { month: "long" }),
+                    uploadMonth,
                 });
                 await screenshot.save();
                 res.json({ url: result?.secure_url });
@@ -62,8 +74,7 @@ export const deleteScreenshot = async (
         }
 
         // Delete from Cloudinary
-        const publicId = screenshot.publicId ?? screenshot.url.split("/").pop()?.split(".")[0];
-        await cloudinary.uploader.destroy(`screenshots/${publicId}`, {
+        await cloudinary.uploader.destroy(getPublicIdForCloudinaryImage(screenshot), {
             resource_type: "image",
         });
 
@@ -94,8 +105,7 @@ export const deleteScreenshotByMonth = async (
         // Delete from Cloudinary in parallel
         await Promise.all(
             toDelete.map(async (screenshot) => {
-                const publicId = screenshot.publicId ?? `screenshots/${screenshot.url.split("/").pop()?.split(".")[0]}`;
-                await cloudinary.uploader.destroy(publicId, {
+                await cloudinary.uploader.destroy(getPublicIdForCloudinaryImage(screenshot), {
                     resource_type: "image",
                 });
             })
@@ -111,3 +121,8 @@ export const deleteScreenshotByMonth = async (
         return;
     }
 };
+
+function getPublicIdForCloudinaryImage(screenshot: Document<unknown, {}, IScreenshot, {}> & IScreenshot & Required<{ _id: unknown; }> & { __v: number; }) {
+    return screenshot.publicId ?? `screenshots/${screenshot.url.split("/").pop()?.split(".")[0]}`;
+}
+

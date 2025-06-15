@@ -6,12 +6,14 @@ import type { User } from '@/types/users';
 import { useRef } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'react-toastify';
+import Loader from './Loader';
 
 export function UploadScreenshot({ isQrCode }: { isQrCode?: boolean }) {
   const { user } = useAuth();
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [loggedInUser] = useState<User | null>(user || null);
+  const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -25,7 +27,8 @@ export function UploadScreenshot({ isQrCode }: { isQrCode?: boolean }) {
         return;
       }
       const response = await uploadScreenshot(file, loggedInUser, isQrCode);
-      toast('Upload successful: ' + response.url);
+      toast('Upload successful 🕺');
+      setUploadedUrl(response.url || null);
     } catch (error) {
       console.error('Upload failed:', error);
       toast('Upload failed.');
@@ -51,13 +54,18 @@ export function UploadScreenshot({ isQrCode }: { isQrCode?: boolean }) {
             करने के लिए स्क्रीनशॉट चुनने के लिए नीचे क्लिक करें)
           </p>
         )}
-        <div className="flex space-x-4 max-w-md mx-auto">
-          <Input
-            className="cursor-pointer"
-            type="file"
-            accept="image/*"
-            onChange={e => setFile(e.target.files?.[0] || null)}
-          />
+        <div className="flex flex-col space-x-4 max-w-md mx-auto gap-4">
+          {uploading ? (
+            <Loader text="कृपया प्रतीक्षा करें 🤴 अपलोड हो रहा है... 🥳" />
+          ) : (
+            <Input
+              ref={fileInputRef}
+              className="cursor-pointer"
+              type="file"
+              accept="image/*"
+              onChange={e => setFile(e.target.files?.[0] || null)}
+            />
+          )}
           <Button onClick={handleUpload} disabled={uploading || !file}>
             {uploading
               ? 'Uploading...'
@@ -66,6 +74,16 @@ export function UploadScreenshot({ isQrCode }: { isQrCode?: boolean }) {
                 : 'Upload Screenshot for this Month'}
           </Button>
         </div>
+        {uploadedUrl && (
+          <div className="mt-4 flex flex-col items-center">
+            <p className="text-green-600">Uploaded Image Preview:</p>
+            <img
+              src={uploadedUrl}
+              alt="Uploaded Screenshot"
+              className="max-w-xs rounded shadow"
+            />
+          </div>
+        )}
       </div>
     </>
   );
