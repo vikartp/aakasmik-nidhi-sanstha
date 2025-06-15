@@ -1,21 +1,20 @@
 import { Router } from "express";
 import { deleteUser, getLoggedInUser, getSecretByMobile, getUserById, getUsers, makeAdmin, verifyMember } from "../controllers/user";
-import authenticateToken from "../middleware/authMiddleware";
 
 const router = Router();
 
 router.get("/", getUsers);
 
-router.get("/me", authenticateToken, getLoggedInUser);
+router.get("/me", getLoggedInUser);
 
-router.get("/:userId", authenticateToken, getUserById);
+router.get("/:userId", getUserById);
 
-router.delete("/:userId", authenticateToken, deleteUser);
+router.delete("/:userId", deleteUser);
 
-router.put("/make-admin/:userId", authenticateToken, makeAdmin);
+router.put("/make-admin/:userId", makeAdmin);
 
-router.put("/verify-member/:userId", authenticateToken, verifyMember);
+router.put("/verify-member/:userId", verifyMember);
 
-router.get("/secret/:mobile", authenticateToken, getSecretByMobile);
+router.get("/secret/:mobile", getSecretByMobile);
 
 export default router;

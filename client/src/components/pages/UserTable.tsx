@@ -1,4 +1,4 @@
-import { deleteUser, getUsers } from '@/services/user';
+import { deleteUser, getUserInfoForPublic, getUsers } from '@/services/user';
 import { useEffect, useState } from 'react';
 import type { User, UserRole } from '@/types/users';
 import {
@@ -21,19 +21,18 @@ export default function UserTable({
   role?: UserRole | undefined;
   defaultPage?: boolean;
 }) {
-  console.log('role:', role);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await getUsers();
-        console.log('Fetched users:', response);
+        let userResponse = [];
         if (defaultPage) {
-          setUsers(response.filter((user: User) => user.verified));
+          userResponse = await getUserInfoForPublic();
         } else {
-          setUsers(response);
+          userResponse = await getUsers();
         }
+        setUsers(userResponse);
       } catch (error) {
         console.error('Error fetching users:', error);
         toast.error('Failed to fetch users. Please try again later.');
@@ -67,7 +66,6 @@ export default function UserTable({
   };
 
   const makeAdmin = (user: User) => async () => {
-    console.log('makeAdmin called for user:', user);
     if (role !== 'superadmin') {
       toast('You do not have permission to make users admins.');
       return;
@@ -111,8 +109,9 @@ export default function UserTable({
             <TableRow>
               <TableHead className="w-[50px]">#</TableHead>
               <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
+              {!defaultPage && <TableHead>Email</TableHead>}
               <TableHead>Father Name</TableHead>
+              <TableHead>Member From</TableHead>
               {role === 'superadmin' && <TableHead>Delete</TableHead>}
               {role === 'superadmin' && <TableHead>Make Admin</TableHead>}
               {role === 'admin' && !defaultPage && (
@@ -126,8 +125,17 @@ export default function UserTable({
                 <TableRow key={user._id || index}>
                   <TableCell>{index + 1}</TableCell>
                   <TableCell>{user.name}</TableCell>
-                  <TableCell>{user.email}</TableCell>
+                  {!defaultPage && <TableCell>{user.email}</TableCell>}
                   <TableCell>{user.fatherName || '-'}</TableCell>
+                  <TableCell>
+                    {user.createdAt
+                      ? new Date(user.createdAt).toLocaleDateString('en-IN', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                        })
+                      : '-'}
+                  </TableCell>
                   {role === 'superadmin' && (
                     <TableCell>
                       <Button

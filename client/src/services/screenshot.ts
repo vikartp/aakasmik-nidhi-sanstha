@@ -82,7 +82,7 @@ export async function getScreenshotsByUserIdAndMonth(
   return response.data;
 }
 
-export async function getScreenshotsByQrCode(): Promise<Screenshot> {
-  const response = await api.get(`/screenshots/qrCode`);
+export async function getQrCode(): Promise<Screenshot> {
+  const response = await api.get(`/public/qr`);
   return response.data;
 }

@@ -9,7 +9,6 @@ import UserSecret from './UserSecret';
  */
 export default function Admin() {
   const { user } = useAuth();
-  console.log('Admin user:', user);
 
   useEffect(() => {});
   return (

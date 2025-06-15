@@ -102,7 +102,6 @@ export const getSecretByMobile = async (req: Request, res: Response): Promise<vo
         }
         const secretKey = await UserSecret.findOne({ mobile });
         if (!secretKey) {
-            console.log(`No secret found for mobile: ${mobile}. Generating a new secret.`);
             const newSecret = generateRandomString();
             const createdSecret = await UserSecret.create({
                 mobile,
@@ -112,7 +111,6 @@ export const getSecretByMobile = async (req: Request, res: Response): Promise<vo
             });
             res.status(200).json({ message: 'Secret retrieved successfully', secret: createdSecret.secret });
         } else {
-            console.log(`Secret found for mobile: ${mobile}`);
             res.status(200).json({ message: 'Secret retrieved successfully', secret: secretKey.secret });
         }
     } catch (err) {

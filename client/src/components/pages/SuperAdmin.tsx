@@ -15,7 +15,6 @@ import UserSecret from './UserSecret';
  */
 export default function SuperAdmin() {
   const { user } = useAuth();
-  console.log('SuperAdmin user:', user);
 
   useEffect(() => {}, []);
 
@@ -32,8 +31,7 @@ export default function SuperAdmin() {
       return;
     }
     try {
-      const response = await api.delete(`/screenshots/month/${month}`);
-      console.log('Delete response:', response.data);
+      await api.delete(`/screenshots/month/${month}`);
       toast.success(`Screenshots for month ${month} deleted successfully`);
     } catch (error) {
       console.error('Error deleting screenshots by month:', error);

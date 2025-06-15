@@ -4,9 +4,12 @@ import authRoutes from "./routes/auth";
 import connectDB from "./config/db";
 import userRoutes from "./routes/user";
 import screenshotRoutes from "./routes/screenshot";
+import contributionRoutes from "./routes/contribution";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { IUser } from "./models/User";
+import authenticateToken from "./middleware/authMiddleware";
+import { getPublicUsers, getQrCode } from "./controllers/publicInfo";
 // import './cronjob'; // Enable this line if you want to check health periodiacally
 
 dotenv.config();
@@ -37,8 +40,13 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.use("/auth", authRoutes)
-app.use("/users", userRoutes);
-app.use("/screenshots", screenshotRoutes);
+app.use("/users", authenticateToken, userRoutes);
+app.use("/screenshots", authenticateToken, screenshotRoutes);
+app.use("/contributions", authenticateToken, contributionRoutes);
+
+// Public Route
+app.use("/public/users", getPublicUsers); // Gets information about users without authentication for home page
+app.use("/public/qr", getQrCode); // Gets public screenshot of a user
 
 app.get("/", (req, res) => {
     res.send("API is running...");

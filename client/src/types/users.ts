@@ -7,7 +7,7 @@ export interface User {
   verified: boolean;
   email?: string;
   occupation?: string;
-  createdAt?: string; // ISO date string
+  createdAt?: Date; // ISO date string
 }
 
 export type UserRole = 'member' | 'admin' | 'superadmin';

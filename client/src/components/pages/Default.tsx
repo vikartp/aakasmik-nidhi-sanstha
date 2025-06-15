@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../ui/button';
 import { useEffect, useState } from 'react';
 import type { Screenshot } from '@/types/screenshots';
-import { getScreenshotsByQrCode } from '@/services/screenshot';
+import { getQrCode } from '@/services/screenshot';
 import { downloadImage } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import UserTable from './UserTable';
@@ -12,14 +12,18 @@ export function Default() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [qrCode, setQrCode] = useState<Screenshot | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchQrCode = async () => {
       try {
-        const response = await getScreenshotsByQrCode();
+        setLoading(true);
+        const response = await getQrCode();
         setQrCode(response);
       } catch (error) {
         console.error('Error fetching QR code:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -61,30 +65,29 @@ export function Default() {
         belonging, solidarity, and hope among the youth of our village.
       </p>
 
-      <div className="max-w-md mx-auto">
-        <p className="text-l">
-          Want to contribute? Please scan 👇 Upload the screenshot 🙏
-        </p>
+      <div className="max-w-md mx-auto flex flex-col justify-center">
+        {loading && <Loader text="Loading QR Code..." />}
         {qrCode ? (
           <>
+            <p className="text-lg text-center mb-4">
+              Please scan the QR code below to contribute to our community fund
+              💚.
+            </p>
             <img
               src={qrCode.url}
               alt="QR Code to scan and pay"
               className="w-auto h-auto"
             />
-            <button
+            <Button
               onClick={() => downloadImage(qrCode.url, 'qr-code.png')}
-              className="mt-2 inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              className="mt-2 bg-blue-600 text-white rounded"
             >
               Download QR Code
-            </button>
+            </Button>
           </>
         ) : (
-          <Loader text="Loading QR Code..." />
+          <p> We'll update our payment QR Code very soon. 🌍</p>
         )}
-        <p className="text-gray-500">
-          (कृपया योगदान देने के लिए QR कोड स्कैन करें और स्क्रीनशॉट अपलोड करें)
-        </p>
       </div>
       <h1 className="text-2xl text-center"> Our Lovely Members ❤️</h1>
       <UserTable role={user?.role} defaultPage={true} />

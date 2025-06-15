@@ -1,8 +1,7 @@
-import { useAuth } from '@/context/AuthContext';
+// import { useAuth } from '@/context/AuthContext';
 
 export default function Member() {
-  const { user } = useAuth();
-  console.log('Member user:', user);
+  // const { user } = useAuth();
   return (
     <div className="max-w-4xl mx-auto mt-10 px-4">
       {/* Additional member features can be added here */}

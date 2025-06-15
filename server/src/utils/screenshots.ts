@@ -17,7 +17,6 @@ export const deleteUserScreenshots = async (userId: string): Promise<boolean> =>
                     }
                 }
                 ));
-            console.log(`Successfully deleted screenshots for user ${userId}`);
         }
         await Screenshot.deleteMany({ userId });
         return true;

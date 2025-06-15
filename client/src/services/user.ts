@@ -15,6 +15,11 @@ export async function getUsers() {
   return response.data;
 }
 
+export async function getUserInfoForPublic() {
+  const response = await api.get('/public/users');
+  return response.data;
+}
+
 export async function createUser(data: { name: string; email: string }) {
   const response = await api.post('/users', data);
   return response.data;
@@ -30,7 +35,6 @@ export async function updateUser(
 
 export async function deleteUser(userId: string) {
   const response = await api.delete(`/users/${userId}`);
-  console.log('Delete response:', response);
   if (!response.status || response.status !== 200) {
     console.error('Error deleting user:', response);
     throw new Error('Failed to delete user');

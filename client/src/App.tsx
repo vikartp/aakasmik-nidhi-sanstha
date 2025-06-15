@@ -5,12 +5,9 @@ import { Register } from './components/pages/Register';
 import { Login } from './components/pages/Login';
 import Dashboard from './components/pages/Dashboard';
 import { Logout } from './components/pages/Logout';
-import { useAuth } from './context/AuthContext';
 import ForgotPassword from './components/pages/ForgotPassword';
 
 function App() {
-  const { user } = useAuth();
-  console.log('App user:', user);
   return (
     <Layout>
       <BrowserRouter>
