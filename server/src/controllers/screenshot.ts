@@ -83,23 +83,31 @@ export const deleteScreenshotByMonth = async (
         const { month } = req.params;
         const screenshots = await Screenshot.find({ uploadMonth: month });
 
-        if (screenshots.length === 0) {
-            res.status(404).json({ error: "No screenshots found for this month" });
+        // Filter out qrCode type screenshots
+        const toDelete = screenshots.filter(s => s.type !== 'qrCode');
+
+        if (toDelete.length === 0) {
+            res.status(404).json({ error: "No screenshots found for this month (excluding qrCode)" });
             return;
         }
 
-        for (const screenshot of screenshots) {
-            // Delete from Cloudinary
-            const publicId = screenshot.publicId ?? screenshot.url.split("/").pop()?.split(".")[0];
-            await cloudinary.uploader.destroy(`screenshots/${publicId}`, {
-                resource_type: "image",
-            });
-        }
+        // Delete from Cloudinary in parallel
+        await Promise.all(
+            toDelete.map(async (screenshot) => {
+                const publicId = screenshot.publicId ?? `screenshots/${screenshot.url.split("/").pop()?.split(".")[0]}`;
+                await cloudinary.uploader.destroy(publicId, {
+                    resource_type: "image",
+                });
+            })
+        );
 
-        const response = await Screenshot.deleteMany({ uploadMonth: month });
+        // Delete from MongoDB (excluding qrCode)
+        const response = await Screenshot.deleteMany({ uploadMonth: month, type: { $ne: 'qrCode' } });
         res.status(200).json({ message: "Screenshots deleted successfully", count: response.deletedCount });
+        return;
     } catch (err) {
         console.error("Error deleting screenshots by month:", err);
         res.status(500).json({ error: "Failed to delete screenshots" });
+        return;
     }
-}
+};

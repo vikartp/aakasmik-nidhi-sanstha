@@ -88,7 +88,7 @@ function DashboardHeader({ title, name }: { title: string; name: string }) {
   const handleLogout = async () => {
     try {
       const res = await api.post('/auth/logout', {});
-      toast(res.data.message);
+      toast.success(res.data.message, { autoClose: 1000 });
     } catch (error) {
       console.error('Logout failed:', error);
     }

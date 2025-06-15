@@ -14,12 +14,18 @@ import { downloadImage } from '@/lib/utils';
 import type { UserRole } from '@/types/users';
 import { toast } from 'react-toastify';
 
-export function ScreenshotTable({ role }: { role: UserRole | undefined }) {
+export function ScreenshotTable({
+  role,
+  refreshKey,
+}: {
+  role: UserRole | undefined;
+  refreshKey?: number;
+}) {
   const [data, setData] = useState<Screenshot[]>([]);
 
   useEffect(() => {
     getAllScreenshots().then(setData).catch(console.error);
-  }, []);
+  }, [refreshKey]);
 
   const handleDeleteScreenshot =
     (id: string, type: 'payment' | 'qrCode') => async () => {

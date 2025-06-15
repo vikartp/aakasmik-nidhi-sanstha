@@ -38,8 +38,11 @@ Also if a user is admin then show 'Remove Admin'.
 
 ## TODO
 - One user should upload one screenshot per month. If screenshot exists in database/cloudinary just delete and then create a new one.
+- Add loader in upload screenshot comp
+- Validate uploaded file before keeping in databse- size and type
 - Create a view screenshot page for admin/superadmin. They can verify the payment and then create the contribution.
 - Create table for user contribution for member page( fetch contribution by userid)
 - Create table for monthly contribution check (filter by month and year). => For admin
 - Create interface for admin to get list of member who has not contributed this month.
 - Add option for admin to change 'Member From'(createdAt) for any user. Create a new field in schema and then change that in use table component display part. Also change the public user controller.
+- Use Redux to manage state for upload and anything else.

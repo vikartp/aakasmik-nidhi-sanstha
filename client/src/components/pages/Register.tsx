@@ -27,7 +27,7 @@ export function Register() {
     try {
       setIsWaiting(true);
       await api.post('/auth/register', form);
-      toast.success('Registered! Please login.');
+      toast.success('Registered! Please login.', { autoClose: 1000 });
       navigate('/');
     } catch (err) {
       console.error(err);

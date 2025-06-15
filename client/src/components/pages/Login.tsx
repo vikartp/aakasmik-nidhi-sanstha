@@ -21,7 +21,7 @@ export function Login() {
       const res = await api.post('/auth/login', { mobile, password });
       login();
       navigate('/dashboard');
-      toast.success(res.data.message);
+      toast.success(res.data.message, { autoClose: 1000 });
     } catch (err: unknown) {
       console.error(err);
       let errorMessage = 'Login failed. Please try again.';
