@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { CookieOptions, Request, Response } from "express";
 import * as bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User, { IUser } from "../models/User";
@@ -10,6 +10,8 @@ dotenv.config();
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || "access_secret";
 // const REFRESH_TOKEN_SECRET =
 //     process.env.REFRESH_TOKEN_SECRET || "refresh_secret";
+
+const isLocal = process.env.NODE_ENV === "development";
 
 // 🔐 Generate tokens
 const generateAccessToken = (user: IUser) =>
@@ -107,14 +109,26 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
         //   sameSite: "none",
         //   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         // })
+        console.log('is env local', isLocal)
 
-        res
-            .cookie("accessToken", accessToken, {
+        const cookieOptions = isLocal
+            ? {
+                httpOnly: true,
+                secure: false,
+                sameSite: "lax",
+                maxAge: 24 * 60 * 60 * 1000, // 1 day
+            }
+            : {
                 httpOnly: true,
                 secure: true,
                 sameSite: "none",
+                domain: ".netlify.app",
+                path: "/",
                 maxAge: 24 * 60 * 60 * 1000, // 1 day
-            })
+            };
+
+        res
+            .cookie("accessToken", accessToken, cookieOptions as CookieOptions)
             .json({ message: "Login successful" });
     } catch (err) {
         res.status(500).json({ message: "Login error" });
@@ -145,7 +159,20 @@ export const logoutUser = async (
     res: Response
 ): Promise<void> => {
     // res.clearCookie("refreshToken");
-    res.clearCookie("accessToken");
+    const clearCookieOptions = isLocal
+        ? {
+            httpOnly: true,
+            secure: false,
+            sameSite: "lax",
+        }
+        : {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+            domain: ".netlify.app",
+            path: "/",
+        };
+    res.clearCookie("accessToken", clearCookieOptions as CookieOptions);
     res.json({ message: "Logged out" });
 };
 

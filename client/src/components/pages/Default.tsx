@@ -29,8 +29,11 @@ export function Default() {
   return (
     <div className="flex flex-col justify-center -mt-2 gap-4">
       {user ? (
-        <Button onClick={() => navigate('/dashboard')}>
-          Go to your Dashboard
+        <Button
+          className="max-w-md mx-auto"
+          onClick={() => navigate('/dashboard')}
+        >
+          Go to your Dashboard ❤️
         </Button>
       ) : (
         <div className="flex items-center justify-end space-x-4">
@@ -39,7 +42,7 @@ export function Default() {
         </div>
       )}
       <h2 className="text-2xl font-semibold">
-        Welcome to Contingency Fund Youth Association, Barkangango
+        🌍 Welcome to Contingency Fund Youth Association, Barkangango 🏡
       </h2>
       <p className="">
         At the heart of Barkangango village lies a strong spirit of unity,
