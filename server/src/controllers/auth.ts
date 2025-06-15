@@ -8,21 +8,12 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || "access_secret";
-// const REFRESH_TOKEN_SECRET =
-//     process.env.REFRESH_TOKEN_SECRET || "refresh_secret";
-
-const isLocal = process.env.NODE_ENV === "development";
 
 // 🔐 Generate tokens
 const generateAccessToken = (user: IUser) =>
     jwt.sign({ id: user._id, mobile: user.mobile }, ACCESS_TOKEN_SECRET, {
         expiresIn: "1d",
     });
-
-// const generateRefreshToken = (user: IUser) =>
-//   jwt.sign({ id: user._id, mobile: user.mobile }, REFRESH_TOKEN_SECRET, {
-//     expiresIn: "7d",
-//   });
 
 export const registerUser = async (
     req: Request,
@@ -48,7 +39,6 @@ export const registerUser = async (
             return;
         }
 
-        // Validate secret key
         const mobileSecret = await UserSecret.findOne({ mobile });
         if (!mobileSecret || mobileSecret.secret !== secretKey) {
             res.status(403).json({ message: "Invalid secret key. Please contact your admin to get secret key for your mobile number." });
@@ -101,78 +91,23 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
-        const accessToken = generateAccessToken(user);
-        // const refreshToken = generateRefreshToken(user);
-        // .cookie("refreshToken", refreshToken, {
-        //   httpOnly: true,
-        //   secure: process.env.NODE_ENV === "production",
-        //   sameSite: "none",
-        //   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-        // })
-        console.log('is env local', isLocal)
-
-        const cookieOptions = isLocal
-            ? {
-                httpOnly: true,
-                secure: false,
-                sameSite: "lax",
-                maxAge: 24 * 60 * 60 * 1000, // 1 day
-            }
-            : {
-                httpOnly: true,
-                secure: true,
-                sameSite: "none",
-                domain: ".netlify.app",
-                path: "/",
-                maxAge: 24 * 60 * 60 * 1000, // 1 day
-            };
-
-        res
-            .cookie("accessToken", accessToken, cookieOptions as CookieOptions)
+        res.cookie("accessToken", generateAccessToken(user), {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+            maxAge: 24 * 60 * 60 * 1000, // 1 day
+        })
             .json({ message: "Login successful" });
     } catch (err) {
         res.status(500).json({ message: "Login error" });
     }
 };
 
-// export const refreshToken = async (
-//   req: Request,
-//   res: Response
-// ): Promise<void> => {
-//   const token = req.cookies.refreshToken;
-//   if (!token) {
-//     res.status(401).json({ message: "No refresh token" });
-//     return;
-//   }
-
-//   try {
-//     const payload = jwt.verify(token, REFRESH_TOKEN_SECRET);
-//     const accessToken = generateAccessToken(payload as IUser);
-//     res.json({ accessToken });
-//   } catch (err) {
-//     res.status(403).json({ message: "Invalid refresh token" });
-//   }
-// };
-
 export const logoutUser = async (
     req: Request,
     res: Response
 ): Promise<void> => {
-    // res.clearCookie("refreshToken");
-    const clearCookieOptions = isLocal
-        ? {
-            httpOnly: true,
-            secure: false,
-            sameSite: "lax",
-        }
-        : {
-            httpOnly: true,
-            secure: true,
-            sameSite: "none",
-            domain: ".netlify.app",
-            path: "/",
-        };
-    res.clearCookie("accessToken", clearCookieOptions as CookieOptions);
+    res.clearCookie("accessToken");
     res.json({ message: "Logged out" });
 };
 
