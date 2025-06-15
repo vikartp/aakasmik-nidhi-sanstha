@@ -24,6 +24,13 @@ export default function SuperAdmin() {
       console.error('Only superadmin can delete screenshots by month');
       return;
     }
+    // Confirm deletion
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete all screenshots for the month of ${month}? This action cannot be undone.`
+    );
+    if (!confirmDelete) {
+      return;
+    }
     try {
       const response = await api.delete(`/screenshots/month/${month}`);
       console.log('Delete response:', response.data);
@@ -53,6 +60,7 @@ export default function SuperAdmin() {
             )
           }
           variant={'destructive'}
+          className="max-w-md mx-auto"
         >
           Delete this month's screenshots
         </Button>

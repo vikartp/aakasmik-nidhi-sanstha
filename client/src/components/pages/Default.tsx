@@ -57,29 +57,31 @@ export function Default() {
         belonging, solidarity, and hope among the youth of our village.
       </p>
 
-      <p className="text-l">
-        Want to contribute? Please scan 👇 and upload the screenshot 🙏
-      </p>
-      {qrCode ? (
-        <>
-          <img
-            src={qrCode.url}
-            alt="QR Code to scan and pay"
-            className="w-auto h-auto"
-          />
-          <button
-            onClick={() => downloadImage(qrCode.url, 'qr-code.png')}
-            className="mt-2 inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Download QR Code
-          </button>
-        </>
-      ) : (
-        <p className="text-gray-500">Loading QR Code...</p>
-      )}
-      <p className="text-gray-500">
-        (कृपया योगदान देने के लिए QR कोड स्कैन करें और स्क्रीनशॉट अपलोड करें)
-      </p>
+      <div className="max-w-md mx-auto">
+        <p className="text-l">
+          Want to contribute? Please scan 👇 Upload the screenshot 🙏
+        </p>
+        {qrCode ? (
+          <>
+            <img
+              src={qrCode.url}
+              alt="QR Code to scan and pay"
+              className="w-auto h-auto"
+            />
+            <button
+              onClick={() => downloadImage(qrCode.url, 'qr-code.png')}
+              className="mt-2 inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+              Download QR Code
+            </button>
+          </>
+        ) : (
+          <p className="text-gray-500">Loading QR Code...</p>
+        )}
+        <p className="text-gray-500">
+          (कृपया योगदान देने के लिए QR कोड स्कैन करें और स्क्रीनशॉट अपलोड करें)
+        </p>
+      </div>
       <h1 className="text-2xl text-center"> Our Lovely Members ❤️</h1>
       <UserTable role={user?.role} defaultPage={true} />
     </div>

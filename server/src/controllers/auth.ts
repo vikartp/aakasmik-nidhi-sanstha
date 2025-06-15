@@ -8,8 +8,8 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || "access_secret";
-const REFRESH_TOKEN_SECRET =
-    process.env.REFRESH_TOKEN_SECRET || "refresh_secret";
+// const REFRESH_TOKEN_SECRET =
+//     process.env.REFRESH_TOKEN_SECRET || "refresh_secret";
 
 // 🔐 Generate tokens
 const generateAccessToken = (user: IUser) =>
@@ -115,7 +115,7 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
                 sameSite: "none",
                 maxAge: 24 * 60 * 60 * 1000, // 1 day
             })
-            .json({ accessToken, message: "Login successful" });
+            .json({ message: "Login successful" });
     } catch (err) {
         res.status(500).json({ message: "Login error" });
     }

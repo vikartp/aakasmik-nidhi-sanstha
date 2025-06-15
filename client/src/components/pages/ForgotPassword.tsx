@@ -63,6 +63,18 @@ export default function ForgotPassword() {
       >
         {loading ? 'Resetting...' : 'Reset Password'}
       </Button>
+      <p className="text-sm text-center text-gray-500">
+        Remembered your password?{' '}
+        <a href="/login" className="text-blue-500 hover:underline">
+          Login
+        </a>
+      </p>
+      <p className="text-sm text-center text-gray-500">
+        Don't have an account?{' '}
+        <a href="/register" className="text-blue-500 hover:underline">
+          Register
+        </a>
+      </p>
     </div>
   );
 }
