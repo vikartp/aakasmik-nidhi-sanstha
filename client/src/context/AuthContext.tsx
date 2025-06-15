@@ -14,6 +14,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
   const getLoggedInUser = async () => {
+    if (localStorage.getItem('cus-logout-key') === 'true') return;
     const response = await getMe();
     if (response) {
       setUser(response);
@@ -30,11 +31,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const login = () => {
+    localStorage.setItem('cus-logout-key', 'false');
     getLoggedInUser();
   };
 
   const logout = () => {
     setUser(null);
+    localStorage.setItem('cus-logout-key', 'true'); // Optional: Set a flag in localStorage to indicate logout
   };
 
   return (

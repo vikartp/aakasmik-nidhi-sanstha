@@ -19,9 +19,9 @@ export function Login() {
     try {
       setIsWaiting(true);
       const res = await api.post('/auth/login', { mobile, password });
-      toast.success(res.data.message);
       login();
       navigate('/dashboard');
+      toast.success(res.data.message);
     } catch (err: unknown) {
       console.error(err);
       let errorMessage = 'Login failed. Please try again.';
