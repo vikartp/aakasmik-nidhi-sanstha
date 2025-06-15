@@ -7,7 +7,8 @@
     "build": "tsc",
     "start": "node dist/app.js",
     "tsfmt-check": "tsfmt --verify --useTsconfig ./tsconfig.json --useTsfmt ./tsfmt.json",
-    "tsfmt-write": "tsfmt -r --useTsconfig ./tsconfig.json --useTsfmt ./tsfmt.json"
+    "tsfmt-write": "tsfmt -r --useTsconfig ./tsconfig.json --useTsfmt ./tsfmt.json",
+    "bp": "npm run tsfmt-write && npm run build"
   },
   "keywords": [],
   "author": "Vikash Kumar",

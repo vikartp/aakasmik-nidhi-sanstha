@@ -9,9 +9,6 @@ router.post('/register', registerUser)
 // Login
 router.post("/login", loginUser)
 
-// Refresh Token
-// router.get("/refresh-token", refreshToken)
-
 // Logout
 router.post("/logout", logoutUser)
 

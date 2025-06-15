@@ -107,6 +107,12 @@ export const logoutUser = async (
     req: Request,
     res: Response
 ): Promise<void> => {
+    res.cookie('accessToken', '', {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        expires: new Date(0)
+    });
     res.clearCookie("accessToken");
     res.json({ message: "Logged out" });
 };
