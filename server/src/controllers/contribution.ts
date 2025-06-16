@@ -1,14 +1,24 @@
 import { Request, Response } from "express";
 import Contribution from "../models/Contribution";
+import Screenshot from '../models/Screenshot';
 
 export const createContribution = async (req: Request, res: Response) => {
     try {
         if (req.user?.role !== 'admin') {
             res.status(403).json({ error: 'Forbidden: Only admins can create contributions' });
             return;
+        }
+        // Automatically set verifiedBy to the current admin's user id
+        const contributionData = {
+            ...req.body,
+            verifiedBy: req.user._id,
         };
-        const contribution = new Contribution(req.body);
+        const contribution = new Contribution(contributionData);
         const saved = await contribution.save();
+        // Update screenshot as verified if screenshotId is present
+        if (saved.screenshotId) {
+            await Screenshot.findByIdAndUpdate(saved.screenshotId, { verified: true });
+        }
         res.status(201).json(saved);
         return;
     } catch (err) {

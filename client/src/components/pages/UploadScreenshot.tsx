@@ -8,7 +8,13 @@ import { useAuth } from '@/context/AuthContext';
 import { toast } from 'react-toastify';
 import Loader from './Loader';
 
-export function UploadScreenshot({ isQrCode }: { isQrCode?: boolean }) {
+export function UploadScreenshot({
+  isQrCode,
+  onUploadSuccess,
+}: {
+  isQrCode?: boolean;
+  onUploadSuccess?: () => void;
+}) {
   const { user } = useAuth();
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -29,6 +35,7 @@ export function UploadScreenshot({ isQrCode }: { isQrCode?: boolean }) {
       const response = await uploadScreenshot(file, loggedInUser, isQrCode);
       toast('Upload successful 🕺');
       setUploadedUrl(response.url || null);
+      if (onUploadSuccess) onUploadSuccess();
     } catch (error) {
       console.error('Upload failed:', error);
       toast('Upload failed.');

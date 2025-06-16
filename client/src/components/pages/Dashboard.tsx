@@ -15,6 +15,7 @@ import type { AxiosError } from 'axios';
 export default function Dashboard() {
   const { user } = useAuth();
   const [loggedInUser, setLoggedInUser] = useState<User | null>(user || null);
+  const [refreshKey, setRefreshKey] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,6 +25,8 @@ export default function Dashboard() {
       setLoggedInUser(null);
     }
   }, [user]);
+
+  const handleRefresh = () => setRefreshKey(k => k + 1);
 
   if (!loggedInUser) {
     return (
@@ -55,7 +58,7 @@ export default function Dashboard() {
             title="Super Admin Dashboard"
             name={loggedInUser?.name || 'Guest'}
           />
-          <UploadScreenshot />
+          <UploadScreenshot onUploadSuccess={handleRefresh} />
           <SuperAdmin />
         </>
       );
@@ -66,7 +69,7 @@ export default function Dashboard() {
             title="Admin Dashboard"
             name={loggedInUser?.name || 'Guest'}
           />
-          <UploadScreenshot />
+          <UploadScreenshot onUploadSuccess={handleRefresh} />
           <Admin />
         </>
       );
@@ -77,8 +80,8 @@ export default function Dashboard() {
             title="Member Dashboard"
             name={loggedInUser?.name || 'Guest'}
           />
-          <UploadScreenshot />
-          <Member />
+          <UploadScreenshot onUploadSuccess={handleRefresh} />
+          <Member refreshKey={refreshKey} />
         </>
       );
   }

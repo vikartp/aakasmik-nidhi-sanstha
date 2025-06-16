@@ -25,3 +25,20 @@ export async function downloadImage(url: string, filename = 'image.png') {
     console.error('Failed to download image:', error);
   }
 }
+
+export function getMonthList() {
+  return [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+}

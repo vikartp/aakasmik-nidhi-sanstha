@@ -1,5 +1,10 @@
 import { useEffect, useState } from 'react';
-import { deleteScreenshot, getAllScreenshots } from '@/services/screenshot';
+import {
+  deleteScreenshot,
+  getAllScreenshots,
+  getScreenshotsByMonth,
+  type Month,
+} from '@/services/screenshot';
 import {
   Table,
   TableBody,
@@ -13,19 +18,39 @@ import { Button } from '../ui/button';
 import { downloadImage } from '@/lib/utils';
 import type { UserRole } from '@/types/users';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 export function ScreenshotTable({
   role,
   refreshKey,
+  month,
 }: {
   role: UserRole | undefined;
   refreshKey?: number;
+  month?: Month;
 }) {
   const [data, setData] = useState<Screenshot[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    if (month) {
+      // If a month is specified, filter screenshots by that month
+      getScreenshotsByMonth(month)
+        .then(response => {
+          if (response.length === 0) {
+            toast.info(`No screenshots found for ${month}.`, {
+              autoClose: 2000,
+            });
+            setData([]);
+          } else {
+            setData(response);
+          }
+        })
+        .catch(console.error);
+      return;
+    }
     getAllScreenshots().then(setData).catch(console.error);
-  }, [refreshKey]);
+  }, [refreshKey, month]);
 
   const handleDeleteScreenshot =
     (id: string, type: 'payment' | 'qrCode') => async () => {
@@ -57,7 +82,7 @@ export function ScreenshotTable({
           <TableRow>
             <TableHead>#</TableHead>
             <TableHead>Preview</TableHead>
-            <TableHead>Uploaded At</TableHead>
+            <TableHead>Status</TableHead>
             <TableHead className="text-right">Actions</TableHead>
             <TableHead className="w-24">Download</TableHead>
             {/* Only show Delete column for superadmin */}
@@ -79,13 +104,21 @@ export function ScreenshotTable({
                   />
                 </TableCell>
                 <TableCell>
-                  {new Date(item.uploadedAt).toLocaleString()}
+                  {item.verified ? (
+                    <span className="inline-block px-3 py-1 rounded-full bg-green-100 text-green-800 font-semibold text-xs">
+                      Verified
+                    </span>
+                  ) : (
+                    <span className="inline-block px-3 py-1 rounded-full bg-red-100 text-red-800 font-semibold text-xs">
+                      Not Verified
+                    </span>
+                  )}
                 </TableCell>
                 <TableCell className="text-right">
                   <Button
                     variant="outline"
                     onClick={() => {
-                      // Handle view details action
+                      navigate(`/screenshot/${item._id}`);
                     }}
                   >
                     View

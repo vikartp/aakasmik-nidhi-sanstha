@@ -37,9 +37,8 @@ Also if a user is admin then show 'Remove Admin'.
 
 
 ## TODO
-- Create a view screenshot page for admin/superadmin. They can verify the payment and then create the contribution.
-- Create table for user contribution for member page( fetch contribution by userid)
 - Create table for monthly contribution check (filter by month and year). => For admin
 - Create interface for admin to get list of member who has not contributed this month.
-- Add option for admin to change 'Member From'(createdAt) for any user. Create a new field in schema and then change that in use table component display part. Also change the public user controller.
+- Option to select month before bulk delete in superadmin.
+- Add option for admin to change 'Member From' for any user. 
 - Use Redux to manage state for upload and anything else.

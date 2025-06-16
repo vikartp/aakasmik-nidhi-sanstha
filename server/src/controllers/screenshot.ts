@@ -57,6 +57,24 @@ export const uploadScreenshot = async (
     }
 };
 
+export const getScreenshotById = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    try {
+        const { id } = req.params;
+        const screenshot = await Screenshot.findById(id);
+        if (!screenshot) {
+            res.status(404).json({ error: "Screenshot not found" });
+            return;
+        }
+        res.status(200).json(screenshot);
+    } catch (err) {
+        console.error("Error fetching screenshot:", err);
+        res.status(500).json({ error: "Failed to fetch screenshot" });
+    }
+};
+
 export const getScreenshots = async (
     req: Request,
     res: Response
@@ -66,6 +84,34 @@ export const getScreenshots = async (
         res.status(200).json(screenshots);
     } catch (err) {
         console.error("Error fetching screenshots:", err);
+        res.status(500).json({ error: "Failed to fetch screenshots" });
+    }
+};
+
+export const getScreenshotsByMonth = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    try {
+        const { month } = req.params;
+        const screenshots = await Screenshot.find({ uploadMonth: month, type: { $ne: 'qrCode' } });
+        res.status(200).json(screenshots);
+    } catch (err) {
+        console.error("Error fetching screenshots by month:", err);
+        res.status(500).json({ error: "Failed to fetch screenshots" });
+    }
+}
+
+export const getScreenshotsByUserIdAndMonth = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    try {
+        const { userId, month } = req.params;
+        const screenshots = await Screenshot.find({ userId, uploadMonth: month, type: { $ne: 'qrCode' } });
+        res.status(200).json(screenshots);
+    } catch (err) {
+        console.error("Error fetching screenshots by user and month:", err);
         res.status(500).json({ error: "Failed to fetch screenshots" });
     }
 };

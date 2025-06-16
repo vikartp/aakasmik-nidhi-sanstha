@@ -51,9 +51,7 @@ export async function deleteScreenshot(id: string): Promise<void> {
   await api.delete(`/screenshots/${id}`);
 }
 
-export async function getScreenshotById(
-  id: string
-): Promise<{ _id: string; url: string; uploadedAt: string }> {
+export async function getScreenshotById(id: string): Promise<Screenshot> {
   const response = await api.get(`/screenshots/${id}`);
   return response.data;
 }
@@ -67,7 +65,7 @@ export async function getScreenshotsByUserId(
 
 export async function getScreenshotsByMonth(
   month: Month
-): Promise<{ _id: string; url: string; uploadedAt: string }[]> {
+): Promise<Screenshot[]> {
   const response = await api.get(`/screenshots/month/${month}`);
   return response.data;
 }
@@ -75,7 +73,7 @@ export async function getScreenshotsByMonth(
 export async function getScreenshotsByUserIdAndMonth(
   userId: string,
   month: Month
-): Promise<{ _id: string; url: string; uploadedAt: string }[]> {
+): Promise<Screenshot[]> {
   const response = await api.get(`/screenshots/user/${userId}/month/${month}`);
   return response.data;
 }
