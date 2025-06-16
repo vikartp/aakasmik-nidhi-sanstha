@@ -4,7 +4,7 @@ import Screenshot from "../models/Screenshot";
 
 export const getPublicUsers = async (req: Request, res: Response): Promise<void> => {
     try {
-        const users = await User.find({ verified: true }, "name fatherName createdAt");
+        const users = await User.find({ verified: true }, "name fatherName profileUrl membershipDate");
         res.status(200).json(users);
     } catch (err) {
         res.status(500).json({ error: (err as Error).message });

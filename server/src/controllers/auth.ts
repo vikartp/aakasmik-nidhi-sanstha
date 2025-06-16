@@ -28,8 +28,7 @@ export const registerUser = async (
             return;
         }
 
-        const existingEmail = await User.findOne({ email });
-        if (existingEmail) {
+        if (email?.length && await User.findOne({ email })) {
             res.status(400).json({ message: "Email Id already registered." });
             return;
         }

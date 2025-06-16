@@ -67,7 +67,7 @@ export function Default() {
 
       <div className="max-w-md mx-auto flex flex-col justify-center">
         {loading && <Loader text="Loading QR Code..." />}
-        {qrCode ? (
+        {qrCode && (
           <>
             <p className="text-lg text-center mb-4">
               Please scan the QR code below to contribute to our community fund
@@ -85,8 +85,6 @@ export function Default() {
               Download QR Code
             </Button>
           </>
-        ) : (
-          <p> We'll update our payment QR Code very soon. 🌍</p>
         )}
       </div>
       <h1 className="text-2xl text-center"> Our Lovely Members ❤️</h1>

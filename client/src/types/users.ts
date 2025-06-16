@@ -8,6 +8,8 @@ export interface User {
   email?: string;
   occupation?: string;
   createdAt?: Date; // ISO date string
+  profileUrl?: string; // URL for profile image
+  membershipDate?: Date; // ISO date string
 }
 
 export type UserRole = 'member' | 'admin' | 'superadmin';

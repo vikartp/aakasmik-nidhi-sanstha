@@ -58,7 +58,7 @@ export default function UserTable({
     try {
       await deleteUser(user._id);
       setUsers(users.filter(u => u._id !== user._id));
-      toast(`User ${user.name} deleted successfully.`);
+      toast(`User ${user.name} deleted successfully.`, { autoClose: 500 });
     } catch (error) {
       console.error('Error deleting user:', error);
       toast('Failed to delete user. Please try again later.');
@@ -108,10 +108,11 @@ export default function UserTable({
           <TableHeader>
             <TableRow>
               <TableHead className="w-[50px]">#</TableHead>
+              <TableHead>Photo</TableHead>
               <TableHead>Name</TableHead>
               {!defaultPage && <TableHead>Phone Number</TableHead>}
               <TableHead>Father Name</TableHead>
-              <TableHead>Member From</TableHead>
+              <TableHead>Memberbership</TableHead>
               {role === 'superadmin' && <TableHead>Delete</TableHead>}
               {role === 'superadmin' && <TableHead>Make Admin</TableHead>}
               {role === 'admin' && !defaultPage && (
@@ -124,16 +125,46 @@ export default function UserTable({
               users.map((user, index) => (
                 <TableRow key={user._id || index}>
                   <TableCell>{index + 1}</TableCell>
+                  <TableCell>
+                    {user.profileUrl ? (
+                      <img
+                        src={user.profileUrl}
+                        alt={user.name}
+                        className="w-10 h-10 rounded-full object-cover border border-gray-300"
+                        style={{ minWidth: 32, minHeight: 32 }}
+                      />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="w-6 h-6 text-gray-400"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M15.75 7.5a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 19.5a7.5 7.5 0 1115 0v.75A2.25 2.25 0 0117.25 22.5h-10.5A2.25 2.25 0 014.5 20.25v-.75z"
+                          />
+                        </svg>
+                      </div>
+                    )}
+                  </TableCell>
                   <TableCell>{user.name}</TableCell>
                   {!defaultPage && <TableCell>{user.mobile}</TableCell>}
                   <TableCell>{user.fatherName || '-'}</TableCell>
                   <TableCell>
-                    {user.createdAt
-                      ? new Date(user.createdAt).toLocaleDateString('en-IN', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                        })
+                    {user.membershipDate
+                      ? new Date(user.membershipDate).toLocaleDateString(
+                          'en-IN',
+                          {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                          }
+                        )
                       : '-'}
                   </TableCell>
                   {role === 'superadmin' && (

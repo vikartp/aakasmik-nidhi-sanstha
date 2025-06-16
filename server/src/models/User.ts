@@ -5,9 +5,11 @@ export interface IUser extends Document {
     password: string;
     name: string;
     fatherName: string;
+    role: 'member' | 'admin' | 'superadmin';
     email?: string;
     occupation?: string;
-    role: 'member' | 'admin' | 'superadmin';
+    membershipDate?: Date; // Optional, if you want to track when the user became a member
+    profileUrl?: string; // Optional, if you want to store a profile picture URL
     verified: boolean;
     createdAt: Date;
 }
@@ -33,8 +35,9 @@ const userSchema = new Schema({
         unique: true,
         // Make email required if that's the intent; otherwise, keep it optional
         required: false, // Change to true if email is mandatory
+        set: (v: string) => (v === '' ? null : v),
         validate: {
-            validator: function(v: string) {
+            validator: function(v: string | null) {
                 // If email is not provided and not required, skip validation
                 if (!v) return true;
                 // Standard email regex
@@ -46,7 +49,9 @@ const userSchema = new Schema({
     occupation: { type: String },
     role: { type: String, enum: ['member', 'admin', 'superadmin'], default: 'member' },
     verified: { type: Boolean, default: false },
-    createdAt: { type: Date, default: Date.now }
+    createdAt: { type: Date, default: Date.now },
+    membershipDate: { type: Date }, // Optional field to track membership date
+    profileUrl: { type: String } // Optional field for profile picture URL
 });
 
 export default mongoose.model<IUser>('User', userSchema);
