@@ -163,6 +163,17 @@ export const uploadProfileImage = async (
         res.status(400).json({ message: "No file uploaded" });
         return;
     }
+    // Validate file type and size
+    const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp", "image/jpg"];
+    if (!allowedTypes.includes(req.file.mimetype)) {
+        res.status(400).json({ message: "Only image files (jpg, jpeg, png, gif, webp) are allowed." });
+        return;
+    }
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (req.file.size > maxSize) {
+        res.status(400).json({ message: "Image size must be less than 10MB. Please reduce the file size." });
+        return;
+    }
     try {
         const userId = req.user?._id;
         if (!userId) {

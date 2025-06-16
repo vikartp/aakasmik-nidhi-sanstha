@@ -10,6 +10,7 @@ import Member from './Member';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'react-toastify';
 import Loader from './Loader';
+import type { AxiosError } from 'axios';
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -118,8 +119,15 @@ function DashboardHeader({ title, name }: { title: string; name: string }) {
       toast.success('Profile image updated!', { autoClose: 1000 });
       // Refetch or update user context
       if (res.data.user) setUser(res.data.user);
-    } catch {
-      toast.error('Failed to upload image');
+    } catch (err) {
+      let errorMessage = 'Failed to upload image. Please try again.';
+      if (err && typeof err === 'object' && 'isAxiosError' in err) {
+        const axiosError = err as AxiosError<{ message?: string }>;
+        if (axiosError.response?.data?.message) {
+          errorMessage = axiosError.response.data.message;
+        }
+        toast.error(errorMessage);
+      }
     } finally {
       setUploading(false);
     }

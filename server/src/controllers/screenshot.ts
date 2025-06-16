@@ -12,6 +12,15 @@ export const uploadScreenshot = async (
         req.body.uploadMonth ||
         new Date().toLocaleString("default", { month: "long" });
     try {
+        if (!req.file) {
+            res.status(400).json({ message: "No file uploaded" });
+            return;
+        }
+        const maxSize = 10 * 1024 * 1024; // 10MB
+        if (req.file.size > maxSize) {
+            res.status(400).json({ message: "Image size must be less than 10MB. Please reduce the file size." });
+            return;
+        }
         // Check for existing screenshot for this user and month
         const existing = await Screenshot.findOne({ userId, uploadMonth, type: 'payment' });
         if (existing) {
