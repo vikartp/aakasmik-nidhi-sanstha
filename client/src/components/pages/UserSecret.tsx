@@ -3,6 +3,7 @@ import { useState } from 'react';
 import api from '@/services/api';
 import { Button } from '../ui/button';
 import { Copy } from 'lucide-react';
+import { Input } from '../ui/input';
 
 export default function UserSecret() {
   const { user } = useAuth();
@@ -66,16 +67,16 @@ export default function UserSecret() {
           <li>They can use this key to change their password as well.</li>
         </ul>
       </div>
-      <div className="flex gap-2 items-center mt-4">
-        <input
+      <div className="flex flex-col sm:flex-row gap-2 items-center mt-4 w-full">
+        <Input
           type="text"
-          className="border px-2 py-1 rounded"
           placeholder="Enter mobile number"
           value={mobile}
           onChange={e => setMobile(e.target.value)}
+          className="w-full sm:w-auto"
         />
         <Button
-          className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 disabled:opacity-50"
+          className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 disabled:opacity-50 w-full sm:w-auto"
           onClick={handleGetSecret}
           disabled={!mobile || loading}
         >

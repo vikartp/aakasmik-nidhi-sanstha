@@ -12,12 +12,8 @@ import { Combobox } from './Combobox';
 import type { ComboboxOption } from './Combobox';
 import { getMonthList } from '@/lib/utils';
 import type { Month } from '@/services/screenshot';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-/**
- * Notes:
- * SuperAdmin has the highest level of access.
- * SuperAdmin can manage all types of users and delete screenshots in bulk.
- */
 export default function SuperAdmin() {
   const { user } = useAuth();
   const [isDeleting, setIsDeleting] = useState(false);
@@ -61,25 +57,40 @@ export default function SuperAdmin() {
     selected: month === selectedMonth,
   }));
 
-  const handleValueChange = (newValue: Month) => {
-    setSelectedMonth(newValue);
-  };
-
   return (
-    <>
-      <div className="flex flex-col justify-center m-2 gap-4">
-        <div className="flex justify-center items-center gap-4 m-4">
-          <p className="text-green-400">Upload QR Code</p>
-          <UploadScreenshot isQrCode={true} />
-        </div>
-        <h2 className="text-xl font-bold">User Management</h2>
+    <Tabs
+      defaultValue="users"
+      className="w-full max-w-full px-0 sm:px-2 md:px-4"
+    >
+      <TabsList className="w-full bg-muted border border-border rounded-t-lg flex justify-center gap-2 p-1 dark:bg-zinc-900 dark:border-zinc-700">
+        <TabsTrigger value="users" className="flex-1 min-w-0 cursor-pointer">
+          Users
+        </TabsTrigger>
+        <TabsTrigger value="screenshots" className="flex-1 min-w-0 cursor-pointer">
+          Screenshots
+        </TabsTrigger>
+        <TabsTrigger value="secret" className="flex-1 min-w-0 cursor-pointer">
+          Secrets
+        </TabsTrigger>
+        <TabsTrigger value="qrcode" className="flex-1 min-w-0 cursor-pointer">
+          QR Code
+        </TabsTrigger>
+      </TabsList>
+      <TabsContent
+        value="users"
+        className="border border-border border-t-0 rounded-b-lg bg-background shadow-sm p-4 sm:p-6 dark:bg-zinc-900 dark:border-zinc-700 w-full"
+      >
         <UserTable role={user?.role} />
-        <h2 className="text-xl font-bold">Screenshots Management</h2>
+      </TabsContent>
+      <TabsContent
+        value="screenshots"
+        className="border border-border border-t-0 rounded-b-lg bg-background shadow-sm p-4 sm:p-6 dark:bg-zinc-900 dark:border-zinc-700 w-full"
+      >
         <div className="flex flex-col sm:flex-row flex-wrap gap-4 items-center mb-2">
           <Combobox<Month>
             frameworks={frameworks}
             frameType="Month"
-            onValueChange={handleValueChange}
+            onValueChange={setSelectedMonth}
           />
           <Button
             onClick={() => deleteScreenshotByMonth(selectedMonth)}
@@ -91,9 +102,27 @@ export default function SuperAdmin() {
           </Button>
           {isDeleting && <Loader text="Deleting screenshots, please wait..." />}
         </div>
-        <ScreenshotTable role={user?.role} refreshKey={screenshotRefresh} />
+        <div className="rounded-md border overflow-y-auto max-h-80 sm:max-h-[500px]">
+          <ScreenshotTable
+            role={user?.role}
+            refreshKey={screenshotRefresh}
+            month={selectedMonth}
+          />
+        </div>
+      </TabsContent>
+      <TabsContent
+        value="secret"
+        className="border border-border border-t-0 rounded-b-lg bg-background shadow-sm p-4 sm:p-6 dark:bg-zinc-900 dark:border-zinc-700 w-full"
+      >
         <UserSecret />
-      </div>
-    </>
+      </TabsContent>
+      <TabsContent
+        value="qrcode"
+        className="border border-border border-t-0 rounded-b-lg bg-background shadow-sm p-4 sm:p-6 dark:bg-zinc-900 dark:border-zinc-700 w-full flex flex-col items-center gap-4"
+      >
+        <p className="text-green-400">Upload QR Code</p>
+        <UploadScreenshot isQrCode={true} />
+      </TabsContent>
+    </Tabs>
   );
 }

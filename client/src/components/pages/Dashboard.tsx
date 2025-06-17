@@ -1,22 +1,20 @@
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import type { User } from '@/types/users';
-import { UploadScreenshot } from './UploadScreenshot';
 import { useEffect, useState, useRef } from 'react';
 import Admin from './Admin';
 import api from '@/services/api';
 import SuperAdmin from './SuperAdmin';
-import Member from './Member';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'react-toastify';
 import Loader from './Loader';
 import type { AxiosError } from 'axios';
 import { LogOut } from 'lucide-react';
+import DashboardCommonSection from './DashboardCommonSection';
 
 export default function Dashboard() {
   const { user } = useAuth();
   const [loggedInUser, setLoggedInUser] = useState<User | null>(user || null);
-  const [refreshKey, setRefreshKey] = useState(0);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -28,8 +26,6 @@ export default function Dashboard() {
     }, 1000); // 1 second delay
     return () => clearTimeout(timeout);
   }, [user]);
-
-  const handleRefresh = () => setRefreshKey(k => k + 1);
 
   if (loading) {
     return (
@@ -69,9 +65,8 @@ export default function Dashboard() {
             title="Super Admin Dashboard"
             name={loggedInUser?.name || 'Guest'}
           />
-          <UploadScreenshot onUploadSuccess={handleRefresh} />
           <SuperAdmin />
-          <Member refreshKey={refreshKey} />
+          <DashboardCommonSection />
         </>
       );
     case 'admin':
@@ -81,9 +76,8 @@ export default function Dashboard() {
             title="Admin Dashboard"
             name={loggedInUser?.name || 'Guest'}
           />
-          <UploadScreenshot onUploadSuccess={handleRefresh} />
           <Admin />
-          <Member refreshKey={refreshKey} />
+          <DashboardCommonSection />
         </>
       );
     default:
@@ -93,8 +87,7 @@ export default function Dashboard() {
             title="Member Dashboard"
             name={loggedInUser?.name || 'Guest'}
           />
-          <UploadScreenshot onUploadSuccess={handleRefresh} />
-          <Member refreshKey={refreshKey} />
+          <DashboardCommonSection />
         </>
       );
   }
