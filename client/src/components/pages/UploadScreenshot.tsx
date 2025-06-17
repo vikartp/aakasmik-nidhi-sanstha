@@ -7,6 +7,7 @@ import { useRef } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'react-toastify';
 import Loader from './Loader';
+import type { AxiosError } from 'axios';
 
 export function UploadScreenshot({
   isQrCode,
@@ -19,7 +20,6 @@ export function UploadScreenshot({
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [loggedInUser] = useState<User | null>(user || null);
-  const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -32,13 +32,19 @@ export function UploadScreenshot({
         toast('You must be logged in to upload a screenshot.');
         return;
       }
-      const response = await uploadScreenshot(file, loggedInUser, isQrCode);
+      await uploadScreenshot(file, loggedInUser, isQrCode);
       toast('Upload successful 🕺');
-      setUploadedUrl(response.url || null);
       if (onUploadSuccess) onUploadSuccess();
-    } catch (error) {
-      console.error('Upload failed:', error);
-      toast('Upload failed.');
+    } catch (err) {
+      console.error(err);
+      let errorMessage = 'Upload failed. Please try again.';
+      if (err && typeof err === 'object' && 'isAxiosError' in err) {
+        const axiosError = err as AxiosError<{ message?: string }>;
+        if (axiosError.response?.data?.message) {
+          errorMessage = axiosError.response.data.message;
+        }
+        toast.error(errorMessage);
+      }
     } finally {
       setUploading(false);
       setFile(null);
@@ -63,7 +69,7 @@ export function UploadScreenshot({
         )}
         <div className="flex flex-col space-x-4 max-w-md mx-auto gap-4">
           {uploading ? (
-            <Loader text="कृपया प्रतीक्षा करें 🤴 अपलोड हो रहा है... 🥳" />
+            <Loader text="कृपया प्रतीक्षा करें 🙏 अपलोड हो रहा है... 🥳" />
           ) : (
             <Input
               ref={fileInputRef}
@@ -81,16 +87,6 @@ export function UploadScreenshot({
                 : 'Upload Screenshot for this Month'}
           </Button>
         </div>
-        {uploadedUrl && (
-          <div className="mt-4 flex flex-col items-center">
-            <p className="text-green-600">Uploaded Image Preview:</p>
-            <img
-              src={uploadedUrl}
-              alt="Uploaded Screenshot"
-              className="max-w-xs rounded shadow"
-            />
-          </div>
-        )}
       </div>
     </>
   );

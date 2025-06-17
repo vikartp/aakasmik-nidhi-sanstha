@@ -11,6 +11,7 @@ import { useAuth } from '@/context/AuthContext';
 import { toast } from 'react-toastify';
 import Loader from './Loader';
 import type { AxiosError } from 'axios';
+import { LogOut } from 'lucide-react';
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -60,6 +61,7 @@ export default function Dashboard() {
           />
           <UploadScreenshot onUploadSuccess={handleRefresh} />
           <SuperAdmin />
+          <Member refreshKey={refreshKey} />
         </>
       );
     case 'admin':
@@ -71,6 +73,7 @@ export default function Dashboard() {
           />
           <UploadScreenshot onUploadSuccess={handleRefresh} />
           <Admin />
+          <Member refreshKey={refreshKey} />
         </>
       );
     default:
@@ -140,7 +143,7 @@ function DashboardHeader({ title, name }: { title: string; name: string }) {
     <div className="flex justify-between items-center mb-4">
       <div className="flex items-center gap-4">
         <div
-          className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center cursor-pointer overflow-hidden border-2 border-gray-300 hover:border-blue-400 transition relative"
+          className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center cursor-pointer overflow-hidden border-2 border-gray-300 hover:border-blue-400 transition relative"
           onClick={handleProfileClick}
           title="Change profile picture"
         >
@@ -187,7 +190,13 @@ function DashboardHeader({ title, name }: { title: string; name: string }) {
           <p>({name})</p>
         </div>
       </div>
-      <Button onClick={handleLogout}>Logout</Button>
+      <Button
+        onClick={handleLogout}
+        className="flex items-center gap-2 px-4 py-2 rounded font-semibold shadow-sm transition-all duration-150 bg-gradient-to-r from-red-500 to-red-700 text-white hover:from-red-600 hover:to-red-800 hover:scale-105 dark:from-red-400 dark:to-red-600 dark:hover:from-red-500 dark:hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-red-300 dark:focus:ring-red-800"
+      >
+        <LogOut className="w-5 h-5" />
+        Logout
+      </Button>
     </div>
   );
 }

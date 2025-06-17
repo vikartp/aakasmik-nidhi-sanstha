@@ -112,12 +112,12 @@ export default function UserTable({
               <TableHead>Name</TableHead>
               {!defaultPage && <TableHead>Phone Number</TableHead>}
               <TableHead>Father Name</TableHead>
-              <TableHead>Memberbership</TableHead>
-              {role === 'superadmin' && <TableHead>Delete</TableHead>}
-              {role === 'superadmin' && <TableHead>Make Admin</TableHead>}
               {role === 'admin' && !defaultPage && (
                 <TableHead>Verify Member</TableHead>
               )}
+              <TableHead>Memberbership</TableHead>
+              {role === 'superadmin' && <TableHead>Delete</TableHead>}
+              {role === 'superadmin' && <TableHead>Make Admin</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -155,6 +155,21 @@ export default function UserTable({
                   <TableCell>{user.name}</TableCell>
                   {!defaultPage && <TableCell>{user.mobile}</TableCell>}
                   <TableCell>{user.fatherName || '-'}</TableCell>
+                  {role === 'admin' && !user.verified && (
+                    <TableCell>
+                      <Button
+                        onClick={verifyMember(user)}
+                        variant={'default'}
+                        className="px-4 py-1 rounded font-semibold shadow-sm transition-all duration-150
+                        bg-gradient-to-r from-blue-500 to-blue-700 text-white
+                        hover:from-blue-600 hover:to-blue-800 hover:scale-105
+                        dark:from-blue-400 dark:to-blue-600 dark:hover:from-blue-500 dark:hover:to-blue-700
+                        focus:outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-800"
+                      >
+                        Verify Member
+                      </Button>
+                    </TableCell>
+                  )}
                   <TableCell>
                     {user.membershipDate
                       ? new Date(user.membershipDate).toLocaleDateString(
@@ -186,17 +201,6 @@ export default function UserTable({
                         className="hover:underline text-green-500"
                       >
                         Make Admin
-                      </Button>
-                    </TableCell>
-                  )}
-                  {role === 'admin' && !user.verified && (
-                    <TableCell>
-                      <Button
-                        onClick={verifyMember(user)}
-                        variant={'default'}
-                        className="hover:underline text-blue-500"
-                      >
-                        Verify Member
                       </Button>
                     </TableCell>
                   )}

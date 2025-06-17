@@ -45,15 +45,19 @@ export const registerUser = async (
         }
 
         const hashed = await bcrypt.hash(password, 10);
-        const user = await User.create({
+        const userData: any = {
             name,
             fatherName,
-            email,
             mobile,
             occupation,
             role,
             password: hashed,
-        });
+        };
+        // Only include email if it's a non-empty string
+        if (typeof email === 'string' && email.trim().length > 0) {
+            userData.email = email.trim();
+        }
+        const user = await User.create(userData);
         res.status(201).json({ message: "Registered successfully", user });
     } catch (err) {
         console.error(err);

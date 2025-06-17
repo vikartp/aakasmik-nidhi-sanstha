@@ -7,6 +7,7 @@ import { downloadImage } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import UserTable from './UserTable';
 import Loader from './Loader';
+import { UserPlus, LogIn } from 'lucide-react';
 
 export function Default() {
   const navigate = useNavigate();
@@ -41,8 +42,20 @@ export function Default() {
         </Button>
       ) : (
         <div className="flex items-center justify-end space-x-4">
-          <Button onClick={() => navigate('/register')}>Register</Button>
-          <Button onClick={() => navigate('/login')}>Login</Button>
+          <Button
+            onClick={() => navigate('/register')}
+            className="flex items-center gap-2 px-4 py-2 rounded font-semibold shadow-sm transition-all duration-150 bg-gradient-to-r from-green-500 to-green-700 text-white hover:from-green-600 hover:to-green-800 hover:scale-105 dark:from-green-400 dark:to-green-600 dark:hover:from-green-500 dark:hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-300 dark:focus:ring-green-800"
+          >
+            <UserPlus className="w-5 h-5" />
+            Register
+          </Button>
+          <Button
+            onClick={() => navigate('/login')}
+            className="flex items-center gap-2 px-4 py-2 rounded font-semibold shadow-sm transition-all duration-150 bg-gradient-to-r from-blue-500 to-blue-700 text-white hover:from-blue-600 hover:to-blue-800 hover:scale-105 dark:from-blue-400 dark:to-blue-600 dark:hover:from-blue-500 dark:hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-800"
+          >
+            <LogIn className="w-5 h-5" />
+            Login
+          </Button>
         </div>
       )}
       <h2 className="text-2xl font-semibold">

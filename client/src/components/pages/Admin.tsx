@@ -7,7 +7,6 @@ import { Combobox } from './Combobox';
 import type { ComboboxOption } from './Combobox';
 import { getMonthList } from '@/lib/utils';
 import type { Month } from '@/services/screenshot';
-import Member from './Member';
 
 /**
  * Notes: Admin has the ability to manage members and view screenshots.
@@ -48,7 +47,6 @@ export default function Admin() {
         </p>
         <ScreenshotTable role={user?.role} month={selectedMonth} />
         <UserSecret />
-        <Member />
       </div>
     </>
   );

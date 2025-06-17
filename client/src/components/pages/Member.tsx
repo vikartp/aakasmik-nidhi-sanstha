@@ -17,6 +17,7 @@ import Loader from './Loader';
 import type { Contribution } from '@/services/contribution';
 import type { Screenshot } from '@/types/screenshots';
 import type { Month } from '@/services/screenshot';
+import { Button } from '../ui/button';
 
 export default function Member({ refreshKey }: { refreshKey?: number }) {
   const { user } = useAuth();
@@ -78,7 +79,7 @@ export default function Member({ refreshKey }: { refreshKey?: number }) {
   };
 
   return (
-    <div className="max-w-4xl mx-auto mt-4 px-2">
+    <div className="max-w-md mx-auto mt-4 px-2">
       {currentMonthStatus === 'pending' && currentMonthScreenshot && (
         <div className="mb-4 flex flex-col items-center border border-yellow-300 bg-yellow-50 dark:bg-yellow-900 rounded p-3">
           <span className="text-yellow-800 dark:text-yellow-200 font-semibold mb-2">
@@ -103,7 +104,6 @@ export default function Member({ refreshKey }: { refreshKey?: number }) {
                   <TableHead>Month</TableHead>
                   <TableHead>Year</TableHead>
                   <TableHead>Amount</TableHead>
-                  <TableHead>Status</TableHead>
                   <TableHead>Action</TableHead>
                 </TableRow>
               </TableHeader>
@@ -128,11 +128,8 @@ export default function Member({ refreshKey }: { refreshKey?: number }) {
                       <TableCell>{c.year}</TableCell>
                       <TableCell>₹{c.amount}</TableCell>
                       <TableCell>
-                        {c.screenshotId ? 'With Screenshot' : 'Manual'}
-                      </TableCell>
-                      <TableCell>
                         {c.screenshotId ? (
-                          <button
+                          <Button
                             className="px-3 py-1 rounded bg-blue-600 text-white text-xs hover:bg-blue-700 transition"
                             onClick={() => handleView(c)}
                             disabled={
@@ -142,7 +139,7 @@ export default function Member({ refreshKey }: { refreshKey?: number }) {
                             {screenshotLoading && selectedScreenshot === c._id
                               ? 'Loading...'
                               : 'View Screenshot'}
-                          </button>
+                          </Button>
                         ) : (
                           <span className="text-gray-400 text-xs">-</span>
                         )}

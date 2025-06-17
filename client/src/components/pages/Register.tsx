@@ -6,6 +6,7 @@ import api from '@/services/api';
 import { toast } from 'react-toastify';
 import type { AxiosError } from 'axios';
 import Loader from './Loader';
+import { UserPlus } from 'lucide-react';
 
 export function Register() {
   const [isWaiting, setIsWaiting] = useState(false);
@@ -79,7 +80,9 @@ export function Register() {
           !form['secretKey'] ||
           isWaiting
         }
+        className="flex items-center gap-2 px-5 py-2 rounded font-semibold shadow-sm transition-all duration-150 bg-gradient-to-r from-green-500 to-green-700 text-white hover:from-green-600 hover:to-green-800 hover:scale-105 dark:from-green-400 dark:to-green-600 dark:hover:from-green-500 dark:hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-300 dark:focus:ring-green-800"
       >
+        <UserPlus className="w-5 h-5" />
         Register
       </Button>
       <div className="text-center text-sm text-gray-500">

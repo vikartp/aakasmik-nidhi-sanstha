@@ -7,6 +7,7 @@ import api from '@/services/api';
 import { toast } from 'react-toastify';
 import type { AxiosError } from 'axios';
 import Loader from './Loader';
+import { LogIn } from 'lucide-react';
 
 export function Login() {
   const [mobile, setMobile] = useState('');
@@ -73,7 +74,9 @@ export function Login() {
         <Button
           onClick={handleLogin}
           disabled={!mobile || !password || isWaiting}
+          className="flex items-center gap-2 px-5 py-2 rounded font-semibold shadow-sm transition-all duration-150 bg-gradient-to-r from-blue-500 to-blue-700 text-white hover:from-blue-600 hover:to-blue-800 hover:scale-105 dark:from-blue-400 dark:to-blue-600 dark:hover:from-blue-500 dark:hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-800"
         >
+          <LogIn className="w-5 h-5" />
           Login
         </Button>
         <span

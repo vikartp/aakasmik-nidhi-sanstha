@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import api from '@/services/api';
 import type { AxiosError } from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { KeyRound } from 'lucide-react';
 
 export default function ForgotPassword() {
   const [mobile, setMobile] = useState('');
@@ -59,9 +60,16 @@ export default function ForgotPassword() {
       <Button
         onClick={handleForgotPassword}
         disabled={!mobile || !secretKey || !newPassword || loading}
-        className="w-full"
+        className="w-full flex items-center justify-center gap-2 px-5 py-2 rounded font-semibold shadow-sm transition-all duration-150 bg-gradient-to-r from-yellow-500 to-yellow-700 text-white hover:from-yellow-600 hover:to-yellow-800 hover:scale-105 dark:from-yellow-400 dark:to-yellow-600 dark:hover:from-yellow-500 dark:hover:to-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-300 dark:focus:ring-yellow-800"
       >
-        {loading ? 'Resetting...' : 'Reset Password'}
+        {loading ? (
+          <span>Resetting...</span>
+        ) : (
+          <>
+            <KeyRound className="w-5 h-5" />
+            Reset Password
+          </>
+        )}
       </Button>
       <p className="text-sm text-center text-gray-500">
         Remembered your password?{' '}

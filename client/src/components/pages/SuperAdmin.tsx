@@ -8,7 +8,6 @@ import api from '@/services/api';
 import { toast } from 'react-toastify';
 import UserSecret from './UserSecret';
 import Loader from './Loader';
-import Member from './Member';
 
 /**
  * Notes:
@@ -74,7 +73,6 @@ export default function SuperAdmin() {
         </Button>
         <ScreenshotTable role={user?.role} refreshKey={screenshotRefresh} />
         <UserSecret />
-        <Member />
       </div>
     </>
   );

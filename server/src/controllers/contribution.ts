@@ -8,18 +8,31 @@ export const createContribution = async (req: Request, res: Response) => {
             res.status(403).json({ error: 'Forbidden: Only admins can create contributions' });
             return;
         }
-        // Automatically set verifiedBy to the current admin's user id
+        // Validate required fields
+        const { userId, month, year, amount, screenshotId } = req.body;
+        if (!userId || !month || !year || !amount) {
+            res.status(400).json({ error: 'Missing required fields: userId, month, year, amount' });
+            return;
+        }
+        // Upsert contribution (atomic)
         const contributionData = {
-            ...req.body,
+            userId,
+            month,
+            year,
+            amount,
+            screenshotId,
             verifiedBy: req.user._id,
         };
-        const contribution = new Contribution(contributionData);
-        const saved = await contribution.save();
-        // Update screenshot as verified if screenshotId is present
-        if (saved.screenshotId) {
-            await Screenshot.findByIdAndUpdate(saved.screenshotId, { verified: true });
+        const updatedContribution = await Contribution.findOneAndUpdate(
+            { userId, month, year },
+            { $set: contributionData },
+            { new: true, upsert: true, setDefaultsOnInsert: true }
+        );
+        // If screenshotId is present, mark screenshot as verified
+        if (screenshotId) {
+            await Screenshot.findByIdAndUpdate(screenshotId, { verified: true });
         }
-        res.status(201).json(saved);
+        res.status(200).json(updatedContribution);
         return;
     } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Unknown error';

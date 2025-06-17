@@ -32,10 +32,7 @@ const userSchema = new Schema({
     fatherName: { type: String, required: true },
     email: {
         type: String,
-        unique: true,
-        // Make email required if that's the intent; otherwise, keep it optional
         required: false, // Change to true if email is mandatory
-        set: (v: string) => (v === '' ? null : v),
         validate: {
             validator: function(v: string | null) {
                 // If email is not provided and not required, skip validation
