@@ -7,16 +7,19 @@ import api from '@/services/api';
 import { toast } from 'react-toastify';
 import type { AxiosError } from 'axios';
 import Loader from './Loader';
-import { LogIn } from 'lucide-react';
+import { LogIn, Eye, EyeOff } from 'lucide-react';
 
 export function Login() {
   const [mobile, setMobile] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isWaiting, setIsWaiting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { login } = useAuth();
 
   const handleLogin = async () => {
+    setError(null);
     try {
       setIsWaiting(true);
       const res = await api.post('/auth/login', { mobile, password });
@@ -24,26 +27,26 @@ export function Login() {
       navigate('/dashboard');
       toast.success(res.data.message, { autoClose: 1000 });
     } catch (err: unknown) {
-      console.error(err);
       let errorMessage = 'Login failed. Please try again.';
       if (err && typeof err === 'object' && 'isAxiosError' in err) {
         const axiosError = err as AxiosError<{ message?: string }>;
         const status = axiosError.response?.status;
         if (status === 401) {
-          toast.error(axiosError.response?.data?.message ?? errorMessage);
+          errorMessage = axiosError.response?.data?.message ?? errorMessage;
         } else if (status === 403) {
-          toast.info(
+          errorMessage =
             axiosError.response?.data?.message ??
-              'You do not have permission to access this resource.'
-          );
+            'You do not have permission to access this resource.';
         } else if (status === 500) {
           errorMessage = 'Server error. Please try again later.';
         } else if (axiosError.response?.data?.message) {
           errorMessage = axiosError.response.data.message;
-        } else {
-          toast.error(errorMessage);
         }
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
       }
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsWaiting(false);
     }
@@ -59,17 +62,45 @@ export function Login() {
       }}
     >
       {isWaiting && <Loader text="Logging in..." />}
+      {error && (
+        <div className="bg-red-100 text-red-700 px-3 py-2 rounded text-sm border border-red-300">
+          {error}
+        </div>
+      )}
       <Input
         placeholder="Mobile Number"
         value={mobile}
-        onChange={e => setMobile(e.target.value)}
+        onChange={e => {
+          const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+          setMobile(val);
+        }}
+        maxLength={10}
+        pattern="[0-9]{10}"
+        inputMode="numeric"
+        autoComplete="tel"
       />
-      <Input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={e => setPassword(e.target.value)}
-      />
+      <div className="relative">
+        <Input
+          type={showPassword ? 'text' : 'password'}
+          placeholder="Password"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+          autoComplete="current-password"
+        />
+        <button
+          type="button"
+          className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 focus:outline-none"
+          onClick={() => setShowPassword(v => !v)}
+          tabIndex={-1}
+          aria-label={showPassword ? 'Hide password' : 'Show password'}
+        >
+          {showPassword ? (
+            <EyeOff className="w-5 h-5" />
+          ) : (
+            <Eye className="w-5 h-5" />
+          )}
+        </button>
+      </div>
       <div className="flex items-center">
         <Button
           onClick={handleLogin}

@@ -17,18 +17,28 @@ export default function Dashboard() {
   const { user } = useAuth();
   const [loggedInUser, setLoggedInUser] = useState<User | null>(user || null);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user) {
-      setLoggedInUser(user);
-    } else {
-      setLoggedInUser(null);
-    }
+    setLoading(true);
+    const timeout: NodeJS.Timeout = setTimeout(() => {
+      setLoggedInUser(user || null);
+      setLoading(false);
+    }, 1000); // 1 second delay
+    return () => clearTimeout(timeout);
   }, [user]);
 
   const handleRefresh = () => setRefreshKey(k => k + 1);
 
+  if (loading) {
+    return (
+      <div className="max-w-4xl mx-auto mt-10 px-4 flex flex-col items-center">
+        <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
+        <Loader text="Loading your dashboard..." />
+      </div>
+    );
+  }
   if (!loggedInUser) {
     return (
       <div className="max-w-4xl mx-auto mt-10 px-4">

@@ -6,7 +6,7 @@ import api from '@/services/api';
 import { toast } from 'react-toastify';
 import type { AxiosError } from 'axios';
 import Loader from './Loader';
-import { UserPlus } from 'lucide-react';
+import { UserPlus, Eye, EyeOff } from 'lucide-react';
 
 export function Register() {
   const [isWaiting, setIsWaiting] = useState(false);
@@ -19,27 +19,52 @@ export function Register() {
     password: '',
     secretKey: '',
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [passwordStrength, setPasswordStrength] = useState('');
   const navigate = useNavigate();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    if (name === 'mobile') {
+      // Only allow numeric input and max 10 digits
+      setForm({ ...form, [name]: value.replace(/\D/g, '').slice(0, 10) });
+    } else if (name === 'password') {
+      setForm({ ...form, [name]: value });
+      setPasswordStrength(getPasswordStrength(value));
+    } else {
+      setForm({ ...form, [name]: value });
+    }
+  };
+
+  function getPasswordStrength(password: string) {
+    if (password.length < 4) return 'Too short';
+    if (password.length < 6) return 'Weak';
+    if (/^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*]).{6,}$/.test(password))
+      return 'Strong';
+    if (/^(?=.*[A-Z])(?=.*[0-9]).{6,}$/.test(password)) return 'Medium';
+    return 'Weak';
+  }
 
   const handleSubmit = async () => {
+    setError(null);
     try {
       setIsWaiting(true);
       await api.post('/auth/register', form);
       toast.success('Registered! Please login.', { autoClose: 1000 });
       navigate('/');
     } catch (err) {
-      console.error(err);
       let errorMessage = 'Registration failed. Please try again.';
       if (err && typeof err === 'object' && 'isAxiosError' in err) {
         const axiosError = err as AxiosError<{ message?: string }>;
         if (axiosError.response?.data?.message) {
           errorMessage = axiosError.response.data.message;
         }
-        toast.error(errorMessage);
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
       }
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsWaiting(false);
     }
@@ -52,24 +77,93 @@ export function Register() {
           <Loader text="Trying to register 🏃‍♂️. Please wait..." />
         </div>
       )}
-      {[
-        'name',
-        'fatherName',
-        'email',
-        'mobile',
-        'occupation',
-        'password',
-        'secretKey',
-      ].map(key => (
+      {error && (
+        <div className="bg-red-100 text-red-700 px-3 py-2 rounded text-sm border border-red-300">
+          {error}
+        </div>
+      )}
+      <Input
+        name="name"
+        placeholder="NAME"
+        value={form.name}
+        onChange={handleChange}
+        autoComplete="name"
+      />
+      <Input
+        name="fatherName"
+        placeholder="FATHER NAME"
+        value={form.fatherName}
+        onChange={handleChange}
+        autoComplete="off"
+      />
+      <Input
+        name="email"
+        placeholder="EMAIL"
+        value={form.email}
+        onChange={handleChange}
+        autoComplete="email"
+        type="email"
+      />
+      <Input
+        name="mobile"
+        placeholder="MOBILE"
+        value={form.mobile}
+        onChange={handleChange}
+        maxLength={10}
+        pattern="[0-9]{10}"
+        inputMode="numeric"
+        autoComplete="tel"
+      />
+      <Input
+        name="occupation"
+        placeholder="OCCUPATION"
+        value={form.occupation}
+        onChange={handleChange}
+        autoComplete="organization-title"
+      />
+      <div className="relative">
         <Input
-          key={key}
-          type={key === 'password' ? 'password' : 'text'}
-          placeholder={key.replace(/([A-Z])/g, ' $1').toUpperCase()}
-          name={key}
-          value={form[key as keyof typeof form]}
+          name="password"
+          type={showPassword ? 'text' : 'password'}
+          placeholder="PASSWORD"
+          value={form.password}
           onChange={handleChange}
+          autoComplete="new-password"
         />
-      ))}
+        <button
+          type="button"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 focus:outline-none"
+          onClick={() => setShowPassword(v => !v)}
+          tabIndex={-1}
+          aria-label={showPassword ? 'Hide password' : 'Show password'}
+        >
+          {showPassword ? (
+            <EyeOff className="w-5 h-5" />
+          ) : (
+            <Eye className="w-5 h-5" />
+          )}
+        </button>
+      </div>
+      {form.password && (
+        <div
+          className={`text-xs font-semibold mb-2 ${
+            passwordStrength === 'Strong'
+              ? 'text-green-600'
+              : passwordStrength === 'Medium'
+                ? 'text-yellow-600'
+                : 'text-red-600'
+          }`}
+        >
+          Password strength: {passwordStrength}
+        </div>
+      )}
+      <Input
+        name="secretKey"
+        placeholder="SECRET KEY"
+        value={form.secretKey}
+        onChange={handleChange}
+        autoComplete="off"
+      />
       <Button
         onClick={handleSubmit}
         disabled={
@@ -89,7 +183,7 @@ export function Register() {
         Already have an account?{' '}
         <span
           onClick={() => navigate('/login')}
-          className="text-blue-500 hover:underline"
+          className="text-blue-500 hover:underline cursor-pointer"
         >
           Login
         </span>
