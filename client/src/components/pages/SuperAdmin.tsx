@@ -8,6 +8,10 @@ import api from '@/services/api';
 import { toast } from 'react-toastify';
 import UserSecret from './UserSecret';
 import Loader from './Loader';
+import { Combobox } from './Combobox';
+import type { ComboboxOption } from './Combobox';
+import { getMonthList } from '@/lib/utils';
+import type { Month } from '@/services/screenshot';
 
 /**
  * Notes:
@@ -18,6 +22,9 @@ export default function SuperAdmin() {
   const { user } = useAuth();
   const [isDeleting, setIsDeleting] = useState(false);
   const [screenshotRefresh, setScreenshotRefresh] = useState(0);
+  const [selectedMonth, setSelectedMonth] = useState<Month>(
+    new Date().toLocaleString('default', { month: 'long' }) as Month
+  );
 
   useEffect(() => {}, []);
 
@@ -48,6 +55,16 @@ export default function SuperAdmin() {
     }
   };
 
+  const frameworks: ComboboxOption<Month>[] = getMonthList().map(month => ({
+    value: month as Month,
+    label: month,
+    selected: month === selectedMonth,
+  }));
+
+  const handleValueChange = (newValue: Month) => {
+    setSelectedMonth(newValue);
+  };
+
   return (
     <>
       <div className="flex flex-col justify-center m-2 gap-4">
@@ -58,19 +75,22 @@ export default function SuperAdmin() {
         <h2 className="text-xl font-bold">User Management</h2>
         <UserTable role={user?.role} />
         <h2 className="text-xl font-bold">Screenshots Management</h2>
-        {isDeleting && <Loader text="Deleting screenshots, please wait..." />}
-        <Button
-          onClick={() =>
-            deleteScreenshotByMonth(
-              new Date().toLocaleString('default', { month: 'long' })
-            )
-          }
-          variant={'destructive'}
-          className="max-w-md mx-auto"
-          disabled={isDeleting}
-        >
-          Delete this month's screenshots
-        </Button>
+        <div className="flex flex-col sm:flex-row flex-wrap gap-4 items-center mb-2">
+          <Combobox<Month>
+            frameworks={frameworks}
+            frameType="Month"
+            onValueChange={handleValueChange}
+          />
+          <Button
+            onClick={() => deleteScreenshotByMonth(selectedMonth)}
+            variant={'destructive'}
+            className="max-w-md"
+            disabled={isDeleting}
+          >
+            {`Delete ${selectedMonth} screenshots`}
+          </Button>
+          {isDeleting && <Loader text="Deleting screenshots, please wait..." />}
+        </div>
         <ScreenshotTable role={user?.role} refreshKey={screenshotRefresh} />
         <UserSecret />
       </div>

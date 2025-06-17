@@ -23,8 +23,6 @@ export default function Admin() {
   }));
 
   const handleValueChange = (newValue: Month) => {
-    console.log('Value from child:', newValue);
-    // Do something with newValue
     setSelectedMonth(newValue);
   };
 
