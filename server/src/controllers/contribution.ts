@@ -2,6 +2,25 @@ import { Request, Response } from "express";
 import Contribution from "../models/Contribution";
 import Screenshot from '../models/Screenshot';
 
+// Helper to get numeric month from month string
+const getMonthIndex = (monthStr: string) => {
+    const months = [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December',
+    ];
+    return months.indexOf(monthStr);
+};
+
 export const createContribution = async (req: Request, res: Response) => {
     try {
         if (req.user?.role !== 'admin') {
@@ -12,6 +31,18 @@ export const createContribution = async (req: Request, res: Response) => {
         const { userId, month, year, amount, screenshotId } = req.body;
         if (!userId || !month || !year || !amount) {
             res.status(400).json({ error: 'Missing required fields: userId, month, year, amount' });
+            return;
+        }
+        // Prevent creating contribution for a future month
+        const now = new Date();
+        const reqMonthIdx = getMonthIndex(month);
+        const nowMonthIdx = now.getMonth();
+        const reqYear = Number(year);
+        if (
+            reqYear > now.getFullYear() ||
+            (reqYear === now.getFullYear() && reqMonthIdx > nowMonthIdx)
+        ) {
+            res.status(400).json({ error: 'Cannot create contribution for a future month.' });
             return;
         }
         // Upsert contribution (atomic)

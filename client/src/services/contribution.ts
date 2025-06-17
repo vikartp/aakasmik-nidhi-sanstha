@@ -2,7 +2,7 @@ import api from './api';
 
 export interface ContributionPayload {
   userId: string;
-  screenshotId: string;
+  screenshotId?: string;
   amount: number;
   month: string;
   year: number;

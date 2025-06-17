@@ -25,11 +25,13 @@ export async function createUser(data: { name: string; email: string }) {
   return response.data;
 }
 
-export async function updateUser(
+export async function updateMembershipDate(
   userId: string,
-  data: Partial<{ name: string; email: string; role: string }>
+  membershipDate: Date
 ) {
-  const response = await api.put(`/users/${userId}`, data);
+  const response = await api.put(`/users/membership/${userId}`, {
+    membershipDate: membershipDate.toISOString(),
+  });
   return response.data;
 }
 

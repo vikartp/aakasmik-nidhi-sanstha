@@ -150,7 +150,7 @@ export default function UserTable({
     role === 'admin' &&
       !defaultPage && {
         key: 'verify',
-        label: 'Verify Member',
+        label: 'Member Action',
         render: (user: User) =>
           !user.verified ? (
             <Button
@@ -161,7 +161,19 @@ export default function UserTable({
               Verify Member
             </Button>
           ) : (
-            <span className="text-green-600 font-semibold">Verified</span>
+            <div className="flex flex-col gap-1 items-start">
+              <span className="text-green-600 font-semibold">Verified</span>
+              <Button
+                size="sm"
+                variant="outline"
+                className="text-xs px-2 py-1 border-blue-400 text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-900"
+                onClick={() =>
+                  window.location.assign(`/admin/user/${user._id}`)
+                }
+              >
+                Manage User
+              </Button>
+            </div>
           ),
       },
     {

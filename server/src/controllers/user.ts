@@ -222,3 +222,49 @@ export const uploadProfileImage = async (
         res.status(500).json({ error: (err as Error).message });
     }
 };
+
+// Update membership date for a user
+export const updateMembershipDate = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    try {
+        if (!req.user || (req.user.role !== "admin" && req.user.role !== "superadmin")) {
+            res.status(403).json({ message: "Forbidden: Only admins can update membership dates" });
+            return;
+        }
+
+        const userId = req.params.userId;
+        const { membershipDate } = req.body;
+
+        if (!membershipDate) {
+            res.status(400).json({ message: "Membership date is required" });
+            return;
+        }
+
+        const inputDate = new Date(membershipDate);
+        if (isNaN(inputDate.getTime())) {
+            res.status(400).json({ message: "Invalid date format" });
+            return;
+        }
+        if (inputDate > new Date()) {
+            res.status(400).json({ message: "Membership date cannot be in the future" });
+            return;
+        }
+
+        const user = await User.findByIdAndUpdate(
+            userId,
+            { membershipDate: inputDate },
+            { new: true }
+        );
+        if (!user) {
+            res.status(404).json({ message: "User not found" });
+            return;
+        }
+
+        res.status(200).json({ message: "Membership date updated successfully", user });
+        return;
+    } catch (err) {
+        res.status(500).json({ error: (err as Error).message });
+    }
+};

@@ -7,6 +7,7 @@ import Dashboard from './components/pages/Dashboard';
 import { Logout } from './components/pages/Logout';
 import ForgotPassword from './components/pages/ForgotPassword';
 import ViewScreenshot from './components/pages/ViewScreenshot';
+import UserManagement from './components/pages/UserManagement';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/screenshot/:id" element={<ViewScreenshot />} />
           <Route path="/logout" element={<Logout />} />
+          <Route path="/admin/user/:userId" element={<UserManagement />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </BrowserRouter>

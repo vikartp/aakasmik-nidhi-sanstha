@@ -37,8 +37,7 @@ Also if a user is admin then show 'Remove Admin'.
 
 
 ## TODO
+- Change end to end flow for accepting month as number. Create a util function which would return the string(Think).
 - Create table for monthly contribution check (filter by month and year). => For admin
 - Create interface for admin to get list of member who has not contributed this month.
-- Option to select month before bulk delete in superadmin.
-- Add option for admin to change 'Member From' for any user. 
 - Use Redux to manage state for upload and anything else.

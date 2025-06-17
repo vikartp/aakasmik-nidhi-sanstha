@@ -66,7 +66,10 @@ export default function SuperAdmin() {
         <TabsTrigger value="users" className="flex-1 min-w-0 cursor-pointer">
           Users
         </TabsTrigger>
-        <TabsTrigger value="screenshots" className="flex-1 min-w-0 cursor-pointer">
+        <TabsTrigger
+          value="screenshots"
+          className="flex-1 min-w-0 cursor-pointer"
+        >
           Screenshots
         </TabsTrigger>
         <TabsTrigger value="secret" className="flex-1 min-w-0 cursor-pointer">
