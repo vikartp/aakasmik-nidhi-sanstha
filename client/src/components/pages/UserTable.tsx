@@ -137,24 +137,33 @@ export default function UserTable({
         ),
     },
     { key: 'name', label: 'Name', render: (user: User) => user.name },
-    !defaultPage && { key: 'mobile', label: 'Phone Number', render: (user: User) => user.mobile },
-    { key: 'fatherName', label: 'Father Name', render: (user: User) => user.fatherName || '-' },
-    role === 'admin' && !defaultPage && {
-      key: 'verify',
-      label: 'Verify Member',
-      render: (user: User) =>
-        !user.verified ? (
-          <Button
-            onClick={verifyMember(user)}
-            variant={'default'}
-            className="px-4 py-1 rounded font-semibold shadow-sm transition-all duration-150 bg-gradient-to-r from-blue-500 to-blue-700 text-white hover:from-blue-600 hover:to-blue-800 hover:scale-105 dark:from-blue-400 dark:to-blue-600 dark:hover:from-blue-500 dark:hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-800"
-          >
-            Verify Member
-          </Button>
-        ) : (
-          <span className="text-green-600 font-semibold">Verified</span>
-        ),
+    !defaultPage && {
+      key: 'mobile',
+      label: 'Phone Number',
+      render: (user: User) => user.mobile,
     },
+    {
+      key: 'fatherName',
+      label: 'Father Name',
+      render: (user: User) => user.fatherName || '-',
+    },
+    role === 'admin' &&
+      !defaultPage && {
+        key: 'verify',
+        label: 'Verify Member',
+        render: (user: User) =>
+          !user.verified ? (
+            <Button
+              onClick={verifyMember(user)}
+              variant={'default'}
+              className="px-4 py-1 rounded font-semibold shadow-sm transition-all duration-150 bg-gradient-to-r from-blue-500 to-blue-700 text-white hover:from-blue-600 hover:to-blue-800 hover:scale-105 dark:from-blue-400 dark:to-blue-600 dark:hover:from-blue-500 dark:hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-800"
+            >
+              Verify Member
+            </Button>
+          ) : (
+            <span className="text-green-600 font-semibold">Verified</span>
+          ),
+      },
     {
       key: 'membershipDate',
       label: 'Memberbership',
@@ -167,33 +176,35 @@ export default function UserTable({
             })
           : '-',
     },
-    role === 'superadmin' && !defaultPage && {
-      key: 'delete',
-      label: 'Delete',
-      render: (user: User) => (
-        <Button
-          onClick={handleDeleteUser(user)}
-          variant={'destructive'}
-          className="hover:underline"
-        >
-          Delete
-        </Button>
-      ),
-    },
-    role === 'superadmin' && !defaultPage && {
-      key: 'makeAdmin',
-      label: 'Make Admin',
-      render: (user: User) =>
-        isMakeAdminRequired(user) ? (
+    role === 'superadmin' &&
+      !defaultPage && {
+        key: 'delete',
+        label: 'Delete',
+        render: (user: User) => (
           <Button
-            onClick={makeAdmin(user)}
-            variant={'default'}
-            className="hover:underline text-green-500"
+            onClick={handleDeleteUser(user)}
+            variant={'destructive'}
+            className="hover:underline"
           >
-            Make Admin
+            Delete
           </Button>
-        ) : null,
-    },
+        ),
+      },
+    role === 'superadmin' &&
+      !defaultPage && {
+        key: 'makeAdmin',
+        label: 'Make Admin',
+        render: (user: User) =>
+          isMakeAdminRequired(user) ? (
+            <Button
+              onClick={makeAdmin(user)}
+              variant={'default'}
+              className="hover:underline text-green-500"
+            >
+              Make Admin
+            </Button>
+          ) : null,
+      },
   ];
   const columns = rawColumns.filter(Boolean) as Array<{
     key: string;
@@ -227,10 +238,7 @@ export default function UserTable({
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="text-center"
-                >
+                <TableCell colSpan={columns.length} className="text-center">
                   No users found.
                 </TableCell>
               </TableRow>
