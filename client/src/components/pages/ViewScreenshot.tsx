@@ -97,7 +97,7 @@ export default function ViewScreenshot() {
           </div>
           <div className="flex flex-row items-center gap-2">
             <span className="font-semibold text-zinc-700 dark:text-zinc-200">
-              Father Name:
+              Father's Name:
             </span>
             <span className="text-zinc-900 dark:text-zinc-100 break-all">
               {user.fatherName}

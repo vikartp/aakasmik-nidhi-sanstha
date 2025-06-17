@@ -99,6 +99,108 @@ export default function UserTable({
     }
   };
 
+  // Define columns dynamically based on context
+  const rawColumns = [
+    {
+      key: 'index',
+      label: '#',
+      render: (_: User, idx: number) => idx + 1,
+    },
+    {
+      key: 'profileUrl',
+      label: 'Photo',
+      render: (user: User) =>
+        user.profileUrl ? (
+          <img
+            src={user.profileUrl}
+            alt={user.name}
+            className="w-10 h-10 rounded-full object-cover border border-gray-300"
+            style={{ minWidth: 32, minHeight: 32 }}
+          />
+        ) : (
+          <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-6 h-6 text-gray-400"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15.75 7.5a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 19.5a7.5 7.5 0 1115 0v.75A2.25 2.25 0 0117.25 22.5h-10.5A2.25 2.25 0 014.5 20.25v-.75z"
+              />
+            </svg>
+          </div>
+        ),
+    },
+    { key: 'name', label: 'Name', render: (user: User) => user.name },
+    !defaultPage && { key: 'mobile', label: 'Phone Number', render: (user: User) => user.mobile },
+    { key: 'fatherName', label: 'Father Name', render: (user: User) => user.fatherName || '-' },
+    role === 'admin' && !defaultPage && {
+      key: 'verify',
+      label: 'Verify Member',
+      render: (user: User) =>
+        !user.verified ? (
+          <Button
+            onClick={verifyMember(user)}
+            variant={'default'}
+            className="px-4 py-1 rounded font-semibold shadow-sm transition-all duration-150 bg-gradient-to-r from-blue-500 to-blue-700 text-white hover:from-blue-600 hover:to-blue-800 hover:scale-105 dark:from-blue-400 dark:to-blue-600 dark:hover:from-blue-500 dark:hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-800"
+          >
+            Verify Member
+          </Button>
+        ) : (
+          <span className="text-green-600 font-semibold">Verified</span>
+        ),
+    },
+    {
+      key: 'membershipDate',
+      label: 'Memberbership',
+      render: (user: User) =>
+        user.membershipDate
+          ? new Date(user.membershipDate).toLocaleDateString('en-IN', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })
+          : '-',
+    },
+    role === 'superadmin' && !defaultPage && {
+      key: 'delete',
+      label: 'Delete',
+      render: (user: User) => (
+        <Button
+          onClick={handleDeleteUser(user)}
+          variant={'destructive'}
+          className="hover:underline"
+        >
+          Delete
+        </Button>
+      ),
+    },
+    role === 'superadmin' && !defaultPage && {
+      key: 'makeAdmin',
+      label: 'Make Admin',
+      render: (user: User) =>
+        isMakeAdminRequired(user) ? (
+          <Button
+            onClick={makeAdmin(user)}
+            variant={'default'}
+            className="hover:underline text-green-500"
+          >
+            Make Admin
+          </Button>
+        ) : null,
+    },
+  ];
+  const columns = rawColumns.filter(Boolean) as Array<{
+    key: string;
+    label: string;
+    render: (user: User, idx: number) => React.ReactNode;
+  }>;
+
   return (
     <div className="rounded-md border overflow-y-auto max-h-80 sm:max-h-[500px]">
       {loading ? (
@@ -107,109 +209,26 @@ export default function UserTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[50px]">#</TableHead>
-              <TableHead>Photo</TableHead>
-              <TableHead>Name</TableHead>
-              {!defaultPage && <TableHead>Phone Number</TableHead>}
-              <TableHead>Father Name</TableHead>
-              {role === 'admin' && !defaultPage && (
-                <TableHead>Verify Member</TableHead>
-              )}
-              <TableHead>Memberbership</TableHead>
-              {role === 'superadmin' && <TableHead>Delete</TableHead>}
-              {role === 'superadmin' && <TableHead>Make Admin</TableHead>}
+              {columns.map(col => (
+                <TableHead key={col.key}>{col.label}</TableHead>
+              ))}
             </TableRow>
           </TableHeader>
           <TableBody>
             {users.length > 0 ? (
               users.map((user, index) => (
                 <TableRow key={user._id || index}>
-                  <TableCell>{index + 1}</TableCell>
-                  <TableCell>
-                    {user.profileUrl ? (
-                      <img
-                        src={user.profileUrl}
-                        alt={user.name}
-                        className="w-10 h-10 rounded-full object-cover border border-gray-300"
-                        style={{ minWidth: 32, minHeight: 32 }}
-                      />
-                    ) : (
-                      <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          strokeWidth={1.5}
-                          stroke="currentColor"
-                          className="w-6 h-6 text-gray-400"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M15.75 7.5a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 19.5a7.5 7.5 0 1115 0v.75A2.25 2.25 0 0117.25 22.5h-10.5A2.25 2.25 0 014.5 20.25v-.75z"
-                          />
-                        </svg>
-                      </div>
-                    )}
-                  </TableCell>
-                  <TableCell>{user.name}</TableCell>
-                  {!defaultPage && <TableCell>{user.mobile}</TableCell>}
-                  <TableCell>{user.fatherName || '-'}</TableCell>
-                  {role === 'admin' && !user.verified && (
-                    <TableCell>
-                      <Button
-                        onClick={verifyMember(user)}
-                        variant={'default'}
-                        className="px-4 py-1 rounded font-semibold shadow-sm transition-all duration-150
-                        bg-gradient-to-r from-blue-500 to-blue-700 text-white
-                        hover:from-blue-600 hover:to-blue-800 hover:scale-105
-                        dark:from-blue-400 dark:to-blue-600 dark:hover:from-blue-500 dark:hover:to-blue-700
-                        focus:outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-800"
-                      >
-                        Verify Member
-                      </Button>
+                  {columns.map(col => (
+                    <TableCell key={col.key}>
+                      {col.render(user, index)}
                     </TableCell>
-                  )}
-                  <TableCell>
-                    {user.membershipDate
-                      ? new Date(user.membershipDate).toLocaleDateString(
-                          'en-IN',
-                          {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                          }
-                        )
-                      : '-'}
-                  </TableCell>
-                  {role === 'superadmin' && (
-                    <TableCell>
-                      <Button
-                        onClick={handleDeleteUser(user)}
-                        variant={'destructive'}
-                        className="hover:underline"
-                      >
-                        Delete
-                      </Button>
-                    </TableCell>
-                  )}
-                  {role === 'superadmin' && isMakeAdminRequired(user) && (
-                    <TableCell>
-                      <Button
-                        onClick={makeAdmin(user)}
-                        variant={'default'}
-                        className="hover:underline text-green-500"
-                      >
-                        Make Admin
-                      </Button>
-                    </TableCell>
-                  )}
+                  ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={role === 'superadmin' ? 6 : 4}
+                  colSpan={columns.length}
                   className="text-center"
                 >
                   No users found.

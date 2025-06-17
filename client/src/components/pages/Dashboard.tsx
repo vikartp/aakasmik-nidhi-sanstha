@@ -153,7 +153,7 @@ function DashboardHeader({ title, name }: { title: string; name: string }) {
     <div className="flex justify-between items-center mb-4">
       <div className="flex items-center gap-4">
         <div
-          className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center cursor-pointer overflow-hidden border-2 border-gray-300 hover:border-blue-400 transition relative"
+          className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center cursor-pointer overflow-hidden border-2 border-gray-300 hover:border-blue-400 transition relative"
           onClick={handleProfileClick}
           title="Change profile picture"
         >

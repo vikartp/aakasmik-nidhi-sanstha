@@ -28,6 +28,11 @@ export const registerUser = async (
             return;
         }
 
+        if (!mobile || !/^[6-9]\d{9}$/.test(mobile)) {
+            res.status(400).json({ message: "Invalid mobile number. Must be 10 digits starting with 6-9." });
+            return;
+        }
+
         if (email?.length && await User.findOne({ email })) {
             res.status(400).json({ message: "Email Id already registered." });
             return;
