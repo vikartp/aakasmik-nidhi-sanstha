@@ -55,8 +55,9 @@ export default function ViewScreenshot() {
         userId: screenshot.userId,
         screenshotId: screenshot._id,
         amount: Number(amount),
-        month: screenshot.uploadMonth,
-        year: new Date(screenshot.uploadedAt).getFullYear(),
+        contributionDate: new Date(
+          `${screenshot.uploadYear}-${screenshot.uploadMonth}-01`
+        ),
       });
       toast.success('Payment contribution verified and recorded!');
       navigate('/dashboard');

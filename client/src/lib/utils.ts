@@ -42,3 +42,19 @@ export function getMonthList() {
     'December',
   ];
 }
+
+export function getMonthName(date: string) {
+  const parsedDate = new Date(date);
+  if (isNaN(parsedDate.getTime())) {
+    throw new Error('Invalid date format');
+  }
+  return getMonthList()[parsedDate.getMonth()];
+}
+
+export function getYear(date: string) {
+  const parsedDate = new Date(date);
+  if (isNaN(parsedDate.getTime())) {
+    throw new Error('Invalid date format');
+  }
+  return parsedDate.getFullYear().toString();
+}

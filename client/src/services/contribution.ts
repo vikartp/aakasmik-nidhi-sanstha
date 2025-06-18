@@ -4,20 +4,16 @@ export interface ContributionPayload {
   userId: string;
   screenshotId?: string;
   amount: number;
-  month: string;
-  year: number;
+  contributionDate: Date;
 }
 
 export interface Contribution {
   _id: string;
-  userId: string;
-  verifiedBy: string;
-  screenshotId?: string;
-  amount: number;
-  month: string;
-  year: number;
-  createdAt: string;
-  updatedAt: string;
+  userId: string; // This contribution belongs to member/user ID
+  amount: number; // Amount contributed
+  verifiedBy: string; // Name of the admin who verified the contribution
+  screenshotId?: string; // Optional screenshot ID if a screenshot is associated with the contribution
+  contributionDate: string; // Date of the contributio // Date when the contribution was last updated
 }
 
 export async function createContribution(payload: ContributionPayload) {

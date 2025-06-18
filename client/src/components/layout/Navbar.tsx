@@ -6,9 +6,11 @@ import logo from '/aakasmik-nidhi-logo.png';
 const UI_THEME_STORAGE_KEY = 'aakasmik-ui-theme';
 
 export function Navbar() {
-  const [darkMode, setDarkMode] = useState<boolean>(
-    () => localStorage.getItem(UI_THEME_STORAGE_KEY) === 'true' || false
-  );
+  const [darkMode, setDarkMode] = useState<boolean>(() => {
+    const stored = localStorage.getItem(UI_THEME_STORAGE_KEY);
+    if (stored === null) return true; // default to dark mode
+    return stored === 'true';
+  });
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode);

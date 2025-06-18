@@ -18,6 +18,7 @@ import type { Contribution } from '@/services/contribution';
 import type { Screenshot } from '@/types/screenshots';
 import type { Month } from '@/services/screenshot';
 import { Button } from '../ui/button';
+import { getMonthName, getYear } from '@/lib/utils';
 
 export default function Member({ refreshKey }: { refreshKey?: number }) {
   const { user } = useAuth();
@@ -105,6 +106,7 @@ export default function Member({ refreshKey }: { refreshKey?: number }) {
                   <TableHead>Year</TableHead>
                   <TableHead>Amount</TableHead>
                   <TableHead>Action</TableHead>
+                  <TableHead>Verified By</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -124,8 +126,8 @@ export default function Member({ refreshKey }: { refreshKey?: number }) {
                           : ''
                       }
                     >
-                      <TableCell>{c.month}</TableCell>
-                      <TableCell>{c.year}</TableCell>
+                      <TableCell>{getMonthName(c.contributionDate)}</TableCell>
+                      <TableCell>{getYear(c.contributionDate)}</TableCell>
                       <TableCell>₹{c.amount}</TableCell>
                       <TableCell>
                         {c.screenshotId ? (
@@ -138,12 +140,13 @@ export default function Member({ refreshKey }: { refreshKey?: number }) {
                           >
                             {screenshotLoading && selectedScreenshot === c._id
                               ? 'Loading...'
-                              : 'View Screenshot'}
+                              : 'Screenshot'}
                           </Button>
                         ) : (
                           <span className="text-gray-400 text-xs">-</span>
                         )}
                       </TableCell>
+                      <TableCell>{c.verifiedBy}</TableCell>
                     </TableRow>
                   ))
                 )}

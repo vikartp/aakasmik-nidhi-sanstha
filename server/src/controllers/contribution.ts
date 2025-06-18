@@ -21,6 +21,13 @@ const getMonthIndex = (monthStr: string) => {
     return months.indexOf(monthStr);
 };
 
+interface ContributionPayload {
+    userId: string;
+    screenshotId?: string;
+    amount: number;
+    contributionDate: Date;
+}
+
 export const createContribution = async (req: Request, res: Response) => {
     try {
         if (req.user?.role !== 'admin') {
@@ -28,34 +35,30 @@ export const createContribution = async (req: Request, res: Response) => {
             return;
         }
         // Validate required fields
-        const { userId, month, year, amount, screenshotId } = req.body;
-        if (!userId || !month || !year || !amount) {
-            res.status(400).json({ error: 'Missing required fields: userId, month, year, amount' });
+        const { userId, amount, contributionDate, screenshotId } = <ContributionPayload>req.body;
+        if (!userId || !amount || !contributionDate) {
+            res.status(400).json({ error: 'Missing required fields: userId, amount, contributionDate' });
             return;
         }
-        // Prevent creating contribution for a future month
-        const now = new Date();
-        const reqMonthIdx = getMonthIndex(month);
-        const nowMonthIdx = now.getMonth();
-        const reqYear = Number(year);
-        if (
-            reqYear > now.getFullYear() ||
-            (reqYear === now.getFullYear() && reqMonthIdx > nowMonthIdx)
-        ) {
-            res.status(400).json({ error: 'Cannot create contribution for a future month.' });
+        // Prevent creating contribution for a future date (allow any time today)
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const contribDate = new Date(contributionDate);
+        contribDate.setHours(0, 0, 0, 0);
+        if (contribDate > today) {
+            res.status(400).json({ error: 'Cannot create contribution for a future date' });
             return;
         }
         // Upsert contribution (atomic)
         const contributionData = {
             userId,
-            month,
-            year,
+            contributionDate,
             amount,
             screenshotId,
-            verifiedBy: req.user._id,
+            verifiedBy: req.user.name,
         };
         const updatedContribution = await Contribution.findOneAndUpdate(
-            { userId, month, year },
+            { userId, contributionDate },
             { $set: contributionData },
             { new: true, upsert: true, setDefaultsOnInsert: true }
         );
@@ -74,7 +77,7 @@ export const createContribution = async (req: Request, res: Response) => {
 
 export const getAllContributions = async (req: Request, res: Response) => {
     try {
-        const contributions = await Contribution.find().sort({ year: -1, month: -1 });
+        const contributions = await Contribution.find().sort({ contributionDate: -1 });
         res.status(200).json(contributions);
         return;
     } catch (err) {
@@ -87,7 +90,7 @@ export const getAllContributions = async (req: Request, res: Response) => {
 export const getContributionsByUser = async (req: Request, res: Response) => {
     const userId = req.params.userid;
     try {
-        const contributions = await Contribution.find({ userId }).sort({ year: -1, month: -1 });
+        const contributions = await Contribution.find({ userId }).sort({ contributionDate: -1 });
         res.status(200).json(contributions);
         return;
     } catch (err) {
@@ -100,7 +103,12 @@ export const getContributionsByUser = async (req: Request, res: Response) => {
 export const getContributionsByYearAndMonth = async (req: Request, res: Response) => {
     const { year, month } = req.params;
     try {
-        const contributions = await Contribution.find({ year, month }).sort({ createdAt: -1 });
+        // Find all contributions where contributionDate is in the given year and month
+        const start = new Date(Number(year), getMonthIndex(month), 1);
+        const end = new Date(Number(year), getMonthIndex(month) + 1, 1);
+        const contributions = await Contribution.find({
+            contributionDate: { $gte: start, $lt: end }
+        }).sort({ contributionDate: -1 });
         res.status(200).json(contributions);
         return;
     } catch (err) {

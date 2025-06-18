@@ -51,8 +51,7 @@ export default function UserManagement() {
       if (!userId) throw new Error('User ID is required');
       await createContribution({
         userId,
-        month,
-        year: Number(year),
+        contributionDate: new Date(`${year}-${month}-01`),
         amount: Number(amount),
       });
       setSuccess('Contribution added successfully!');
