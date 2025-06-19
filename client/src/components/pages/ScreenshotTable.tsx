@@ -19,6 +19,7 @@ import { downloadImage } from '@/lib/utils';
 import type { UserRole } from '@/types/users';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import Loader from './Loader';
 
 export function ScreenshotTable({
   role,
@@ -30,9 +31,11 @@ export function ScreenshotTable({
   month?: Month;
 }) {
   const [data, setData] = useState<Screenshot[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
 
   useEffect(() => {
+    setLoading(true);
     if (month) {
       // If a month is specified, filter screenshots by that month
       getScreenshotsByMonth(month)
@@ -46,10 +49,14 @@ export function ScreenshotTable({
             setData(response);
           }
         })
-        .catch(console.error);
+        .catch(console.error)
+        .finally(() => setLoading(false));
       return;
     }
-    getAllScreenshots().then(setData).catch(console.error);
+    getAllScreenshots()
+      .then(setData)
+      .catch(console.error)
+      .finally(() => setLoading(false));
   }, [refreshKey, month]);
 
   const handleDeleteScreenshot =
@@ -76,86 +83,91 @@ export function ScreenshotTable({
     };
 
   return (
-    <div className="rounded-md border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>#</TableHead>
-            <TableHead>Preview</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-            <TableHead className="w-24">Download</TableHead>
-            {/* Only show Delete column for superadmin */}
-            {role === 'superadmin' && (
-              <TableHead className="w-24">Delete</TableHead>
-            )}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {data.length > 0 ? (
-            data.map((item, index) => (
-              <TableRow key={item._id}>
-                <TableCell>{index + 1}</TableCell>
-                <TableCell>
-                  <img
-                    src={item.url}
-                    alt={`Screenshot ${index + 1}`}
-                    className="w-32 h-auto rounded shadow"
-                  />
-                </TableCell>
-                <TableCell>
-                  {item.verified ? (
-                    <span className="inline-block px-3 py-1 rounded-full bg-green-100 text-green-800 font-semibold text-xs">
-                      Verified
-                    </span>
-                  ) : (
-                    <span className="inline-block px-3 py-1 rounded-full bg-red-100 text-red-800 font-semibold text-xs">
-                      Not Verified
-                    </span>
-                  )}
-                </TableCell>
-                <TableCell className="text-right">
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      navigate(`/screenshot/${item._id}`);
-                    }}
-                  >
-                    View
-                  </Button>
-                </TableCell>
-                <TableCell className="text-center">
-                  <Button
-                    variant="outline"
-                    onClick={() =>
-                      downloadImage(item.url, `screenshot-${item._id}.png`)
-                    }
-                  >
-                    Download
-                  </Button>
-                </TableCell>
-                {/* Only show Delete button for superadmin */}
-                {role === 'superadmin' && (
-                  <TableCell className="text-center">
+    <div className="rounded-md border max-h-95 overflow-y-auto">
+      {loading ? (
+        <Loader />
+      ) : (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>#</TableHead>
+              <TableHead>Preview</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+              <TableHead className="w-24">Download</TableHead>
+              {role === 'superadmin' && (
+                <TableHead className="w-24">Delete</TableHead>
+              )}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {data.length > 0 ? (
+              data.map((item, index) => (
+                <TableRow key={item._id}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>
+                    <img
+                      src={item.url}
+                      alt={`Screenshot ${index + 1}`}
+                      className="w-32 h-auto rounded shadow"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    {item.verified ? (
+                      <span className="inline-block px-3 py-1 rounded-full bg-green-100 text-green-800 font-semibold text-xs">
+                        Verified
+                      </span>
+                    ) : (
+                      <span className="inline-block px-3 py-1 rounded-full bg-red-100 text-red-800 font-semibold text-xs">
+                        Not Verified
+                      </span>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-right">
                     <Button
-                      variant="destructive"
-                      onClick={handleDeleteScreenshot(item._id, item.type)}
+                      variant="outline"
+                      onClick={() => {
+                        navigate(`/screenshot/${item._id}`);
+                      }}
                     >
-                      Delete
+                      View
                     </Button>
                   </TableCell>
-                )}
+                  <TableCell className="text-center">
+                    <Button
+                      variant="outline"
+                      onClick={() =>
+                        downloadImage(item.url, `screenshot-${item._id}.png`)
+                      }
+                    >
+                      Download
+                    </Button>
+                  </TableCell>
+                  {role === 'superadmin' && (
+                    <TableCell className="text-center">
+                      <Button
+                        variant="destructive"
+                        onClick={handleDeleteScreenshot(item._id, item.type)}
+                      >
+                        Delete
+                      </Button>
+                    </TableCell>
+                  )}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={role === 'superadmin' ? 6 : 5}
+                  className="text-center"
+                >
+                  No screenshots found.
+                </TableCell>
               </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={3} className="text-center">
-                No screenshots found.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+            )}
+          </TableBody>
+        </Table>
+      )}
     </div>
   );
 }

@@ -58,3 +58,10 @@ export function getYear(date: string) {
   }
   return parsedDate.getFullYear().toString();
 }
+
+export function getCurrentMonth(): import('@/services/screenshot').Month {
+  const now = new Date();
+  return getMonthList()[
+    now.getMonth()
+  ] as import('@/services/screenshot').Month;
+}

@@ -27,3 +27,11 @@ export async function getContributionsByUser(
   const response = await api.get(`/contributions/${userId}`);
   return response.data;
 }
+
+export async function getContributionsByYearAndMonth(
+  year: number,
+  month: string
+) {
+  const response = await api.get(`/contributions/year/${year}/month/${month}`);
+  return response.data;
+}

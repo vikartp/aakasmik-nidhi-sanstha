@@ -268,3 +268,31 @@ export const updateMembershipDate = async (
         res.status(500).json({ error: (err as Error).message });
     }
 };
+
+// Update user info (name, fatherName, email, occupation) for logged-in user
+export const updateUserInfo = async (req: Request, res: Response): Promise<void> => {
+    try {
+        if (!req.user) {
+            res.status(401).json({ message: "User not authenticated" });
+            return;
+        }
+        const user = await User.findById(req.user._id);
+        if (!user) {
+            res.status(404).json({ message: "User not found" });
+            return;
+        }
+        const { name, fatherName, email, occupation } = req.body;
+        if (name !== undefined) user.name = name;
+        if (fatherName !== undefined) user.fatherName = fatherName;
+        if (email !== undefined) user.email = email;
+        if (occupation !== undefined) user.occupation = occupation;
+        if (name === undefined && fatherName === undefined && email === undefined && occupation === undefined) {
+            res.status(400).json({ message: "No valid fields to update" });
+            return;
+        }
+        await user.save();
+        res.status(200).json({ message: "User info updated successfully", user });
+    } catch (err) {
+        res.status(500).json({ error: (err as Error).message });
+    }
+};

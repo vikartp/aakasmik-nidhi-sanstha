@@ -225,7 +225,7 @@ export default function UserTable({
   }>;
 
   return (
-    <div className="rounded-md border overflow-y-auto max-h-95">
+    <div className="rounded-md border max-h-95 overflow-y-auto">
       {loading ? (
         <Loader />
       ) : (

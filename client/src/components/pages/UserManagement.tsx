@@ -6,9 +6,12 @@ import { createContribution } from '@/services/contribution';
 import Loader from './Loader';
 import { getUserById } from '@/services/user';
 import { updateMembershipDate } from '@/services/user';
+import { getContributionsByUser } from '@/services/contribution';
 import type { User } from '@/types/users';
+import type { Contribution } from '@/services/contribution';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Calendar } from '@/components/ui/calendar';
+import UserContribution from './UserContribution';
 
 export default function UserManagement() {
   const { userId } = useParams();
@@ -27,6 +30,13 @@ export default function UserManagement() {
   const [membershipLoading, setMembershipLoading] = useState(false);
   const [membershipSuccess, setMembershipSuccess] = useState('');
   const [membershipError, setMembershipError] = useState('');
+  const [userContributions, setUserContributions] = useState<Contribution[]>(
+    []
+  );
+
+  const fetchUserContributions = (uid: string) => {
+    getContributionsByUser(uid).then(setUserContributions);
+  };
 
   useEffect(() => {
     if (!userId) return;
@@ -40,7 +50,13 @@ export default function UserManagement() {
     const now = new Date();
     setMonth(getMonthList()[now.getMonth()]);
     setYear(now.getFullYear().toString());
+    // Fetch user contributions
+    fetchUserContributions(userId);
   }, [userId]);
+
+  const refreshUserContributions = () => {
+    if (userId) fetchUserContributions(userId);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,6 +72,7 @@ export default function UserManagement() {
       });
       setSuccess('Contribution added successfully!');
       setAmount('');
+      refreshUserContributions();
     } catch {
       setError('Failed to add contribution.');
     } finally {
@@ -209,6 +226,13 @@ export default function UserManagement() {
             )}
             {error && <div className="text-red-600 font-semibold">{error}</div>}
           </form>
+          <div className="mt-8">
+            <UserContribution
+              contributions={userContributions}
+              showHeader
+              headerText="User Contributions"
+            />
+          </div>
         </TabsContent>
         <TabsContent
           value="membership"

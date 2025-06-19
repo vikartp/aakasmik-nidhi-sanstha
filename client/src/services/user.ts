@@ -43,3 +43,13 @@ export async function deleteUser(userId: string) {
   }
   return response.data;
 }
+
+export async function updateUserInfo(data: {
+  name: string;
+  fatherName: string;
+  email: string;
+  occupation: string;
+}) {
+  const response = await api.put('/users/update-info', data);
+  return response.data;
+}
