@@ -15,13 +15,16 @@ import { getUsers } from '@/services/user';
 import { getScreenshotsByMonth } from '@/services/screenshot';
 import { getContributionsByYearAndMonth } from '@/services/contribution';
 import { getCurrentMonth } from '@/lib/utils';
+import { toast } from 'react-toastify';
 
 export default function MonthlyStatusTable() {
   const [users, setUsers] = useState<User[]>([]);
-  const [screenshots, setScreenshots] = useState<Record<string, Screenshot[]>>(
-    {}
-  );
-  const [contributions, setContributions] = useState<Contribution[]>([]);
+  const [screenshots, setScreenshots] = useState<
+    Record<string, Screenshot | undefined>
+  >({});
+  const [contributions, setContributions] = useState<
+    Record<string, Contribution | undefined>
+  >({});
   const [loading, setLoading] = useState(true);
   const month = getCurrentMonth();
   const year = new Date().getFullYear();
@@ -32,26 +35,35 @@ export default function MonthlyStatusTable() {
       getUsers(),
       getScreenshotsByMonth(month),
       getContributionsByYearAndMonth(year, month),
-    ]).then(([userList, allScreenshots, monthContributions]) => {
-      const verifiedUsers = userList.filter((u: User) => u.verified);
-      // Sort users alphabetically by name
-      verifiedUsers.sort((a: User, b: User) => a.name.localeCompare(b.name));
-      setUsers(verifiedUsers);
-      // Group screenshots by userId
-      const screenshotsMap: Record<string, Screenshot[]> = {};
-      allScreenshots.forEach((shot: Screenshot) => {
-        if (!screenshotsMap[shot.userId]) screenshotsMap[shot.userId] = [];
-        screenshotsMap[shot.userId].push(shot);
+    ])
+      .then(([userList, allScreenshots, monthContributions]) => {
+        const verifiedUsers = userList.filter((u: User) => u.verified);
+        // Sort users alphabetically by name
+        verifiedUsers.sort((a: User, b: User) => a.name.localeCompare(b.name));
+        setUsers(verifiedUsers);
+        // Map screenshots by userId (one per user per month)
+        const screenshotsMap: Record<string, Screenshot> = {};
+        allScreenshots.forEach((shot: Screenshot) => {
+          screenshotsMap[shot.userId] = shot;
+        });
+        setScreenshots(screenshotsMap);
+        // Map contributions by userId (one per user per month)
+        const contributionsMap: Record<string, Contribution> = {};
+        monthContributions.forEach((contrib: Contribution) => {
+          contributionsMap[contrib.userId] = contrib;
+        });
+        setContributions(contributionsMap);
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
+        toast.error('Failed to load monthly status data.');
       });
-      setScreenshots(screenshotsMap);
-      setContributions(monthContributions);
-      setLoading(false);
-    });
   }, [month, year]);
 
   // Helper to get status and amount for a user
   const getStatusAndAmount = (userId: string) => {
-    const contrib = contributions.find(c => c.userId === userId);
+    const contrib = contributions[userId];
     if (contrib) {
       return {
         status: 'Paid',
@@ -59,8 +71,8 @@ export default function MonthlyStatusTable() {
         color: 'bg-green-100 text-green-800',
       };
     }
-    const userScreenshots = screenshots[userId] || [];
-    if (userScreenshots.length > 0) {
+    const userScreenshot = screenshots[userId];
+    if (userScreenshot) {
       return {
         status: 'Pending',
         amount: '-',

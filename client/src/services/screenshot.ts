@@ -63,6 +63,12 @@ export async function getScreenshotsByUserId(
   return response.data;
 }
 
+/**
+ * It is assumed that we have screenshots for current year month only.
+ * Don't forget to delete screenshots for previous months.
+ * @param month
+ * @returns
+ */
 export async function getScreenshotsByMonth(
   month: Month
 ): Promise<Screenshot[]> {

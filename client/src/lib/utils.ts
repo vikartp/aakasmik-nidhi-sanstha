@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from 'clsx';
 import { toast } from 'react-toastify';
 import { twMerge } from 'tailwind-merge';
+import { type Month } from '@/services/screenshot';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -59,9 +60,7 @@ export function getYear(date: string) {
   return parsedDate.getFullYear().toString();
 }
 
-export function getCurrentMonth(): import('@/services/screenshot').Month {
+export function getCurrentMonth(): Month {
   const now = new Date();
-  return getMonthList()[
-    now.getMonth()
-  ] as import('@/services/screenshot').Month;
+  return getMonthList()[now.getMonth()] as Month;
 }
