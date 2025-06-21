@@ -9,6 +9,7 @@ import type { User } from '@/types/users';
 import { createContribution } from '@/services/contribution';
 import Loader from './Loader';
 import { Input } from '../ui/input';
+import { SquareArrowLeft } from 'lucide-react';
 
 export default function ViewScreenshot() {
   const { id } = useParams<{ id: string }>();
@@ -80,7 +81,7 @@ export default function ViewScreenshot() {
     <div className="max-w-2xl mx-auto p-2 sm:p-4 bg-white dark:bg-zinc-900 rounded shadow mt-0">
       <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mb-3">
         <Button variant="outline" onClick={() => navigate('/dashboard')}>
-          Back to Dashboard
+          Back to Dashboard <SquareArrowLeft />
         </Button>
       </div>
       <h2 className="text-lg font-bold mb-2 text-zinc-800 dark:text-zinc-100">

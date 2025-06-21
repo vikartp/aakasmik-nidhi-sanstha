@@ -44,7 +44,14 @@ export default function ForgotPassword() {
       <Input
         placeholder="Mobile Number"
         value={mobile}
-        onChange={e => setMobile(e.target.value)}
+        onChange={e => {
+          const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+          setMobile(val);
+        }}
+        maxLength={10}
+        pattern="[0-9]{10}"
+        inputMode="numeric"
+        autoComplete="tel"
       />
       <Input
         placeholder="Secret Key"

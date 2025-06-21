@@ -27,11 +27,22 @@ export default function Admin() {
     setSelectedMonth(newValue);
   };
 
+  // Use localStorage to persist active tab
+  const [activeTab, setActiveTab] = useState(() => {
+    return localStorage.getItem('adminActiveTab') || 'users';
+  });
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    localStorage.setItem('adminActiveTab', tab);
+  };
+
   useEffect(() => {});
   return (
     <>
       <Tabs
-        defaultValue="users"
+        value={activeTab}
+        onValueChange={handleTabChange}
         className="w-full max-w-full px-0 sm:px-2 md:px-4"
       >
         <TabsList className="w-full bg-muted border border-border rounded-t-lg flex justify-center gap-2 p-1 dark:bg-zinc-900 dark:border-zinc-700">

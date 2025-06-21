@@ -68,6 +68,7 @@ export default function MonthlyStatusTable() {
       return {
         status: 'Paid',
         amount: contrib.amount,
+        verifiedBy: contrib.verifiedBy || '-',
         color: 'bg-green-100 text-green-800',
       };
     }
@@ -76,10 +77,11 @@ export default function MonthlyStatusTable() {
       return {
         status: 'Pending',
         amount: '-',
+        verifiedBy: '-',
         color: 'bg-yellow-100 text-yellow-800',
       };
     }
-    return { status: 'Due', amount: '-', color: 'bg-red-100 text-red-800' };
+    return { status: 'Due', amount: '-', verifiedBy: '-', color: 'bg-red-100 text-red-800' };
   };
 
   return (
@@ -101,13 +103,14 @@ export default function MonthlyStatusTable() {
                 <TableHead>Name</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Amount</TableHead>
-                <TableHead>Father Name</TableHead>
+                <TableHead>Verified By</TableHead>
+                <TableHead>Father's Name</TableHead>
                 <TableHead>Mobile</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {users.map(user => {
-                const { status, amount, color } = getStatusAndAmount(user._id);
+                const { status, amount, color, verifiedBy } = getStatusAndAmount(user._id);
                 return (
                   <TableRow key={user._id}>
                     <TableCell>
@@ -146,6 +149,7 @@ export default function MonthlyStatusTable() {
                       </span>
                     </TableCell>
                     <TableCell>{amount}</TableCell>
+                    <TableCell>{verifiedBy}</TableCell>
                     <TableCell>{user.fatherName || '-'}</TableCell>
                     <TableCell>{user.mobile || '-'}</TableCell>
                   </TableRow>

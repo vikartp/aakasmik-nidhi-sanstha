@@ -7,7 +7,7 @@ import { downloadImage } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import UserTable from './UserTable';
 import Loader from './Loader';
-import { UserPlus, LogIn } from 'lucide-react';
+import { UserPlus, LogIn, LayoutDashboard,  } from 'lucide-react';
 
 export function Default() {
   const navigate = useNavigate();
@@ -38,7 +38,7 @@ export function Default() {
           className="max-w-md mx-auto"
           onClick={() => navigate('/dashboard')}
         >
-          Go to your Dashboard ❤️
+          Go to your Dashboard <LayoutDashboard />
         </Button>
       ) : (
         <div className="flex items-center justify-end space-x-4">
@@ -59,23 +59,10 @@ export function Default() {
         </div>
       )}
       <h2 className="text-2xl font-semibold">
-        🌍 Welcome to Contingency Fund Youth Association, Barkangango 🏡
+        🌍 💚 आकस्मिक निधि युवा संस्था बरकनगांगो के ऑनलाइन पोर्टल में में आपका स्वागत है 🏡🌍
       </h2>
       <p className="">
-        At the heart of Barkangango village lies a strong spirit of unity,
-        compassion, and mutual support — values that form the foundation of the
-        Contingency Fund Youth Association, Barkangango. We are a
-        community-driven group made up of hundreds of dedicated individuals who
-        believe in standing by each other during times of crisis. Every month,
-        each member contributes a small amount to a shared fund. This collective
-        effort builds a financial safety net that can be used to support any
-        member facing an unexpected emergency — be it a medical issue, natural
-        disaster, or any urgent personal crisis. Our mission is simple yet
-        powerful: "Together, we are stronger." Through regular contributions and
-        transparent management, we ensure that help is always available when
-        someone in our community needs it the most. By coming together, we not
-        only share financial responsibility but also foster a deep sense of
-        belonging, solidarity, and hope among the youth of our village.
+        बरकनगांगो गांव के दिल में एकता, करुणा और आपसी सहयोग की एक मजबूत भावना है - ऐसे मूल्य जो बरकनगांगो के आकस्मिक निधि युवा संघ की नींव बनाते हैं। हम सैकड़ों समर्पित व्यक्तियों से बना एक समुदाय संचालित समूह हैं जो संकट के समय एक-दूसरे के साथ खड़े होने में विश्वास करते हैं। हर महीने, प्रत्येक सदस्य एक साझा निधि में एक छोटी राशि का योगदान देता है। यह सामूहिक प्रयास एक वित्तीय सुरक्षा जाल बनाता है जिसका उपयोग किसी भी सदस्य को अप्रत्याशित आपातकाल का सामना करने में मदद करने के लिए किया जा सकता है - चाहे वह कोई चिकित्सा समस्या हो, प्राकृतिक आपदा हो या कोई तत्काल व्यक्तिगत संकट हो। हमारा मिशन सरल लेकिन शक्तिशाली है: "एक साथ, हम मजबूत हैं।" नियमित योगदान और पारदर्शी प्रबंधन के माध्यम से, हम सुनिश्चित करते हैं कि जब हमारे समुदाय में किसी को इसकी सबसे अधिक आवश्यकता होती है तो मदद हमेशा उपलब्ध होती है। एक साथ आकर, हम न केवल वित्तीय जिम्मेदारी साझा करते हैं बल्कि हमारे गांव के युवाओं के बीच अपनेपन, एकजुटता और आशा की गहरी भावना को भी बढ़ावा देते हैं।
       </p>
 
       <div className="max-w-md mx-auto flex flex-col justify-center">

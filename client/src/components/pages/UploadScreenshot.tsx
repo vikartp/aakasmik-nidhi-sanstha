@@ -20,6 +20,10 @@ export function UploadScreenshot({
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [loggedInUser] = useState<User | null>(user || null);
+  const currentMonth = new Date().toLocaleString('default', {
+    month: 'long',
+  });
+  const currentYear = new Date().getFullYear();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -48,7 +52,6 @@ export function UploadScreenshot({
     } finally {
       setUploading(false);
       setFile(null);
-      // TODO: Fix this, it doesn't reset the file input
       if (fileInputRef.current) {
         fileInputRef.current = null;
       }
@@ -60,11 +63,8 @@ export function UploadScreenshot({
       <div className="flex flex-col items-center gap-4">
         {!isQrCode && (
           <p>
-            You can upload screenshot of contribution for this month here. Click
-            below to choose a screenshot to upload
-            <br />
-            (आप इस महीने के योगदान का स्क्रीनशॉट यहाँ अपलोड कर सकते हैं। अपलोड
-            करने के लिए स्क्रीनशॉट चुनने के लिए नीचे क्लिक करें)
+            आप इस महीने के योगदान का स्क्रीनशॉट यहाँ अपलोड कर सकते हैं। अपलोड
+            करने के लिए स्क्रीनशॉट चुनने के लिए नीचे क्लिक करें 👇🏻
           </p>
         )}
         <div className="flex flex-col space-x-4 max-w-md mx-auto gap-4">
@@ -84,7 +84,7 @@ export function UploadScreenshot({
               ? 'Uploading...'
               : isQrCode
                 ? 'Upload QR Code'
-                : 'Upload Screenshot for this Month'}
+                : `Upload Screenshot for ${currentMonth}-${currentYear}`}
           </Button>
         </div>
       </div>

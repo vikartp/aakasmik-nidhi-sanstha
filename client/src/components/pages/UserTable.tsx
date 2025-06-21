@@ -13,6 +13,7 @@ import { Button } from '../ui/button';
 import { toast } from 'react-toastify';
 import { makeAdminReq, verifyMemberReq } from '@/services/approval';
 import Loader from './Loader';
+import { Check } from 'lucide-react';
 
 export default function UserTable({
   role,
@@ -32,6 +33,7 @@ export default function UserTable({
         } else {
           userResponse = await getUsers();
         }
+        userResponse.sort((a: User, b: User) => a.name.localeCompare(b.name));
         setUsers(userResponse);
       } catch (error) {
         console.error('Error fetching users:', error);
@@ -161,8 +163,7 @@ export default function UserTable({
               Verify Member
             </Button>
           ) : (
-            <div className="flex flex-col gap-1 items-start">
-              <span className="text-green-600 font-semibold">Verified</span>
+            <div className="flex flex-row gap-2 items-center">
               <Button
                 size="sm"
                 variant="outline"
@@ -171,8 +172,11 @@ export default function UserTable({
                   window.location.assign(`/admin/user/${user._id}`)
                 }
               >
-                Manage User
+                User Dashboard
               </Button>
+              <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-100 dark:bg-green-900 ml-1">
+                <Check className="w-4 h-4 text-green-600 dark:text-green-400" aria-label="Verified" />
+              </span>
             </div>
           ),
       },

@@ -12,6 +12,7 @@ import type { Contribution } from '@/services/contribution';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Calendar } from '@/components/ui/calendar';
 import UserContribution from './UserContribution';
+import { SquareArrowLeft } from 'lucide-react';
 
 export default function UserManagement() {
   const { userId } = useParams();
@@ -107,7 +108,7 @@ export default function UserManagement() {
         className="mb-4 max-w-md"
         onClick={() => navigate('/dashboard')}
       >
-        Back to Dashboard
+        Back to Dashboard <SquareArrowLeft />
       </Button>
       {user ? (
         <div className="mb-6 flex flex-col sm:flex-row gap-4 items-center sm:items-start">
