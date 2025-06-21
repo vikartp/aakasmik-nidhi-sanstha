@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import Loader from './Loader';
 import api from '@/services/api';
 import { toast } from 'react-toastify';
-import { ArrowUpFromLine, LogOut } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import EditProfile from './EditProfile';
 import type { AxiosError } from 'axios';
 
@@ -25,7 +25,7 @@ export default function DashboardHeader({
   useEffect(() => {
     if (!user?.profileUrl) {
       setShowProfileHint(true);
-      const timer = setTimeout(() => setShowProfileHint(false), 5000);
+      const timer = setTimeout(() => setShowProfileHint(false), 10000);
       return () => clearTimeout(timer);
     }
   }, [user?.profileUrl]);
@@ -119,7 +119,7 @@ export default function DashboardHeader({
               disabled={uploading}
             />
           </div>
-          <div className="text-2xl font-bold">
+          <div className="text-xl font-bold">
             <p>{title}</p>
             <p>({name})</p>
           </div>
@@ -136,9 +136,8 @@ export default function DashboardHeader({
         </div>
       </div>
       {showProfileHint && (
-        <div className="flex bg-black bg-opacity-80 text-white text-md px-3 py-1 rounded shadow z-20 whitespace-nowrap">
-          <ArrowUpFromLine />
-          <p>Change Profile Picture By Clicking Here ☝🏻</p>
+        <div className="flex text-md px-1 py-2 rounded shadow z-20 whitespace-nowrap">
+          <p>☝🏻Update profile pic by Clicking on user icon </p>
         </div>
       )}
     </>

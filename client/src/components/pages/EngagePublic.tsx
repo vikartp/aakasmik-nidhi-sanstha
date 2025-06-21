@@ -4,9 +4,15 @@ import { useEffect, useRef } from 'react';
 function launchConfetti(canvas: HTMLCanvasElement) {
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
-  const W = canvas.width = window.innerWidth;
-  const H = canvas.height = 220;
-  const confettiColors = ['#ff9933', '#ffffff', '#138808', '#1976d2', '#ffd700']; // India flag + vibrant
+  const W = (canvas.width = window.innerWidth);
+  const H = (canvas.height = 220);
+  const confettiColors = [
+    '#ff9933',
+    '#ffffff',
+    '#138808',
+    '#1976d2',
+    '#ffd700',
+  ]; // India flag + vibrant
   const confettiCount = 60;
   const confetti: {
     x: number;
@@ -26,8 +32,8 @@ function launchConfetti(canvas: HTMLCanvasElement) {
       d: Math.random() * confettiCount,
       color: confettiColors[Math.floor(Math.random() * confettiColors.length)],
       tilt: Math.floor(Math.random() * 10) - 10,
-      tiltAngleIncremental: (Math.random() * 0.07) + .05,
-      tiltAngle: 0
+      tiltAngleIncremental: Math.random() * 0.07 + 0.05,
+      tiltAngle: 0,
     });
   }
   let angle = 0;
@@ -63,15 +69,19 @@ export default function EngagePublic() {
   }, []);
 
   return (
-    <div className="w-full flex flex-col items-center justify-center relative" style={{minHeight: 220}}>
+    <div
+      className="w-full flex flex-col items-center justify-center relative"
+      style={{ minHeight: 220 }}
+    >
       <canvas
         ref={canvasRef}
         className="w-full max-w-2xl rounded-lg shadow-lg absolute top-0 left-1/2 -translate-x-1/2 z-0 pointer-events-none"
-        style={{height:220, zIndex: 0}}
+        style={{ height: 220, zIndex: 0 }}
       />
       <div className="mt-4 text-center px-4 relative z-10">
         <p className="text-lg text-green-600 font-bold animate-bounce mb-1">
-          Join hundreds of youth from villages across Jharkhand who are making a difference!
+          Join hundreds of youth from villages across Jharkhand who are making a
+          difference!
         </p>
         <p className="text-lg text-blue-600 font-semibold animate-bounce mb-1">
           Be a part of our vibrant, caring community.
@@ -80,10 +90,18 @@ export default function EngagePublic() {
           Scan the QR code below to contribute or register now!
         </p>
         <div className="mt-3 flex flex-wrap gap-2 justify-center">
-          <span className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-xs font-semibold">#India</span>
-          <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">#Jharkhand</span>
-          <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-semibold">#YouthPower</span>
-          <span className="bg-pink-100 text-pink-700 px-3 py-1 rounded-full text-xs font-semibold">#Community</span>
+          <span className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-xs font-semibold">
+            #India
+          </span>
+          <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">
+            #Jharkhand
+          </span>
+          <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-semibold">
+            #YouthPower
+          </span>
+          <span className="bg-pink-100 text-pink-700 px-3 py-1 rounded-full text-xs font-semibold">
+            #Community
+          </span>
         </div>
       </div>
     </div>

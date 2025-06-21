@@ -5,8 +5,9 @@ import {
     getContributionsByUser,
     getContributionsByYearAndMonth,
     getContributionById,
+    getTotalContributionAmount,
     updateContribution,
-    deleteContribution
+    deleteContribution,
 } from "../controllers/contribution";
 
 const router = Router();
@@ -16,6 +17,9 @@ router.post('/', createContribution);
 
 // Get all contributions
 router.get('/', getAllContributions);
+
+// Get total contributions
+router.get('/total-amount', getTotalContributionAmount);
 
 // Get contributions by user ID
 router.get('/:userid', getContributionsByUser);

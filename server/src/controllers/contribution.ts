@@ -134,6 +134,20 @@ export const getContributionById = async (req: Request, res: Response) => {
     }
 };
 
+export const getTotalContributionAmount = async (req: Request, res: Response) => {
+    try {
+        const total = await Contribution.aggregate([
+            { $group: { _id: null, totalAmount: { $sum: '$amount' } } }
+        ]);
+        res.status(200).json({ total: total[0]?.totalAmount || 0 });
+        return;
+    } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+        res.status(500).json({ error: errorMessage });
+        return;
+    }
+};
+
 export const updateContribution = async (req: Request, res: Response) => {
     try {
         if (req.user?.role !== 'admin') {

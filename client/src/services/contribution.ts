@@ -35,3 +35,8 @@ export async function getContributionsByYearAndMonth(
   const response = await api.get(`/contributions/year/${year}/month/${month}`);
   return response.data;
 }
+
+export async function getTotal(): Promise<number> {
+  const response = await api.get('/contributions/total-amount');
+  return response.data.total;
+}

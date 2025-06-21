@@ -1,7 +1,7 @@
 import { useAuth } from '@/context/AuthContext';
 import { useEffect, useState } from 'react';
 import { getScreenshotsByUserIdAndMonth } from '@/services/screenshot';
-import { getContributionsByUser } from '@/services/contribution';
+import { getContributionsByUser, getTotal } from '@/services/contribution';
 import { getCurrentMonth } from '@/lib/utils';
 import type { Screenshot } from '@/types/screenshots';
 import type { Contribution } from '@/services/contribution';
@@ -16,12 +16,16 @@ export default function Member({ refreshKey }: { refreshKey?: number }) {
     'pending' | 'none' | 'verified'
   >('none');
   const [contributions, setContributions] = useState<Contribution[]>([]);
+  const [total, setTotal] = useState<number>(0);
 
   useEffect(() => {
     if (!user) return;
 
     // Fetch all contributions for the logged-in user
     getContributionsByUser(user._id).then(setContributions);
+
+    // Calculate total contributions
+    getTotal().then(setTotal);
 
     // Check for current month screenshot
     const currentMonth = getCurrentMonth();
@@ -65,6 +69,26 @@ export default function Member({ refreshKey }: { refreshKey?: number }) {
       <div className="mt-8 px-2">
         <MonthlyStatusTable />
       </div>
+      {total > 0 && (
+        <div className="text-center mt-8 px-2">
+          <div className="bg-green-50 dark:bg-green-900 rounded-lg p-4 shadow-md inline-block w-full max-w-xs mx-auto">
+            <div className="text-base font-semibold text-green-700 dark:text-green-300 mb-1">
+              Total Contributions Till Date
+            </div>
+            <div className="text-sm font-medium text-green-700 dark:text-green-300 mb-1">
+              अब तक कुल योगदान राशि
+            </div>
+            <div className="text-2xl font-bold text-green-800 dark:text-green-200 mb-2">
+              ₹ {total}
+            </div>
+            <div className="text-xs text-gray-700 dark:text-gray-300 leading-snug">
+              (This is the total amount contributed by all members so far.)
+              <br />
+              (यह अब तक सभी सदस्यों द्वारा दिया गया कुल योगदान है।)
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
