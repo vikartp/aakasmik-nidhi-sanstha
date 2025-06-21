@@ -43,7 +43,7 @@ export default function Admin() {
       <Tabs
         value={activeTab}
         onValueChange={handleTabChange}
-        className="w-full max-w-full px-0 sm:px-2 md:px-4"
+        className="w-full max-w-full px-0 sm:px-2 md:px-4 bg-transparent"
       >
         <TabsList className="w-full bg-muted border border-border rounded-t-lg flex justify-center gap-2 p-1 dark:bg-zinc-900 dark:border-zinc-700">
           <TabsTrigger value="users" className="flex-1 min-w-0 cursor-pointer">
@@ -61,13 +61,13 @@ export default function Admin() {
         </TabsList>
         <TabsContent
           value="users"
-          className="border border-border border-t-0 rounded-b-lg bg-background shadow-sm p-4 sm:p-6 dark:bg-zinc-900 dark:border-zinc-700 w-full"
+          className="border border-border border-t-0 rounded-b-lg shadow-sm p-4 sm:p-6 w-full bg-white/60 dark:bg-black/40 backdrop-blur-md"
         >
           <UserTable role={user?.role} />
         </TabsContent>
         <TabsContent
           value="screenshots"
-          className="border border-border border-t-0 rounded-b-lg bg-background shadow-sm p-4 sm:p-6 dark:bg-zinc-900 dark:border-zinc-700 w-full"
+          className="border border-border border-t-0 rounded-b-lg shadow-sm p-4 sm:p-6 w-full bg-white/60 dark:bg-black/40 backdrop-blur-md"
         >
           <Combobox<Month>
             frameworks={frameworks}
@@ -82,7 +82,7 @@ export default function Admin() {
         </TabsContent>
         <TabsContent
           value="secret"
-          className="border border-border border-t-0 rounded-b-lg bg-background shadow-sm p-4 sm:p-6 dark:bg-zinc-900 dark:border-zinc-700 w-full"
+          className="border border-border border-t-0 rounded-b-lg shadow-sm p-4 sm:p-6 w-full bg-white/60 dark:bg-black/40 backdrop-blur-md"
         >
           <UserSecret />
         </TabsContent>

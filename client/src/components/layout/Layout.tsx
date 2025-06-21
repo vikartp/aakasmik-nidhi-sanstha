@@ -11,7 +11,7 @@ export function Layout({ children }: { children: ReactNode }) {
       {/* Subtle overlay for depth */}
       <div className="absolute inset-0 -z-10 bg-white/60 dark:bg-black/40 backdrop-blur-sm" />
       <Navbar />
-      <main className="flex-grow px-4 py-6">{children}</main>
+      <main className="flex-grow px-4 py-6 relative z-0 bg-transparent">{children}</main>
       <Footer />
       <ToastContainer />
     </div>
