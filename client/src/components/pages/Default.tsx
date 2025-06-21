@@ -11,6 +11,7 @@ import { UserPlus, LogIn, LayoutDashboard } from 'lucide-react';
 import { postFeedback } from '@/services/feedback';
 import { toast } from 'react-toastify';
 import type { AxiosError } from 'axios';
+import EngagePublic from './EngagePublic';
 
 export function Default() {
   const navigate = useNavigate();
@@ -96,7 +97,8 @@ export function Default() {
           </Button>
         </div>
       )}
-      <h2 className="text-2xl font-semibold">
+      {!user && <EngagePublic />}
+      <h2 className="text-2xl text-center font-semibold">
         🌍 💚 आकस्मिक निधि युवा संस्था बरकनगांगो के ऑनलाइन पोर्टल में में आपका
         स्वागत है 🏡🌍
       </h2>
@@ -121,10 +123,6 @@ export function Default() {
         {loading && <Loader text="Loading QR Code..." />}
         {qrCode && (
           <>
-            <p className="text-lg text-center mb-4">
-              Please scan the QR code below to contribute to our community fund
-              💚.
-            </p>
             <img
               src={qrCode.url}
               alt="QR Code to scan and pay"
