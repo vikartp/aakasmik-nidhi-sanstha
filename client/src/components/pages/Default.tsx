@@ -7,13 +7,18 @@ import { downloadImage } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import UserTable from './UserTable';
 import Loader from './Loader';
-import { UserPlus, LogIn, LayoutDashboard,  } from 'lucide-react';
+import { UserPlus, LogIn, LayoutDashboard } from 'lucide-react';
+import { postFeedback } from '@/services/feedback';
+import { toast } from 'react-toastify';
+import type { AxiosError } from 'axios';
 
 export function Default() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [qrCode, setQrCode] = useState<Screenshot | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [feedbackAdmin, setFeedbackAdmin] = useState<string>('');
+  const [feedbackCreator, setFeedbackCreator] = useState<string>('');
 
   useEffect(() => {
     const fetchQrCode = async () => {
@@ -30,6 +35,39 @@ export function Default() {
 
     fetchQrCode();
   }, []);
+
+  const handleFeedbackSubmit = async (
+    content: string,
+    target: 'admin' | 'superadmin',
+    clear: () => void
+  ) => {
+    try {
+      await postFeedback({ content, target });
+      toast.success('Feedback submitted successfully!', { autoClose: 1200 });
+      clear();
+    } catch (err) {
+      let errorMessage = 'Failed to submit feedback. Please try again.';
+      if (err && typeof err === 'object' && 'isAxiosError' in err) {
+        const axiosError = err as AxiosError<{ message?: string }>;
+        if (axiosError.response?.data?.message) {
+          errorMessage = axiosError.response.data.message;
+        }
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+      toast.error(errorMessage);
+    }
+  };
+
+  const handleAdminFeedbackSubmit = () => {
+    handleFeedbackSubmit(feedbackAdmin, 'admin', () => setFeedbackAdmin(''));
+  };
+
+  const handleCreatorFeedbackSubmit = () => {
+    handleFeedbackSubmit(feedbackCreator, 'superadmin', () =>
+      setFeedbackCreator('')
+    );
+  };
 
   return (
     <div className="flex flex-col justify-center -mt-2 gap-4">
@@ -59,10 +97,24 @@ export function Default() {
         </div>
       )}
       <h2 className="text-2xl font-semibold">
-        🌍 💚 आकस्मिक निधि युवा संस्था बरकनगांगो के ऑनलाइन पोर्टल में में आपका स्वागत है 🏡🌍
+        🌍 💚 आकस्मिक निधि युवा संस्था बरकनगांगो के ऑनलाइन पोर्टल में में आपका
+        स्वागत है 🏡🌍
       </h2>
       <p className="">
-        बरकनगांगो गांव के दिल में एकता, करुणा और आपसी सहयोग की एक मजबूत भावना है - ऐसे मूल्य जो बरकनगांगो के आकस्मिक निधि युवा संघ की नींव बनाते हैं। हम सैकड़ों समर्पित व्यक्तियों से बना एक समुदाय संचालित समूह हैं जो संकट के समय एक-दूसरे के साथ खड़े होने में विश्वास करते हैं। हर महीने, प्रत्येक सदस्य एक साझा निधि में एक छोटी राशि का योगदान देता है। यह सामूहिक प्रयास एक वित्तीय सुरक्षा जाल बनाता है जिसका उपयोग किसी भी सदस्य को अप्रत्याशित आपातकाल का सामना करने में मदद करने के लिए किया जा सकता है - चाहे वह कोई चिकित्सा समस्या हो, प्राकृतिक आपदा हो या कोई तत्काल व्यक्तिगत संकट हो। हमारा मिशन सरल लेकिन शक्तिशाली है: "एक साथ, हम मजबूत हैं।" नियमित योगदान और पारदर्शी प्रबंधन के माध्यम से, हम सुनिश्चित करते हैं कि जब हमारे समुदाय में किसी को इसकी सबसे अधिक आवश्यकता होती है तो मदद हमेशा उपलब्ध होती है। एक साथ आकर, हम न केवल वित्तीय जिम्मेदारी साझा करते हैं बल्कि हमारे गांव के युवाओं के बीच अपनेपन, एकजुटता और आशा की गहरी भावना को भी बढ़ावा देते हैं।
+        बरकनगांगो गांव के दिल में एकता, करुणा और आपसी सहयोग की एक मजबूत भावना है
+        - ऐसे मूल्य जो बरकनगांगो के आकस्मिक निधि युवा संघ की नींव बनाते हैं। हम
+        सैकड़ों समर्पित व्यक्तियों से बना एक समुदाय संचालित समूह हैं जो संकट के
+        समय एक-दूसरे के साथ खड़े होने में विश्वास करते हैं। हर महीने, प्रत्येक
+        सदस्य एक साझा निधि में एक छोटी राशि का योगदान देता है। यह सामूहिक प्रयास
+        एक वित्तीय सुरक्षा जाल बनाता है जिसका उपयोग किसी भी सदस्य को अप्रत्याशित
+        आपातकाल का सामना करने में मदद करने के लिए किया जा सकता है - चाहे वह कोई
+        चिकित्सा समस्या हो, प्राकृतिक आपदा हो या कोई तत्काल व्यक्तिगत संकट हो।
+        हमारा मिशन सरल लेकिन शक्तिशाली है: "एक साथ, हम मजबूत हैं।" नियमित योगदान
+        और पारदर्शी प्रबंधन के माध्यम से, हम सुनिश्चित करते हैं कि जब हमारे
+        समुदाय में किसी को इसकी सबसे अधिक आवश्यकता होती है तो मदद हमेशा उपलब्ध
+        होती है। एक साथ आकर, हम न केवल वित्तीय जिम्मेदारी साझा करते हैं बल्कि
+        हमारे गांव के युवाओं के बीच अपनेपन, एकजुटता और आशा की गहरी भावना को भी
+        बढ़ावा देते हैं।
       </p>
 
       <div className="max-w-md mx-auto flex flex-col justify-center">
@@ -89,6 +141,65 @@ export function Default() {
       </div>
       <h1 className="text-2xl text-center"> Our Lovely Members ❤️</h1>
       <UserTable role={user?.role} defaultPage={true} />
+
+      {/* Feedback Section */}
+      {user && (
+        <div className="w-full mt-8 flex flex-col gap-6">
+          <div className="w-full max-w-4xl mx-auto bg-blue-50 dark:bg-zinc-800 border border-blue-200 dark:border-zinc-700 rounded p-5 shadow text-zinc-800 dark:text-zinc-100 text-center">
+            <h2 className="text-xl font-bold mb-2">
+              We'd Love to Hear From You!
+            </h2>
+            <p className="text-base">
+              If you have any suggestions, questions, feedback, or words of
+              appreciation for the Admin or the Creator of this portal, please
+              share them below. Your input helps us improve and motivates us to
+              keep building a better community experience. Every message is
+              valued and will be read with care. Thank you for helping us grow
+              together!
+            </p>
+          </div>
+          <div className="w-full flex flex-col md:flex-row gap-8">
+            {/* Feedback to Admin */}
+            <div className="flex-1 bg-white dark:bg-zinc-900 rounded shadow p-6 flex flex-col gap-4 border border-zinc-200 dark:border-zinc-700">
+              <h2 className="text-lg font-semibold text-zinc-800 dark:text-zinc-100 text-center">
+                Feedback to Admin
+              </h2>
+              <textarea
+                id="feedback-admin"
+                className="border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 rounded p-3 min-h-[80px] resize-y focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-600"
+                value={feedbackAdmin}
+                onChange={e => setFeedbackAdmin(e.target.value)}
+                placeholder="Write your feedback for the Admin..."
+              />
+              <Button
+                className="self-end bg-blue-600 hover:bg-blue-700 text-white rounded shadow"
+                onClick={handleAdminFeedbackSubmit}
+              >
+                Submit to Admin
+              </Button>
+            </div>
+            {/* Feedback to Creator */}
+            <div className="flex-1 bg-white dark:bg-zinc-900 rounded shadow p-6 flex flex-col gap-4 border border-zinc-200 dark:border-zinc-700">
+              <h2 className="text-lg font-semibold text-zinc-800 dark:text-zinc-100 text-center">
+                Feedback to Creator of the portal
+              </h2>
+              <textarea
+                id="feedback-creator"
+                className="border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 rounded p-3 min-h-[80px] resize-y focus:outline-none focus:ring-2 focus:ring-green-400 dark:focus:ring-green-600"
+                value={feedbackCreator}
+                onChange={e => setFeedbackCreator(e.target.value)}
+                placeholder="Write your feedback for the Creator..."
+              />
+              <Button
+                className="self-end bg-green-600 hover:bg-green-700 text-white rounded shadow"
+                onClick={handleCreatorFeedbackSubmit}
+              >
+                Submit to Creator
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

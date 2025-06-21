@@ -5,6 +5,7 @@ import connectDB from "./config/db";
 import userRoutes from "./routes/user";
 import screenshotRoutes from "./routes/screenshot";
 import contributionRoutes from "./routes/contribution";
+import feedbackRoutes from "./routes/feedback";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { IUser } from "./models/User";
@@ -43,6 +44,7 @@ app.use("/auth", authRoutes)
 app.use("/users", authenticateToken, userRoutes);
 app.use("/screenshots", authenticateToken, screenshotRoutes);
 app.use("/contributions", authenticateToken, contributionRoutes);
+app.use("/feedback", authenticateToken, feedbackRoutes);
 
 // Public Route
 app.use("/public/users", getPublicUsers); // Gets information about users without authentication for home page

@@ -24,9 +24,9 @@ export default function DashboardHeader({
 
   useEffect(() => {
     if (!user?.profileUrl) {
-    setShowProfileHint(true);
-    const timer = setTimeout(() => setShowProfileHint(false), 5000);
-    return () => clearTimeout(timer);
+      setShowProfileHint(true);
+      const timer = setTimeout(() => setShowProfileHint(false), 5000);
+      return () => clearTimeout(timer);
     }
   }, [user?.profileUrl]);
 
@@ -137,10 +137,8 @@ export default function DashboardHeader({
       </div>
       {showProfileHint && (
         <div className="flex bg-black bg-opacity-80 text-white text-md px-3 py-1 rounded shadow z-20 whitespace-nowrap">
-          <ArrowUpFromLine /> 
-          <p>
-            Change Profile Picture By Clicking Here ☝🏻
-          </p>
+          <ArrowUpFromLine />
+          <p>Change Profile Picture By Clicking Here ☝🏻</p>
         </div>
       )}
     </>

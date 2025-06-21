@@ -175,7 +175,10 @@ export default function UserTable({
                 User Dashboard
               </Button>
               <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-100 dark:bg-green-900 ml-1">
-                <Check className="w-4 h-4 text-green-600 dark:text-green-400" aria-label="Verified" />
+                <Check
+                  className="w-4 h-4 text-green-600 dark:text-green-400"
+                  aria-label="Verified"
+                />
               </span>
             </div>
           ),

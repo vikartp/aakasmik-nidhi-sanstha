@@ -13,6 +13,7 @@ import type { ComboboxOption } from './Combobox';
 import { getMonthList } from '@/lib/utils';
 import type { Month } from '@/services/screenshot';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import FeedbackList from './Feedback';
 
 export default function SuperAdmin() {
   const { user } = useAuth();
@@ -78,6 +79,9 @@ export default function SuperAdmin() {
         <TabsTrigger value="qrcode" className="flex-1 min-w-0 cursor-pointer">
           QR Code
         </TabsTrigger>
+        <TabsTrigger value="feedback" className="flex-1 min-w-0 cursor-pointer">
+          Feedback
+        </TabsTrigger>
       </TabsList>
       <TabsContent
         value="users"
@@ -125,6 +129,12 @@ export default function SuperAdmin() {
       >
         <p className="text-green-400">Upload QR Code</p>
         <UploadScreenshot isQrCode={true} />
+      </TabsContent>
+      <TabsContent
+        value="feedback"
+        className="border border-border border-t-0 rounded-b-lg bg-background shadow-sm p-4 sm:p-6 dark:bg-zinc-900 dark:border-zinc-700 w-full"
+      >
+        <FeedbackList />
       </TabsContent>
     </Tabs>
   );

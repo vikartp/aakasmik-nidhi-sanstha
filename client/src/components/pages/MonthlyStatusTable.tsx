@@ -81,7 +81,12 @@ export default function MonthlyStatusTable() {
         color: 'bg-yellow-100 text-yellow-800',
       };
     }
-    return { status: 'Due', amount: '-', verifiedBy: '-', color: 'bg-red-100 text-red-800' };
+    return {
+      status: 'Due',
+      amount: '-',
+      verifiedBy: '-',
+      color: 'bg-red-100 text-red-800',
+    };
   };
 
   return (
@@ -110,7 +115,8 @@ export default function MonthlyStatusTable() {
             </TableHeader>
             <TableBody>
               {users.map(user => {
-                const { status, amount, color, verifiedBy } = getStatusAndAmount(user._id);
+                const { status, amount, color, verifiedBy } =
+                  getStatusAndAmount(user._id);
                 return (
                   <TableRow key={user._id}>
                     <TableCell>
