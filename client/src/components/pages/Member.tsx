@@ -1,9 +1,11 @@
 import { useAuth } from '@/context/AuthContext';
 import { useEffect, useState } from 'react';
-import { getScreenshotsByUserIdAndMonth } from '@/services/screenshot';
+import {
+  getScreenshotsByUserIdAndMonth,
+  type Screenshot,
+} from '@/services/screenshot';
 import { getContributionsByUser, getTotal } from '@/services/contribution';
 import { getCurrentMonth } from '@/lib/utils';
-import type { Screenshot } from '@/types/screenshots';
 import type { Contribution } from '@/services/contribution';
 import UserContribution from './UserContribution';
 import MonthlyStatusTable from './MonthlyStatusTable';

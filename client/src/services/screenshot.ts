@@ -1,6 +1,16 @@
-import type { User } from '@/types/users';
 import api from './api';
-import type { Screenshot } from '@/types/screenshots';
+import type { User } from './user';
+
+export type Screenshot = {
+  _id: string;
+  userId: string;
+  url: string;
+  uploadedAt: Date;
+  uploadMonth: string;
+  uploadYear: string;
+  type: 'payment' | 'qrCode';
+  verified: boolean;
+};
 
 export type Month =
   | 'January'

@@ -9,10 +9,12 @@ import {
 } from '../ui/table';
 import Loader from './Loader';
 import type { Contribution } from '@/services/contribution';
-import type { Screenshot } from '@/types/screenshots';
-import type { User } from '@/types/users';
-import { getUsers } from '@/services/user';
-import { getScreenshotsByMonth, type Month } from '@/services/screenshot';
+import { getUsers, type User } from '@/services/user';
+import {
+  getScreenshotsByMonth,
+  type Month,
+  type Screenshot,
+} from '@/services/screenshot';
 import { getContributionsByYearAndMonth } from '@/services/contribution';
 import { getMonthList } from '@/lib/utils';
 import { toast } from 'react-toastify';

@@ -4,6 +4,7 @@ import {
   getAllScreenshots,
   getScreenshotsByMonth,
   type Month,
+  type Screenshot,
 } from '@/services/screenshot';
 import {
   Table,
@@ -13,13 +14,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import type { Screenshot } from '@/types/screenshots';
 import { Button } from '../ui/button';
 import { downloadImage } from '@/lib/utils';
-import type { UserRole } from '@/types/users';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import Loader from './Loader';
+import type { UserRole } from '@/services/user';
 
 export function ScreenshotTable({
   role,

@@ -1,6 +1,11 @@
-import { deleteUser, getUserInfoForPublic, getUsers } from '@/services/user';
+import {
+  deleteUser,
+  getUserInfoForPublic,
+  getUsers,
+  type User,
+  type UserRole,
+} from '@/services/user';
 import { useEffect, useState } from 'react';
-import type { User, UserRole } from '@/types/users';
 import {
   Table,
   TableBody,

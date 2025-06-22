@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getScreenshotById } from '@/services/screenshot';
-import { getUserById } from '@/services/user';
+import { getScreenshotById, type Screenshot } from '@/services/screenshot';
+import { getUserById, type User } from '@/services/user';
 import { Button } from '../ui/button';
 import { toast } from 'react-toastify';
-import type { Screenshot } from '@/types/screenshots';
-import type { User } from '@/types/users';
 import { createContribution } from '@/services/contribution';
 import Loader from './Loader';
 import { Input } from '../ui/input';

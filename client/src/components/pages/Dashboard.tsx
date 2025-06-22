@@ -1,6 +1,5 @@
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import type { User } from '@/types/users';
 import { useEffect, useState } from 'react';
 import Admin from './Admin';
 import SuperAdmin from './SuperAdmin';
@@ -8,6 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import Loader from './Loader';
 import DashboardCommonSection from './DashboardCommonSection';
 import DashboardHeader from './DashboardHeader';
+import type { User } from '@/services/user';
 
 export default function Dashboard() {
   const { user } = useAuth();

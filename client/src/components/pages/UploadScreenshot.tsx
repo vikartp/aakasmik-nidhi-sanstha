@@ -2,12 +2,12 @@ import { useState } from 'react';
 import { uploadScreenshot } from '@/services/screenshot';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import type { User } from '@/types/users';
 import { useRef } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'react-toastify';
 import Loader from './Loader';
 import type { AxiosError } from 'axios';
+import type { User } from '@/services/user';
 
 export function UploadScreenshot({
   isQrCode,

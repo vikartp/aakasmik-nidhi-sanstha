@@ -1,8 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../ui/button';
 import { useEffect, useState } from 'react';
-import type { Screenshot } from '@/types/screenshots';
-import { getQrCode } from '@/services/screenshot';
+import { getQrCode, type Screenshot } from '@/services/screenshot';
 import { downloadImage } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import UserTable from './UserTable';
