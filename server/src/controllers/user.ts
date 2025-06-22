@@ -118,11 +118,20 @@ export const getSecretByMobile = async (
     const mobile = req.params.mobile;
     try {
         if (mobile.length !== 10) {
-            res
-                .status(400)
-                .json({
-                    message: "Invalid mobile number format. It should be 10 digits long.",
-                });
+            res.status(400).json({ message: "Invalid mobile number format. It should be 10 digits long." });
+            return;
+        }
+        // This endpoint can be used by admins or superadmins to retrieve secrets for any user
+        if (req.user && req.user.role !== "admin" && req.user.role !== "superadmin") {
+            res.status(403).json({ message: "Forbidden: Only admins can access user secrets" });
+            return;
+        }
+        // If user with this mobile number verified, restrict access to secret key
+        const mobileUser = await User.findOne({ mobile });
+        if (mobileUser && mobileUser.verified && req?.user?.role === "admin") {
+            res.status(403).json({
+                message: `Forbidden: User is already verified. Users can get/reset thier secret key by themselves.
+                 Ask him/her to contact creator of the portal if he/she has forgotten password and secret key both.` });
             return;
         }
         const secretKey = await UserSecret.findOne({ mobile });
@@ -150,6 +159,68 @@ export const getSecretByMobile = async (
         }
     } catch (err) {
         res.status(500).json({ error: (err as Error).message });
+        return;
+    }
+};
+
+// Reset secret key for a user
+export const resetSecretKey = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    if (!req.user) {
+        res.status(401).json({ message: "User not authenticated" });
+        return;
+    }
+    try {
+        const userSecretObj = await UserSecret.findOne({ mobile: req.user.mobile });
+        const newSecret = generateRandomString();
+        if (!userSecretObj) {
+            // If no secret exists, create a new one
+            await UserSecret.create({
+                mobile: req.user.mobile,
+                secret: newSecret,
+                createdAt: new Date(),
+                createdBy: req.user._id,
+            });
+        } else {
+            // If a secret exists, update it
+            userSecretObj.secret = newSecret;
+            userSecretObj.createdAt = new Date();
+            userSecretObj.createdBy = req.user._id as string;
+            await userSecretObj.save();
+        }
+        res.status(200).json({
+            message: "Secret key reset successfully",
+            secret: newSecret,
+        });
+    } catch (error) {
+        res.status(500).json({ error: (error as Error).message });
+        return;
+    }
+}
+
+export const getMySecretKey = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    if (!req.user) {
+        res.status(401).json({ message: "User not authenticated" });
+        return;
+    }
+    try {
+        const userSecretObj = await UserSecret.findOne({ mobile: req.user.mobile });
+        if (!userSecretObj) {
+            res.status(404).json({ message: "Secret key not found." });
+            return;
+        }
+        res.status(200).json({
+            message: "Secret key retrieved successfully",
+            secret: userSecretObj.secret,
+        });
+    }
+    catch (error) {
+        res.status(500).json({ error: (error as Error).message });
         return;
     }
 };

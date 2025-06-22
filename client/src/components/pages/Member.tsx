@@ -9,6 +9,7 @@ import { getCurrentMonth } from '@/lib/utils';
 import type { Contribution } from '@/services/contribution';
 import UserContribution from './UserContribution';
 import MonthlyStatusTable from './MonthlyStatusTable';
+import UserSecret from './UserSecret';
 
 export default function Member({ refreshKey }: { refreshKey?: number }) {
   const { user } = useAuth();
@@ -91,6 +92,7 @@ export default function Member({ refreshKey }: { refreshKey?: number }) {
           </div>
         </div>
       )}
+      <UserSecret member={true} />
     </>
   );
 }

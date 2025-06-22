@@ -9,7 +9,9 @@ import {
     updateMembershipDate,
     uploadProfileImage,
     verifyMember,
-    updateUserInfo
+    updateUserInfo,
+    resetSecretKey,
+    getMySecretKey
 } from "../controllers/user";
 import multer from "multer";
 
@@ -19,6 +21,10 @@ const router = Router();
 router.get("/", getUsers);
 
 router.get("/me", getLoggedInUser);
+
+router.get("/my-secret", getMySecretKey);
+
+router.get("/reset-secret", resetSecretKey);
 
 router.get("/:userId", getUserById);
 
