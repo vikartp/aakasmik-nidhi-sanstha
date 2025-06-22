@@ -86,7 +86,7 @@ export default function MonthlyStatusTable() {
       };
     }
     const userScreenshot = screenshots[userId];
-    if (userScreenshot) {
+    if (userScreenshot && Number(selectedYear) === new Date().getFullYear()) {
       return {
         status: 'Pending',
         amount: '-',
