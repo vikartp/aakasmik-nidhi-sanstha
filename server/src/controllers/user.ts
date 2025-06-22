@@ -64,6 +64,15 @@ export const deleteUser = async (
             return;
         }
         await deleteUserScreenshots(userId);
+        if (user.profileUrl) {
+            // If it exists, delete the old image from Cloudinary
+            const publicId = user.profileUrl.split("/").pop()?.split(".")[0];
+            if (publicId) {
+                await cloudinary.uploader.destroy(`profile/${publicId}`, {
+                    resource_type: "image",
+                });
+            }
+        }
         res.status(200).json({ message: "User deleted successfully" });
     } catch (err) {
         res.status(500).json({ error: (err as Error).message });

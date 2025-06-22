@@ -114,7 +114,7 @@ export default function MonthlyStatusTable() {
           <IndianRupee className="text-blue-600 dark:text-blue-400 w-7 h-7" />
         </span>
       </h1>
-      <div className="flex flex-row items-center gap-6 w-full max-w-2xl justify-center bg-gradient-to-r from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-xl py-4 shadow-md">
+      <div className="flex flex-row items-center gap-6 mb-4 w-full max-w-2xl justify-center bg-gradient-to-r from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-xl py-4 shadow-md">
         <div className="flex flex-col items-start">
           <label
             htmlFor="month-select"
