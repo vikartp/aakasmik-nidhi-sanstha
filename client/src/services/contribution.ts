@@ -40,3 +40,8 @@ export async function getTotal(): Promise<number> {
   const response = await api.get('/contributions/total-amount');
   return response.data.total;
 }
+
+export async function deleteContribution(id: string) {
+  const response = await api.delete(`/contributions/${id}`);
+  return response.data;
+}

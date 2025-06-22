@@ -232,6 +232,7 @@ export default function UserManagement() {
               contributions={userContributions}
               showHeader
               headerText="User Contributions"
+              enableDelete={true}
             />
           </div>
         </TabsContent>
