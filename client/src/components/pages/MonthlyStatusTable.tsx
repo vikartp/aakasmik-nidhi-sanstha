@@ -12,10 +12,11 @@ import type { Contribution } from '@/services/contribution';
 import type { Screenshot } from '@/types/screenshots';
 import type { User } from '@/types/users';
 import { getUsers } from '@/services/user';
-import { getScreenshotsByMonth } from '@/services/screenshot';
+import { getScreenshotsByMonth, type Month } from '@/services/screenshot';
 import { getContributionsByYearAndMonth } from '@/services/contribution';
-import { getCurrentMonth } from '@/lib/utils';
+import { getMonthList } from '@/lib/utils';
 import { toast } from 'react-toastify';
+import { HandCoins, IndianRupee } from 'lucide-react';
 
 export default function MonthlyStatusTable() {
   const [users, setUsers] = useState<User[]>([]);
@@ -26,15 +27,25 @@ export default function MonthlyStatusTable() {
     Record<string, Contribution | undefined>
   >({});
   const [loading, setLoading] = useState(true);
-  const month = getCurrentMonth();
-  const year = new Date().getFullYear();
+
+  const monthList = getMonthList();
+  const currentYear = new Date().getFullYear();
+  const yearList = Array.from({ length: currentYear - 2024 + 1 }, (_, i) =>
+    (2024 + i).toString()
+  );
+  const [selectedMonth, setSelectedMonth] = useState<string>(
+    monthList[new Date().getMonth()]
+  );
+  const [selectedYear, setSelectedYear] = useState<string>(
+    currentYear.toString()
+  );
 
   useEffect(() => {
     setLoading(true);
     Promise.all([
       getUsers(),
-      getScreenshotsByMonth(month),
-      getContributionsByYearAndMonth(year, month),
+      getScreenshotsByMonth(selectedMonth as Month),
+      getContributionsByYearAndMonth(Number(selectedYear), selectedMonth),
     ])
       .then(([userList, allScreenshots, monthContributions]) => {
         const verifiedUsers = userList.filter((u: User) => u.verified);
@@ -59,7 +70,7 @@ export default function MonthlyStatusTable() {
         setLoading(false);
         toast.error('Failed to load monthly status data.');
       });
-  }, [month, year]);
+  }, [selectedMonth, selectedYear]);
 
   // Helper to get status and amount for a user
   const getStatusAndAmount = (userId: string) => {
@@ -91,12 +102,59 @@ export default function MonthlyStatusTable() {
 
   return (
     <div className="mt-8 flex flex-col items-center w-full">
-      <h2 className="text-xl font-bold mb-2 text-center">
-        Monthly Status{' '}
-        <span className="font-normal text-base">
-          ({month} {year})
+      {/* Month/Year Selectors Row */}
+      <h1 className="flex items-center justify-center text-2xl font-extrabold mb-4 text-center bg-gradient-to-r from-green-400 via-blue-500 to-indigo-500 bg-clip-text text-transparent drop-shadow-lg dark:from-green-300 dark:via-blue-400 dark:to-indigo-400 py-2 rounded-xl shadow-md gap-2 select-none">
+        <span className="inline-flex items-center bg-white/70 dark:bg-gray-900/70 rounded-full px-2 py-1 mr-2 shadow-sm">
+          <HandCoins className="text-green-600 dark:text-green-400 w-7 h-7" />
         </span>
-      </h2>
+        <span className="">Monthly Contribution Status</span>
+        <span className="inline-flex items-center bg-white/70 dark:bg-gray-900/70 rounded-full px-2 py-1 ml-2 shadow-sm">
+          <IndianRupee className="text-blue-600 dark:text-blue-400 w-7 h-7" />
+        </span>
+      </h1>
+      <div className="flex flex-row items-center gap-6 w-full max-w-2xl justify-center bg-gradient-to-r from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-xl py-4 shadow-md">
+        <div className="flex flex-col items-start">
+          <label
+            htmlFor="month-select"
+            className="text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200 tracking-wide drop-shadow"
+          >
+            Month
+          </label>
+          <select
+            id="month-select"
+            value={selectedMonth}
+            onChange={e => setSelectedMonth(e.target.value)}
+            className="w-48 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-600 text-base bg-white dark:bg-gray-900 dark:text-white shadow-sm transition-all duration-200 hover:border-blue-400 dark:hover:border-blue-400"
+          >
+            {monthList.map(month => (
+              <option key={month} value={month}>
+                {month}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="flex flex-col items-start">
+          <label
+            htmlFor="year-select"
+            className="text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200 tracking-wide drop-shadow"
+          >
+            Year
+          </label>
+          <select
+            id="year-select"
+            value={selectedYear}
+            onChange={e => setSelectedYear(e.target.value)}
+            className="w-36 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-400 dark:focus:ring-green-600 text-base bg-white dark:bg-gray-900 dark:text-white shadow-sm transition-all duration-200 hover:border-green-400 dark:hover:border-green-400"
+          >
+            {yearList.map(year => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
       <div className="rounded border w-full max-w-full overflow-x-auto">
         {loading ? (
           <Loader />
