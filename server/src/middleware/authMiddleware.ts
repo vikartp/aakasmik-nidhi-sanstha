@@ -33,6 +33,9 @@ const authenticateToken = async (req: Request, res: Response, next: NextFunction
         }
 
         req.user = userObject as IUser
+        // Simple logger for tracking activity
+        const now = new Date().toLocaleString('en-IN', { hour12: false });
+        console.log(`[${now}] User: ${userObject.name} (${userObject._id}) accessed ${req.method} ${req.originalUrl}`);
         next()
     } catch (error) {
         res.status(401).json({ message: (error === "Invalid token payload") ? error : "Invalid or expired token" })
