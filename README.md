@@ -37,7 +37,7 @@ Also if a user is admin then show 'Remove Admin'.
 
 
 ## TODO
-- Change end to end flow for accepting month as number. Create a util function which would return the string(Think).
-- Create table for monthly contribution check (filter by month and year). => For admin
-- Create interface for admin to get list of member who has not contributed this month.
+- Create a nodejs api on vercel to use node-cron and fire this get call in 5 mins interval
+https://aakasmik-nidhi-backend.onrender.com/health
+
 - Use Redux to manage state for upload and anything else.
