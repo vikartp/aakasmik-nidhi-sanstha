@@ -58,6 +58,10 @@ export const deleteUser = async (
 ): Promise<void> => {
     const userId = req.params.userId;
     try {
+        if (req.user?.role !== 'superadmin') {
+            res.status(403).json({ error: 'Forbidden: Only super admin can delete users.' });
+            return;
+        };
         const user = await User.findByIdAndDelete(userId);
         if (!user) {
             res.status(404).json({ message: "User not found" });
@@ -82,6 +86,10 @@ export const deleteUser = async (
 export const makeAdmin = async (req: Request, res: Response): Promise<void> => {
     const userId = req.params.userId;
     try {
+        if (req.user?.role !== 'superadmin') {
+            res.status(403).json({ error: 'Forbidden: Only super admin can make admin.' });
+            return;
+        };
         const user = await User.findById(userId);
         if (!user) {
             res.status(404).json({ message: "User not found" });
@@ -107,6 +115,10 @@ export const verifyMember = async (
 ): Promise<void> => {
     const userId = req.params.userId;
     try {
+        if (req.user?.role !== 'admin') {
+            res.status(403).json({ error: 'Forbidden: Only admin can verify member.' });
+            return;
+        };
         const user = await User.findById(userId);
         if (!user) {
             res.status(404).json({ message: "User not found" });
