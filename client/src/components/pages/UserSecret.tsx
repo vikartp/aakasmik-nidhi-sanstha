@@ -157,7 +157,7 @@ export default function UserSecret({ member }: { member?: boolean }) {
               onClick={handleGetSecret}
               disabled={!mobile || loading}
             >
-              {loading ? 'Fetching...' : 'Get Secret Key'}
+              {loading ? 'Fetching...' : 'Get Secret Key With Mobile'}
             </Button>
           </>
         )}
