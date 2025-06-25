@@ -43,11 +43,15 @@ export const registerUser = async (
             return;
         }
 
-        const mobileSecret = await UserSecret.findOne({ mobile });
-        if (!mobileSecret || mobileSecret.secret !== secretKey) {
-            res.status(403).json({ message: "Invalid secret key. Please contact your admin to get secret key for your mobile number." });
-            return;
-        }
+        /**
+         * Note: Commenting out the secret key validation for now.
+         * Uncomment this section if you want to enforce secret key validation.
+         */
+        // const mobileSecret = await UserSecret.findOne({ mobile });
+        // if (!mobileSecret || mobileSecret.secret !== secretKey) {
+        //     res.status(403).json({ message: "Invalid secret key. Please contact your admin to get secret key for your mobile number." });
+        //     return;
+        // }
 
         const hashed = await bcrypt.hash(password, 10);
         const userData: any = {

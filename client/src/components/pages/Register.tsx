@@ -15,9 +15,9 @@ export function Register() {
     fatherName: '',
     email: '',
     mobile: '',
-    occupation: '',
+    // occupation: '',
     password: '',
-    secretKey: '',
+    // secretKey: '',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -114,13 +114,13 @@ export function Register() {
         inputMode="numeric"
         autoComplete="tel"
       />
-      <Input
+      {/* <Input
         name="occupation"
         placeholder="OCCUPATION"
         value={form.occupation}
         onChange={handleChange}
         autoComplete="organization-title"
-      />
+      /> */}
       <div className="relative">
         <Input
           name="password"
@@ -157,13 +157,13 @@ export function Register() {
           Password strength: {passwordStrength}
         </div>
       )}
-      <Input
+      {/* <Input
         name="secretKey"
         placeholder="SECRET KEY"
         value={form.secretKey}
         onChange={handleChange}
         autoComplete="off"
-      />
+      /> */}
       <Button
         onClick={handleSubmit}
         disabled={
@@ -171,7 +171,6 @@ export function Register() {
           !form['name'] ||
           !form['fatherName'] ||
           !form['password'] ||
-          !form['secretKey'] ||
           isWaiting
         }
         className="flex items-center gap-2 px-5 py-2 rounded font-semibold shadow-sm transition-all duration-150 bg-gradient-to-r from-green-500 to-green-700 text-white hover:from-green-600 hover:to-green-800 hover:scale-105 dark:from-green-400 dark:to-green-600 dark:hover:from-green-500 dark:hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-300 dark:focus:ring-green-800"
