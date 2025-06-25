@@ -10,7 +10,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { IUser } from "./models/User";
 import authenticateToken from "./middleware/authMiddleware";
-import { getPublicUsers, getQrCode } from "./controllers/publicInfo";
+import { getAdminAndSuperAdmin, getPublicUsers, getQrCode } from "./controllers/publicInfo";
 // import './cronjob'; // Enable this line if you want to check health periodiacally
 
 dotenv.config();
@@ -49,6 +49,7 @@ app.use("/feedback", authenticateToken, feedbackRoutes);
 // Public Route
 app.use("/public/users", getPublicUsers); // Gets information about users without authentication for home page
 app.use("/public/qr", getQrCode); // Gets public screenshot of a user
+app.use("/get-admins-superadmin", getAdminAndSuperAdmin); // Gets all admins for public view
 
 app.get("/", (req, res) => {
     res.send("API is running...");

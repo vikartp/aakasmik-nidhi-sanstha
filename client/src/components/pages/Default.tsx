@@ -11,6 +11,8 @@ import { postFeedback } from '@/services/feedback';
 import { toast } from 'react-toastify';
 import type { AxiosError } from 'axios';
 import EngagePublic from './EngagePublic';
+import { getAdminsAndSuperAdmin } from '@/services/admin';
+import type { User } from '@/services/user';
 
 export function Default() {
   const navigate = useNavigate();
@@ -19,6 +21,8 @@ export function Default() {
   const [loading, setLoading] = useState<boolean>(true);
   const [feedbackAdmin, setFeedbackAdmin] = useState<string>('');
   const [feedbackCreator, setFeedbackCreator] = useState<string>('');
+  const [admins, setAdmins] = useState<User[]>([]);
+  const [superAdmin, setSuperAdmin] = useState<User | null>(null);
 
   useEffect(() => {
     const fetchQrCode = async () => {
@@ -34,6 +38,15 @@ export function Default() {
     };
 
     fetchQrCode();
+  }, []);
+
+  useEffect(() => {
+    // Fetch admins and superadmin
+    getAdminsAndSuperAdmin().then(data => {
+      setAdmins(data.filter((u: User) => u.role === 'admin'));
+      const superAdminUser = data.find((u: User) => u.role === 'superadmin');
+      setSuperAdmin(superAdminUser || null);
+    });
   }, []);
 
   const handleFeedbackSubmit = async (
@@ -197,6 +210,58 @@ export function Default() {
           </div>
         </div>
       )}
+      {/* Admin & Creator Section */}
+      <div className="w-full max-w-4xl mx-auto mt-2 flex flex-col md:flex-row gap-8">
+        <div className="flex-1 rounded shadow p-3 flex flex-col gap-4 items-center">
+          <h2 className="text-lg font-bold text-blue-700 dark:text-blue-300 mb-4 text-center">
+            Admin
+          </h2>
+          <div className="flex flex-wrap gap-6 justify-center">
+            {admins.length === 0 && (
+              <div className="text-gray-500">No Admins found.</div>
+            )}
+            {admins.map(admin => (
+              <div key={admin._id} className="flex flex-col items-center gap-2">
+                <img
+                  src={
+                    admin.profileUrl ||
+                    'https://ui-avatars.com/api/?name=' +
+                      encodeURIComponent(admin.name)
+                  }
+                  alt={admin.name}
+                  className="w-20 h-20 rounded-full object-cover border border-gray-300 dark:border-gray-700"
+                />
+                <span className="font-semibold text-gray-800 dark:text-gray-100">
+                  {admin.name}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="flex-1 rounded shadow p-3 flex flex-col gap-4 items-center">
+          <h2 className="text-lg font-bold text-green-700 dark:text-green-300 mb-4 text-center">
+            Creator
+          </h2>
+          {superAdmin ? (
+            <div className="flex flex-col items-center gap-2">
+              <img
+                src={
+                  superAdmin.profileUrl ||
+                  'https://ui-avatars.com/api/?name=' +
+                    encodeURIComponent(superAdmin.name)
+                }
+                alt={superAdmin.name}
+                className="w-20 h-20 rounded-full object-cover border border-gray-300 dark:border-gray-700"
+              />
+              <span className="font-semibold text-gray-800 dark:text-gray-100">
+                {superAdmin.name}
+              </span>
+            </div>
+          ) : (
+            <div className="text-gray-500">No Creator found.</div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

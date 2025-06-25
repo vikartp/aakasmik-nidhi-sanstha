@@ -31,3 +31,14 @@ export const getQrCode = async (
         res.status(500).json({ error: "Failed to fetch QR Code screenshot" });
     }
 }
+
+// Get all admins for public view
+export const getAdminAndSuperAdmin = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const admins = await User.find({ role: { $in: ['admin', 'superadmin'] } }, "name profileUrl role");
+        res.status(200).json(admins);
+    } catch (err) {
+        console.error("Error fetching admins:", err);
+        res.status(500).json({ error: "Failed to fetch admins" });
+    }
+};

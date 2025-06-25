@@ -87,21 +87,20 @@ export default function UserSecret({ member }: { member?: boolean }) {
 
   return (
     <div className="flex flex-col gap-2">
-      <h2 className="text-2xl font-bold mt-2">User Secrets</h2>
+      <h2 className="text-2xl font-bold mt-2">User Secret</h2>
       <div className="mb-2">
         <h3 className="text-lg font-semibold mb-1">Important Guidelines:</h3>
         {member ? (
           <ul className="list-disc list-inside text-lg">
             <li>
-              Please reset the secret key once you login for the first time.
+              कृपया पहली बार लॉगिन करने के बाद अपना सीक्रेट की रीसेट करें।
             </li>
             <li>
-              This key is used for secure operations and should be kept
-              confidential.
+              यह कुंजी सुरक्षित कार्यों के लिए उपयोग होती है और इसे गोपनीय रखें।
             </li>
             <li>
-              You can use this key to change your password. Please don't share
-              this with anyone.
+              आप इस कुंजी का उपयोग पासवर्ड बदलने के लिए कर सकते हैं। कृपया इसे
+              किसी के साथ साझा न करें।
             </li>
           </ul>
         ) : (
