@@ -3,7 +3,8 @@ import { getMe, type User } from '@/services/user';
 
 type AuthContextType = {
   user: User | null;
-  login: () => void;
+  loading: boolean;
+  login: () => Promise<void>;
   logout: () => void;
   setUser: (user: User | null) => void;
 };
@@ -12,15 +13,21 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const getLoggedInUser = async () => {
-    if (localStorage.getItem('cus-logout-key') === 'true') return;
+    if (localStorage.getItem('cus-logout-key') === 'true') {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
     const response = await getMe();
     if (response) {
       setUser(response);
     } else {
       setUser(null);
     }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -30,9 +37,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     fetchLoggedInUser();
   }, []);
 
-  const login = () => {
+  const login = async () => {
     localStorage.setItem('cus-logout-key', 'false');
-    getLoggedInUser();
+    await getLoggedInUser();
   };
 
   const logout = () => {
@@ -41,7 +48,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, setUser }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, setUser }}>
       {children}
     </AuthContext.Provider>
   );
