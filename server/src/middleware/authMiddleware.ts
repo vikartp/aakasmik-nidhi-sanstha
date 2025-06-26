@@ -7,7 +7,16 @@ dotenv.config()
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || "access_secret"
 
 const authenticateToken = async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.cookies.accessToken as string | undefined;
+    let token: string | undefined;
+    // Check for token in Authorization header
+    if (req.headers.authorization && req.headers.authorization.startsWith("Bearer ")) {
+        token = req.headers.authorization.split(" ")[1];
+    } else {
+        // Check for token in cookies
+        if (req.cookies && req.cookies.accessToken) {
+            token = req.cookies.accessToken;
+        }
+    }
 
     if (!token) {
         res.status(401).json({ message: "Access token missing" });
@@ -34,8 +43,7 @@ const authenticateToken = async (req: Request, res: Response, next: NextFunction
 
         req.user = userObject as IUser
         // Simple logger for tracking activity
-        const now = new Date().toLocaleString('en-IN', { hour12: false });
-        console.log(`[${now}] User: ${userObject.name} (${userObject._id}) accessed ${req.method} ${req.originalUrl}`);
+        console.log(`User: ${userObject.name} accessed ${req.method} ${req.originalUrl}`);
         next()
     } catch (error) {
         res.status(401).json({ message: (error === "Invalid token payload") ? error : "Invalid or expired token" })

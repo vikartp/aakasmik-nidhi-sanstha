@@ -102,14 +102,15 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
                 });
             return;
         }
+        const accessToken = generateAccessToken(user);
 
-        res.cookie("accessToken", generateAccessToken(user), {
+        res.cookie("accessToken", accessToken, {
             httpOnly: true,
             secure: true,
             sameSite: "none",
             maxAge: 24 * 60 * 60 * 1000, // 1 day
         })
-            .json({ message: "Login successful" });
+            .json({ message: "Login successful", accessToken });
     } catch (err) {
         res.status(500).json({ message: "Login error" });
     }
