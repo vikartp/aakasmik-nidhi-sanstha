@@ -18,7 +18,17 @@ import {
 import { getContributionsByYearAndMonth } from '@/services/contribution';
 import { getMonthList } from '@/lib/utils';
 import { toast } from 'react-toastify';
-import { HandCoins, IndianRupee } from 'lucide-react';
+import { HandCoins, IndianRupee, Download } from 'lucide-react';
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import 'jspdf-autotable';
+import { Button } from '../ui/button';
+
+// Register the plugin
+(
+  jsPDF as typeof jsPDF & { API: { autoTable: typeof autoTable } }
+).API.autoTable = autoTable;
 
 export default function MonthlyStatusTable() {
   const [users, setUsers] = useState<User[]>([]);
@@ -100,6 +110,93 @@ export default function MonthlyStatusTable() {
       verifiedBy: '-',
       color: 'bg-red-100 text-red-800',
     };
+  };
+
+  // Prepare table data for export (excluding profile pic)
+  const getExportRows = () => {
+    return users.map(user => {
+      const { status, amount, verifiedBy } = getStatusAndAmount(user._id);
+      return {
+        Name: user.name,
+        Status: status,
+        Amount: amount,
+        'Verified By': verifiedBy,
+        Mobile: user.mobile || '-',
+        "Father's Name": user.fatherName || '-',
+      };
+    });
+  };
+
+  const getExportFileName = (ext: string) => {
+    return `Aakasmik-Nidhi-${selectedYear}-${selectedMonth}.${ext}`;
+  };
+
+  const exportToExcel = () => {
+    const exportRows = getExportRows();
+    const worksheet = XLSX.utils.json_to_sheet(exportRows);
+    // Calculate dynamic column widths
+    const cols = Object.keys(exportRows[0] || {}).map(col => {
+      const maxLen = Math.max(
+        col.length,
+        ...exportRows.map(
+          row => String((row as Record<string, unknown>)[col] ?? '').length
+        )
+      );
+      return { wch: maxLen + 2 }; // +2 for padding
+    });
+    worksheet['!cols'] = cols;
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+    XLSX.writeFile(workbook, getExportFileName('xlsx'));
+  };
+
+  const exportToPDF = () => {
+    const exportRows = getExportRows();
+    if (!exportRows.length) {
+      toast.error('No data to export.');
+      return;
+    }
+    const doc = new jsPDF({
+      orientation: 'landscape',
+      unit: 'pt',
+      format: 'A4',
+    });
+    const tableColumn = Object.keys(exportRows[0]);
+    const tableRows = exportRows.map(row =>
+      tableColumn.map(col =>
+        String((row as Record<string, unknown>)[col] ?? '')
+      )
+    );
+
+    autoTable(doc, {
+      head: [tableColumn],
+      body: tableRows,
+      startY: 40,
+      theme: 'striped',
+      styles: { fontSize: 10, cellPadding: 4 },
+      headStyles: { fillColor: [41, 128, 185], textColor: 255 },
+      margin: { left: 20, right: 20 },
+      didDrawPage: function () {
+        doc.setFontSize(16);
+        doc.setTextColor(40, 128, 185);
+        doc.text(
+          `Aakasmik Nidhi Status - ${selectedMonth} ${selectedYear} => Generated on: ${getTodayDate()}`,
+          doc.internal.pageSize.getWidth() / 2,
+          30,
+          { align: 'center' }
+        );
+      },
+    });
+    doc.save(getExportFileName('pdf'));
+  };
+
+  const getTodayDate = () => {
+    const today = new Date();
+    return today.toLocaleDateString('en-IN', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
   };
 
   return (
@@ -230,6 +327,17 @@ export default function MonthlyStatusTable() {
           </div>
         )}
       </div>
+      {/* Download buttons below the table */}
+      {!loading && (
+        <div className="flex gap-4 mt-4">
+          <Button onClick={exportToExcel} variant="outline">
+            <Download className="w-4 h-4 mr-2" /> Download as Excel
+          </Button>
+          <Button onClick={exportToPDF} variant="outline">
+            <Download className="w-4 h-4 mr-2" /> Download as PDF
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
