@@ -35,7 +35,7 @@ export const getQrCode = async (
 // Get all admins for public view
 export const getAdminAndSuperAdmin = async (req: Request, res: Response): Promise<void> => {
     try {
-        const admins = await User.find({ role: { $in: ['admin', 'superadmin'] } }, "name profileUrl role");
+        const admins = await User.find({ role: { $in: ['admin', 'superadmin'] } }, "name profileUrl role mobile");
         res.status(200).json(admins);
     } catch (err) {
         console.error("Error fetching admins:", err);

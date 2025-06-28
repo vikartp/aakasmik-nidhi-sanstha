@@ -71,7 +71,7 @@ export default function EngagePublic() {
   return (
     <div
       className="w-full flex flex-col items-center justify-center relative"
-      style={{ minHeight: 220 }}
+      style={{ minHeight: 200 }}
     >
       <canvas
         ref={canvasRef}

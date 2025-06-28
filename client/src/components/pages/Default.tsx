@@ -1,18 +1,62 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../ui/button';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { getQrCode, type Screenshot } from '@/services/screenshot';
 import { downloadImage } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import UserTable from './UserTable';
 import Loader from './Loader';
-import { UserPlus, LogIn, LayoutDashboard } from 'lucide-react';
+import {
+  UserPlus,
+  LogIn,
+  LayoutDashboard,
+  Phone,
+  MessageCircle,
+} from 'lucide-react';
 import { postFeedback } from '@/services/feedback';
 import { toast } from 'react-toastify';
 import type { AxiosError } from 'axios';
 import EngagePublic from './EngagePublic';
 import { getAdminsAndSuperAdmin } from '@/services/admin';
 import type { User } from '@/services/user';
+import useEmblaCarousel from 'embla-carousel-react';
+import Autoplay from 'embla-carousel-autoplay';
+
+const aboutSlides = [
+  'बरकनगांगो गांव के दिल में एकता, करुणा और आपसी सहयोग की एक मजबूत भावना है - ऐसे मूल्य जो बरकनगांगो के आकस्मिक निधि युवा संघ की नींव बनाते हैं।',
+  'हम सैकड़ों समर्पित व्यक्तियों से बना एक समुदाय संचालित समूह हैं जो संकट के समय एक-दूसरे के साथ खड़े होने में विश्वास करते हैं।',
+  'हर महीने, प्रत्येक सदस्य एक साझा निधि में एक छोटी राशि का योगदान देता है। यह सामूहिक प्रयास एक वित्तीय सुरक्षा जाल बनाता है जिसका उपयोग किसी भी सदस्य को अप्रत्याशित आपातकाल का सामना करने में मदद करने के लिए किया जा सकता है।',
+  'हमारा मिशन सरल लेकिन शक्तिशाली है: "एक साथ, हम मजबूत हैं।" नियमित योगदान और पारदर्शी प्रबंधन के माध्यम से, हम सुनिश्चित करते हैं कि जब हमारे समुदाय में किसी को इसकी सबसे अधिक आवश्यकता होती है तो मदद हमेशा उपलब्ध होती है।',
+  'एक साथ आकर, हम न केवल वित्तीय जिम्मेदारी साझा करते हैं बल्कि हमारे गांव के युवाओं के बीच अपनेपन, एकजुटता और आशा की गहरी भावना को भी बढ़ावा देते हैं।',
+];
+
+function AboutCarousel() {
+  const autoplay = useRef(Autoplay({ delay: 4000, stopOnInteraction: false }));
+  const [emblaRef] = useEmblaCarousel({ loop: true, align: 'center' }, [
+    autoplay.current,
+  ]);
+  return (
+    <section className="w-full max-w-2xl mx-auto my-4">
+      <div
+        ref={emblaRef}
+        className="embla overflow-hidden rounded-2xl shadow-2xl border border-blue-200 dark:border-blue-900 bg-gradient-to-br from-green-50 via-white to-blue-50 dark:from-[#0f172a] dark:via-[#1e293b] dark:to-[#0e2235]"
+      >
+        <div className="embla__container flex">
+          {aboutSlides.map((text, idx) => (
+            <div
+              className="embla__slide flex items-center justify-center min-h-[140px] px-6 py-10 md:py-14 w-full flex-[0_0_100%]"
+              key={idx}
+            >
+              <p className="text-lg md:text-2xl text-center font-semibold text-gray-800 dark:text-blue-100 leading-relaxed drop-shadow-lg dark:drop-shadow-xl">
+                {text}
+              </p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
 
 export function Default() {
   const navigate = useNavigate();
@@ -109,27 +153,12 @@ export function Default() {
           </Button>
         </div>
       )}
-      {!user && <EngagePublic />}
-      <h2 className="text-2xl text-center font-semibold">
-        🌍 💚 आकस्मिक निधि युवा संस्था बरकनगांगो के ऑनलाइन पोर्टल में में आपका
-        स्वागत है 🏡🌍
+      <h2 className="text-2xl text-center font-semibold bg-gradient-to-r from-green-400 via-blue-500 to-indigo-500 bg-clip-text text-transparent drop-shadow-lg dark:from-green-300 dark:via-blue-400 dark:to-indigo-400 py-2 rounded-xl shadow-md gap-2">
+        आकस्मिक निधि युवा संस्था के ऑनलाइन पोर्टल में में आपका स्वागत है
       </h2>
-      <p className="">
-        बरकनगांगो गांव के दिल में एकता, करुणा और आपसी सहयोग की एक मजबूत भावना है
-        - ऐसे मूल्य जो बरकनगांगो के आकस्मिक निधि युवा संघ की नींव बनाते हैं। हम
-        सैकड़ों समर्पित व्यक्तियों से बना एक समुदाय संचालित समूह हैं जो संकट के
-        समय एक-दूसरे के साथ खड़े होने में विश्वास करते हैं। हर महीने, प्रत्येक
-        सदस्य एक साझा निधि में एक छोटी राशि का योगदान देता है। यह सामूहिक प्रयास
-        एक वित्तीय सुरक्षा जाल बनाता है जिसका उपयोग किसी भी सदस्य को अप्रत्याशित
-        आपातकाल का सामना करने में मदद करने के लिए किया जा सकता है - चाहे वह कोई
-        चिकित्सा समस्या हो, प्राकृतिक आपदा हो या कोई तत्काल व्यक्तिगत संकट हो।
-        हमारा मिशन सरल लेकिन शक्तिशाली है: "एक साथ, हम मजबूत हैं।" नियमित योगदान
-        और पारदर्शी प्रबंधन के माध्यम से, हम सुनिश्चित करते हैं कि जब हमारे
-        समुदाय में किसी को इसकी सबसे अधिक आवश्यकता होती है तो मदद हमेशा उपलब्ध
-        होती है। एक साथ आकर, हम न केवल वित्तीय जिम्मेदारी साझा करते हैं बल्कि
-        हमारे गांव के युवाओं के बीच अपनेपन, एकजुटता और आशा की गहरी भावना को भी
-        बढ़ावा देते हैं।
-      </p>
+
+      <AboutCarousel />
+      {!user && <EngagePublic />}
 
       <div className="max-w-md mx-auto flex flex-col justify-center">
         {loading && <Loader text="Loading QR Code..." />}
@@ -211,10 +240,15 @@ export function Default() {
         </div>
       )}
       {/* Admin & Creator Section */}
-      <div className="w-full max-w-4xl mx-auto mt-2 flex flex-col md:flex-row gap-8">
+      <div className="w-full max-w-4xl mx-auto mt-2 flex flex-col md:flex-row gap-2">
         <div className="flex-1 rounded shadow p-3 flex flex-col gap-4 items-center">
-          <h2 className="text-lg font-bold text-blue-700 dark:text-blue-300 mb-4 text-center">
-            Admin
+          <h2>
+            {' '}
+            क्या आप हमारे सदस्य बनना चाहते हैं? कृपया हमारे एडमिन से संपर्क
+            करें। 👇🏻{' '}
+          </h2>
+          <h2 className="text-lg font-bold text-blue-700 dark:text-blue-300 text-center">
+            Admins
           </h2>
           <div className="flex flex-wrap gap-6 justify-center">
             {admins.length === 0 && (
@@ -234,13 +268,35 @@ export function Default() {
                 <span className="font-semibold text-gray-800 dark:text-gray-100">
                   {admin.name}
                 </span>
+                {admin.mobile && (
+                  <div className="flex gap-3 mt-1">
+                    <a
+                      href={`tel:${admin.mobile}`}
+                      title="Call"
+                      className="text-green-600 hover:text-green-800"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Phone className="w-5 h-5" />
+                    </a>
+                    <a
+                      href={`https://wa.me/${admin.mobile}`}
+                      title="WhatsApp"
+                      className="text-green-500 hover:text-green-700"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <MessageCircle className="w-5 h-5" />
+                    </a>
+                  </div>
+                )}
               </div>
             ))}
           </div>
         </div>
         <div className="flex-1 rounded shadow p-3 flex flex-col gap-4 items-center">
-          <h2 className="text-lg font-bold text-green-700 dark:text-green-300 mb-4 text-center">
-            Creator
+          <h2 className="text-lg font-bold text-green-700 dark:text-green-300 text-center">
+            Creator of the portal
           </h2>
           {superAdmin ? (
             <div className="flex flex-col items-center gap-2">
@@ -256,6 +312,28 @@ export function Default() {
               <span className="font-semibold text-gray-800 dark:text-gray-100">
                 {superAdmin.name}
               </span>
+              {superAdmin.mobile && (
+                <div className="flex gap-3 mt-1">
+                  <a
+                    href={`tel:${superAdmin.mobile}`}
+                    title="Call"
+                    className="text-green-600 hover:text-green-800"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Phone className="w-5 h-5" />
+                  </a>
+                  <a
+                    href={`https://wa.me/${superAdmin.mobile}`}
+                    title="WhatsApp"
+                    className="text-green-500 hover:text-green-700"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <MessageCircle className="w-5 h-5" />
+                  </a>
+                </div>
+              )}
             </div>
           ) : (
             <div className="text-gray-500">No Creator found.</div>
