@@ -25,7 +25,6 @@ export function Login() {
       const res = await api.post('/auth/login', { mobile, password });
       localStorage.setItem('accessToken', res.data.accessToken);
       await login(); // Await user info fetch before navigating
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Optional delay for UX
       navigate('/dashboard');
       toast.success(res.data.message, { autoClose: 1000 });
     } catch (err: unknown) {

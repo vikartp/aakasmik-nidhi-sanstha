@@ -36,7 +36,7 @@ function AboutCarousel() {
     autoplay.current,
   ]);
   return (
-    <section className="w-full max-w-2xl mx-auto my-4">
+    <section className="w-full max-w-2xl mx-auto">
       <div
         ref={emblaRef}
         className="embla overflow-hidden rounded-2xl shadow-2xl border border-blue-200 dark:border-blue-900 bg-gradient-to-br from-green-50 via-white to-blue-50 dark:from-[#0f172a] dark:via-[#1e293b] dark:to-[#0e2235]"
@@ -127,7 +127,7 @@ export function Default() {
   };
 
   return (
-    <div className="flex flex-col justify-center -mt-2 gap-4">
+    <div className="flex flex-col justify-center gap-2">
       {user ? (
         <Button
           className="max-w-md mx-auto"
@@ -242,10 +242,10 @@ export function Default() {
       {/* Admin & Creator Section */}
       <div className="w-full max-w-4xl mx-auto mt-2 flex flex-col md:flex-row gap-2">
         <div className="flex-1 rounded shadow p-3 flex flex-col gap-4 items-center">
-          <h2>
+          <h2 className="font-bold">
             {' '}
-            क्या आप हमारे सदस्य बनना चाहते हैं? कृपया हमारे एडमिन से संपर्क
-            करें। 👇🏻{' '}
+            क्या आप हमारे सदस्य बनना चाहते हैं? हमारे एडमिन से संपर्क करें।
+            👇🏻{' '}
           </h2>
           <h2 className="text-lg font-bold text-blue-700 dark:text-blue-300 text-center">
             Admins
@@ -269,7 +269,7 @@ export function Default() {
                   {admin.name}
                 </span>
                 {admin.mobile && (
-                  <div className="flex gap-3 mt-1">
+                  <div className="flex gap-6 mt-1">
                     <a
                       href={`tel:${admin.mobile}`}
                       title="Call"
@@ -277,7 +277,7 @@ export function Default() {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      <Phone className="w-5 h-5" />
+                      <Phone className="w-7 h-7" />
                     </a>
                     <a
                       href={`https://wa.me/${admin.mobile}`}
@@ -286,7 +286,7 @@ export function Default() {
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      <MessageCircle className="w-5 h-5" />
+                      <MessageCircle className="w-7 h-7" />
                     </a>
                   </div>
                 )}
@@ -313,7 +313,7 @@ export function Default() {
                 {superAdmin.name}
               </span>
               {superAdmin.mobile && (
-                <div className="flex gap-3 mt-1">
+                <div className="flex gap-6 mt-1">
                   <a
                     href={`tel:${superAdmin.mobile}`}
                     title="Call"
@@ -321,7 +321,7 @@ export function Default() {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <Phone className="w-5 h-5" />
+                    <Phone className="w-7 h-7" />
                   </a>
                   <a
                     href={`https://wa.me/${superAdmin.mobile}`}
@@ -330,7 +330,7 @@ export function Default() {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <MessageCircle className="w-5 h-5" />
+                    <MessageCircle className="w-7 h-7" />
                   </a>
                 </div>
               )}
