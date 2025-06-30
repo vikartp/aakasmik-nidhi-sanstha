@@ -289,7 +289,14 @@ export const uploadProfileImage = async (
         }
         // Upload the file to your storage ( Cloudinary)
         const uploadResponse = cloudinary.uploader.upload_stream(
-            { folder: "profile", secure: true, resource_type: "image" },
+            {
+                folder: "profile",
+                secure: true,
+                resource_type: "image",
+                transformation: [
+                    { width: 256, height: 256, gravity: "face", crop: "thumb", radius: "max", quality: "auto:eco", fetch_format: "auto" }
+                ]
+            },
             async (error, result) => {
                 if (error) {
                     return res.status(500).json({ error: "Cloudinary upload failed" });
