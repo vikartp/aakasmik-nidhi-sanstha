@@ -154,7 +154,7 @@ export function Default() {
         </div>
       )}
       <h2 className="text-2xl text-center font-semibold bg-gradient-to-r from-green-400 via-blue-500 to-indigo-500 bg-clip-text text-transparent drop-shadow-lg dark:from-green-300 dark:via-blue-400 dark:to-indigo-400 py-2 rounded-xl shadow-md gap-2">
-        आकस्मिक निधि युवा संस्था के ऑनलाइन पोर्टल में में आपका स्वागत है
+        आकस्मिक निधि युवा संस्था के ऑनलाइन पोर्टल में आपका स्वागत है
       </h2>
 
       <AboutCarousel />
