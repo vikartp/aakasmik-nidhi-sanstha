@@ -15,9 +15,7 @@ export function Register() {
     fatherName: '',
     email: '',
     mobile: '',
-    // occupation: '',
     password: '',
-    // secretKey: '',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -50,7 +48,15 @@ export function Register() {
     setError(null);
     try {
       setIsWaiting(true);
-      await api.post('/auth/register', form);
+      // Sanitize form data
+      const sanitizedForm = {
+        name: form.name.trim(),
+        fatherName: form.fatherName.trim(),
+        email: form.email.trim(),
+        mobile: form.mobile.trim(),
+        password: form.password.trim(),
+      };
+      await api.post('/auth/register', sanitizedForm);
       toast.success('Registered! Please login.', { autoClose: 1000 });
       navigate('/');
     } catch (err) {
@@ -114,13 +120,6 @@ export function Register() {
         inputMode="numeric"
         autoComplete="tel"
       />
-      {/* <Input
-        name="occupation"
-        placeholder="OCCUPATION"
-        value={form.occupation}
-        onChange={handleChange}
-        autoComplete="organization-title"
-      /> */}
       <div className="relative">
         <Input
           name="password"
@@ -157,13 +156,6 @@ export function Register() {
           Password strength: {passwordStrength}
         </div>
       )}
-      {/* <Input
-        name="secretKey"
-        placeholder="SECRET KEY"
-        value={form.secretKey}
-        onChange={handleChange}
-        autoComplete="off"
-      /> */}
       <Button
         onClick={handleSubmit}
         disabled={

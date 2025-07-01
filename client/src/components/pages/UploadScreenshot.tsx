@@ -62,7 +62,7 @@ export function UploadScreenshot({
     <>
       <div className="flex flex-col items-center gap-4">
         {!isQrCode && (
-          <p>
+          <p className="whitespace-nowrap animate-marquee font-medium text-base text-blue-700 dark:text-blue-300 px-2">
             आप इस महीने के योगदान का स्क्रीनशॉट यहाँ अपलोड कर सकते हैं। अपलोड
             करने के लिए नीचे क्लिक करें 👇🏻
           </p>
