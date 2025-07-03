@@ -143,11 +143,6 @@ export default function UserTable({
         ),
     },
     { key: 'name', label: 'Name', render: (user: User) => user.name },
-    !defaultPage && {
-      key: 'mobile',
-      label: 'Phone Number',
-      render: (user: User) => user.mobile,
-    },
     role === 'admin' &&
       !defaultPage && {
         key: 'verify',
@@ -176,6 +171,11 @@ export default function UserTable({
             </div>
           ),
       },
+    !defaultPage && {
+      key: 'mobile',
+      label: 'Phone Number',
+      render: (user: User) => user.mobile,
+    },
     {
       key: 'fatherName',
       label: 'Father Name',

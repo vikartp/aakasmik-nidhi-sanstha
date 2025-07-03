@@ -88,21 +88,38 @@ export function Register() {
           {error}
         </div>
       )}
+      <div>
+        <label htmlFor="name" className="block text-sm font-medium mb-1">
+          NAME (नाम)
+        </label>
+        <Input
+          id="name"
+          name="name"
+          placeholder="NAME"
+          value={form.name}
+          onChange={handleChange}
+          autoComplete="name"
+        />
+      </div>
+      <div>
+        <label htmlFor="fatherName" className="block text-sm font-medium mb-1">
+          FATHER NAME (पिता का नाम)
+        </label>
+        <Input
+          id="fatherName"
+          name="fatherName"
+          placeholder="FATHER NAME"
+          value={form.fatherName}
+          onChange={handleChange}
+          autoComplete="off"
+        />
+      </div>
+      {/* <div>
+      <label htmlFor="email" className="block text-sm font-medium mb-1">
+        EMAIL (ईमेल)
+      </label>
       <Input
-        name="name"
-        placeholder="NAME"
-        value={form.name}
-        onChange={handleChange}
-        autoComplete="name"
-      />
-      <Input
-        name="fatherName"
-        placeholder="FATHER NAME"
-        value={form.fatherName}
-        onChange={handleChange}
-        autoComplete="off"
-      />
-      <Input
+        id="email"
         name="email"
         placeholder="EMAIL"
         value={form.email}
@@ -110,18 +127,29 @@ export function Register() {
         autoComplete="email"
         type="email"
       />
-      <Input
-        name="mobile"
-        placeholder="MOBILE"
-        value={form.mobile}
-        onChange={handleChange}
-        maxLength={10}
-        pattern="[0-9]{10}"
-        inputMode="numeric"
-        autoComplete="tel"
-      />
-      <div className="relative">
+    </div> */}
+      <div>
+        <label htmlFor="mobile" className="block text-sm font-medium mb-1">
+          MOBILE (मोबाइल)
+        </label>
         <Input
+          id="mobile"
+          name="mobile"
+          placeholder="MOBILE"
+          value={form.mobile}
+          onChange={handleChange}
+          maxLength={10}
+          pattern="[0-9]{10}"
+          inputMode="numeric"
+          autoComplete="tel"
+        />
+      </div>
+      <div className="relative">
+        <label htmlFor="password" className="block text-sm font-medium mb-1">
+          PASSWORD (पासवर्ड)
+        </label>
+        <Input
+          id="password"
           name="password"
           type={showPassword ? 'text' : 'password'}
           placeholder="PASSWORD"
@@ -131,7 +159,7 @@ export function Register() {
         />
         <button
           type="button"
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 focus:outline-none"
+          className="absolute right-3 top-10 -translate-y-1/2 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 focus:outline-none"
           onClick={() => setShowPassword(v => !v)}
           tabIndex={-1}
           aria-label={showPassword ? 'Hide password' : 'Show password'}
