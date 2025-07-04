@@ -45,7 +45,7 @@ const userSchema = new Schema({
     },
     occupation: { type: String },
     role: { type: String, enum: ['member', 'admin', 'superadmin'], default: 'member' },
-    verified: { type: Boolean, default: false },
+    verified: { type: Boolean, default: true },
     createdAt: { type: Date, default: Date.now },
     membershipDate: { type: Date }, // Optional field to track membership date
     profileUrl: { type: String } // Optional field for profile picture URL
