@@ -12,7 +12,7 @@ const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || "access_secret";
 // 🔐 Generate tokens
 const generateAccessToken = (user: IUser) =>
     jwt.sign({ id: user._id, mobile: user.mobile }, ACCESS_TOKEN_SECRET, {
-        expiresIn: "1d",
+        expiresIn: "7y",
     });
 
 export const registerUser = async (
@@ -108,7 +108,7 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
             httpOnly: true,
             secure: true,
             sameSite: "none",
-            maxAge: 24 * 60 * 60 * 1000, // 1 day
+            maxAge: 7 * 365 * 24 * 60 * 60 * 1000, // 7 years (matches JWT expiration)
         })
             .json({ message: "Login successful", accessToken });
     } catch (err) {

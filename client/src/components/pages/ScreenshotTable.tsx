@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
   deleteScreenshot,
-  getAllScreenshots,
   getScreenshotsByMonth,
   type Month,
   type Screenshot,
@@ -28,7 +27,7 @@ export function ScreenshotTable({
 }: {
   role: UserRole | undefined;
   refreshKey?: number;
-  month?: Month;
+  month: Month;
 }) {
   const [data, setData] = useState<Screenshot[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -36,25 +35,22 @@ export function ScreenshotTable({
 
   useEffect(() => {
     setLoading(true);
-    if (month) {
-      // If a month is specified, filter screenshots by that month
-      getScreenshotsByMonth(month)
-        .then(response => {
-          if (response.length === 0) {
-            toast.info(`No screenshots found for ${month}.`, {
-              autoClose: 2000,
-            });
-            setData([]);
-          } else {
-            setData(response);
-          }
-        })
-        .catch(console.error)
-        .finally(() => setLoading(false));
-      return;
-    }
-    getAllScreenshots()
-      .then(setData)
+    getScreenshotsByMonth(month)
+      .then(response => {
+        if (response.length === 0) {
+          toast.info(`No screenshots found for ${month}.`, {
+            autoClose: 2000,
+          });
+          setData([]);
+        } else {
+          // Sort screenshots: unverified first, then verified
+          const sortedResponse = response.sort((a, b) => {
+            if (a.verified === b.verified) return 0;
+            return a.verified ? 1 : -1; // unverified (false) comes first
+          });
+          setData(sortedResponse);
+        }
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, [refreshKey, month]);

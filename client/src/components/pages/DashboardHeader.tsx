@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import Loader from './Loader';
 import api from '@/services/api';
 import { toast } from 'react-toastify';
-import { LogOut } from 'lucide-react';
+import { HomeIcon, LogOut } from 'lucide-react';
 import EditProfile from './EditProfile';
 import type { AxiosError } from 'axios';
 
@@ -74,6 +74,11 @@ export default function DashboardHeader({
 
   return (
     <>
+      <div className="flex justify-center">
+        <Button className="text-center max-w-md" onClick={() => navigate('/')}>
+          Home Page पर जाएं <HomeIcon />
+        </Button>
+      </div>
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center gap-4">
           <div
@@ -137,7 +142,7 @@ export default function DashboardHeader({
       </div>
       {showProfileHint && (
         <div className="flex text-md px-1 py-2 rounded shadow z-20 whitespace-nowrap">
-          <p>☝🏻Update profile pic by Clicking on user icon </p>
+          <p>☝🏻इस आइकन पर क्लिक करके प्रोफ़ाइल चित्र अपडेट करें </p>
         </div>
       )}
     </>

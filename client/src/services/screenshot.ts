@@ -52,10 +52,10 @@ export async function uploadScreenshot(
   return response.data;
 }
 
-export async function getAllScreenshots(): Promise<Screenshot[]> {
-  const response = await api.get('/screenshots');
-  return response.data;
-}
+// export async function getAllScreenshots(): Promise<Screenshot[]> {
+//   const response = await api.get('/screenshots');
+//   return response.data;
+// }
 
 export async function deleteScreenshot(id: string): Promise<void> {
   await api.delete(`/screenshots/${id}`);

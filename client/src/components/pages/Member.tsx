@@ -66,7 +66,7 @@ export default function Member({ refreshKey }: { refreshKey?: number }) {
         <UserContribution
           contributions={contributions}
           showHeader
-          headerText="Your Contributions"
+          headerText="आपका योगदान"
         />
       </div>
       <div className="mt-8 px-2">
