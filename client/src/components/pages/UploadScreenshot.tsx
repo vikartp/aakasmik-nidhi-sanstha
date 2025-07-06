@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { uploadScreenshot } from '@/services/screenshot';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { useRef } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { toast } from 'react-toastify';
 import Loader from './Loader';
 import type { AxiosError } from 'axios';
 import type { User } from '@/services/user';
+import { LassoSelectIcon, Upload } from 'lucide-react';
 
 export function UploadScreenshot({
   isQrCode,
@@ -83,8 +83,8 @@ export function UploadScreenshot({
               <span className="text-lg flex-shrink-0">3️⃣</span>
               <p className="text-gray-700 dark:text-gray-200 font-medium text-sm">
                 फिर नीचे{' '}
-                <span className="bg-yellow-200 dark:bg-yellow-600 px-1 py-0.5 rounded text-xs font-semibold">
-                  "Choose File"
+                <span className="bg-blue-600 px-1 py-0.5 rounded text-xs font-semibold">
+                  "यहाँ क्लिक करें और स्क्रीनशॉट चुनें"
                 </span>{' '}
                 पर क्लिक करें
               </p>
@@ -92,14 +92,14 @@ export function UploadScreenshot({
             <div className="flex items-start gap-2 p-2 bg-white dark:bg-gray-600 rounded-lg shadow-sm border-l-4 border-orange-400">
               <span className="text-lg flex-shrink-0">4️⃣</span>
               <p className="text-gray-700 dark:text-gray-200 font-medium text-sm">
-                फिर गैलरी से स्क्रीनशॉट चुनें
+                फिर पॉप-अप से स्क्रीनशॉट चुनें
               </p>
             </div>
             <div className="flex items-start gap-2 p-2 bg-white dark:bg-gray-600 rounded-lg shadow-sm border-l-4 border-red-400">
               <span className="text-lg flex-shrink-0">5️⃣</span>
               <p className="text-gray-700 dark:text-gray-200 font-medium text-sm">
                 फिर{' '}
-                <span className="bg-blue-200 dark:bg-blue-600 px-1 py-0.5 rounded text-xs font-semibold">
+                <span className="bg-green-500 px-1 py-0.5 rounded text-xs font-semibold">
                   स्क्रीनशॉट अपलोड करें
                 </span>{' '}
                 बटन पर क्लिक करें
@@ -123,20 +123,44 @@ export function UploadScreenshot({
           {uploading ? (
             <Loader text="कृपया प्रतीक्षा करें 🙏 अपलोड हो रहा है... 🥳" />
           ) : (
-            <Input
-              ref={fileInputRef}
-              className="cursor-pointer"
-              type="file"
-              accept="image/*"
-              onChange={e => setFile(e.target.files?.[0] || null)}
-            />
+            <div>
+              <input
+                ref={fileInputRef}
+                id="file-upload"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={e => setFile(e.target.files?.[0] || null)}
+              />
+              <label
+                htmlFor="file-upload"
+                className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition font-semibold shadow gap-2"
+              >
+                {
+                  <span className="flex items-center gap-2">
+                    यहाँ क्लिक करें और स्क्रीनशॉट चुनें
+                    <LassoSelectIcon className="inline-block w-5 h-5" />
+                  </span>
+                }
+              </label>
+              {file && (
+                <p className="mt-1 text-green-600 text-xs font-medium">
+                  चयनित फ़ाइल: {file.name}
+                </p>
+              )}
+            </div>
           )}
-          <Button onClick={handleUpload} disabled={uploading || !file}>
+          <Button
+            className="bg-green-500"
+            onClick={handleUpload}
+            disabled={uploading || !file}
+          >
             {uploading
               ? 'Uploading...'
               : isQrCode
                 ? 'Upload QR Code'
                 : `${currentMonth}-${currentYear} का स्क्रीनशॉट अपलोड करें`}
+            <Upload />
           </Button>
         </div>
       </div>
