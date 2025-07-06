@@ -9,6 +9,7 @@ export interface IScreenshot extends Document {
     uploadYear: string;
     type: 'payment' | 'qrCode',
     verified: boolean;
+    rejected?: string; // Optional field for rejection reason
 }
 
 const screenshotSchema: Schema<IScreenshot> = new Schema({
@@ -20,6 +21,7 @@ const screenshotSchema: Schema<IScreenshot> = new Schema({
     uploadYear: { type: String, required: true, default: new Date().getFullYear().toString() },
     type: { type: String, enum: ['payment', 'qrCode'], required: true, default: 'payment' },
     verified: { type: Boolean, required: true, default: false },
+    rejected: { type: String, default: null }
 });
 
 export default mongoose.model<IScreenshot>('Screenshot', screenshotSchema);

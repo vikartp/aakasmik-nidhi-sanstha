@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getScreenshotById, type Screenshot } from '@/services/screenshot';
+import {
+  getScreenshotById,
+  rejectScreenshot,
+  type Screenshot,
+} from '@/services/screenshot';
 import { getUserById, type User } from '@/services/user';
 import { Button } from '../ui/button';
 import { toast } from 'react-toastify';
@@ -17,6 +21,7 @@ export default function ViewScreenshot() {
   const [loading, setLoading] = useState(true);
   const [verifying, setVerifying] = useState(false);
   const [amount, setAmount] = useState('');
+  const [rejectionReason, setRejectionReason] = useState('');
 
   useEffect(() => {
     async function fetchData() {
@@ -35,6 +40,33 @@ export default function ViewScreenshot() {
     }
     if (id) fetchData();
   }, [id]);
+
+  const handleRejection = async () => {
+    if (!screenshot) return;
+    if (!rejectionReason.trim()) {
+      toast.error('Please enter a rejection reason.');
+      return;
+    }
+    if (
+      !window.confirm(
+        'Are you sure you want to reject this payment contribution?'
+      )
+    )
+      return;
+    setVerifying(true);
+    try {
+      await rejectScreenshot({
+        screenshotId: screenshot._id,
+        rejectionReason,
+      });
+      toast.success('Payment contribution rejected and recorded!');
+      navigate('/dashboard');
+    } catch {
+      toast.error('Failed to reject contribution.');
+    } finally {
+      setVerifying(false);
+    }
+  };
 
   const handleVerify = async () => {
     if (!screenshot) return;
@@ -150,7 +182,7 @@ export default function ViewScreenshot() {
             </span>
           </div>
         </div>
-        <div className="flex flex-col justify-center items-center mt-4 sm:mt-0 flex-shrink-0 w-full sm:w-auto">
+        <div className="flex flex-col gap-1 justify-center items-center mt-4 sm:mt-0 flex-shrink-0 w-full sm:w-auto">
           <Input
             type="number"
             min="1"
@@ -179,6 +211,30 @@ export default function ViewScreenshot() {
               <Loader text="Verifying..." />
             ) : (
               'Verify Payment Contribution'
+            )}
+          </Button>
+          <p className="text-lg text-red-500">
+            क्या आप अस्वीकार(REJECT) करना चाहते हैं?
+          </p>
+          <Input
+            placeholder="Rejection का कारण"
+            value={rejectionReason}
+            onChange={e => setRejectionReason(e.target.value)}
+            className="mb-2 max-w-xs"
+            disabled={verifying || screenshot.verified}
+          />
+          <Button
+            className="w-auto"
+            variant={screenshot.verified ? 'secondary' : 'default'}
+            onClick={handleRejection}
+            disabled={verifying || screenshot.verified || !rejectionReason}
+          >
+            {screenshot.verified ? (
+              'Already Verified'
+            ) : verifying ? (
+              <Loader text="Verifying..." />
+            ) : (
+              'Reject Screenshot'
             )}
           </Button>
           <img

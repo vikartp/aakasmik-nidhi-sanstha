@@ -57,6 +57,36 @@ export const uploadScreenshot = async (
     }
 };
 
+export const rejectScreenshot = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    const { screenshotId, rejectionReason } = req.body;
+    try {
+        if (!screenshotId || !rejectionReason) {
+            res.status(400).json({ error: "Missing required fields" });
+            return;
+        }
+
+        // Find the screenshot
+        const screenshot = await Screenshot.findById(screenshotId);
+        if (!screenshot) {
+            res.status(404).json({ error: "Screenshot not found" });
+            return;
+        }
+
+        // Set rejection reason and verified status
+        screenshot.rejected = rejectionReason;
+        screenshot.verified = false; // Mark as not verified
+        await screenshot.save();
+
+        res.status(200).json({ message: "Screenshot rejected successfully" });
+    } catch (err) {
+        console.error("Error rejecting screenshot:", err);
+        res.status(500).json({ error: "Failed to reject screenshot" });
+    }
+}
+
 export const getScreenshotById = async (
     req: Request,
     res: Response

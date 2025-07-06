@@ -119,7 +119,7 @@ export default function UserTable({
         user.profileUrl ? (
           <img
             src={user.profileUrl}
-            alt={user.name}
+            alt={''}
             className="w-10 h-10 rounded-full object-cover border border-gray-300"
             style={{ minWidth: 32, minHeight: 32 }}
           />

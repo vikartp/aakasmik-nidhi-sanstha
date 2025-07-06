@@ -10,6 +10,7 @@ export type Screenshot = {
   uploadYear: string;
   type: 'payment' | 'qrCode';
   verified: boolean;
+  rejected?: string;
 };
 
 export type Month =
@@ -96,5 +97,13 @@ export async function getScreenshotsByUserIdAndMonth(
 
 export async function getQrCode(): Promise<Screenshot> {
   const response = await api.get(`/public/qr`);
+  return response.data;
+}
+
+export async function rejectScreenshot(data: {
+  screenshotId: string;
+  rejectionReason: string;
+}): Promise<void> {
+  const response = await api.post('/screenshots/reject', data);
   return response.data;
 }

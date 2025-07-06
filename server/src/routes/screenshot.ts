@@ -1,17 +1,17 @@
 import { Router } from "express";
-import { deleteScreenshot, getScreenshotById, getScreenshots, getScreenshotsByMonth, uploadScreenshot, deleteScreenshotByMonth, getScreenshotsByUserIdAndMonth } from "../controllers/screenshot";
+import { deleteScreenshot, getScreenshotById, getScreenshots, getScreenshotsByMonth, uploadScreenshot, deleteScreenshotByMonth, getScreenshotsByUserIdAndMonth, rejectScreenshot } from "../controllers/screenshot";
 import multer from "multer";
-import authenticateToken from "../middleware/authMiddleware";
 
 const upload = multer({ storage: multer.memoryStorage() });
 const router = Router();
 
-router.get("/", authenticateToken, getScreenshots);
-router.get("/:id", authenticateToken, getScreenshotById);
-router.get("/month/:month", authenticateToken, getScreenshotsByMonth);
-router.get("/user/:userId/month/:month", authenticateToken, getScreenshotsByUserIdAndMonth);
-router.post("/upload", authenticateToken, upload.single("screenshot"), uploadScreenshot);
+router.get("/", getScreenshots);
+router.get("/:id", getScreenshotById);
+router.get("/month/:month", getScreenshotsByMonth);
+router.get("/user/:userId/month/:month", getScreenshotsByUserIdAndMonth);
+router.post("/upload", upload.single("screenshot"), uploadScreenshot);
+router.post("/reject", rejectScreenshot);
 router.delete("/:id", deleteScreenshot);
-router.delete("/month/:month", authenticateToken, deleteScreenshotByMonth);
+router.delete("/month/:month", deleteScreenshotByMonth);
 
 export default router;

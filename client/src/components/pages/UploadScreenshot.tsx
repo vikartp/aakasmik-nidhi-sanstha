@@ -12,9 +12,11 @@ import { LassoSelectIcon, Upload } from 'lucide-react';
 export function UploadScreenshot({
   isQrCode,
   onUploadSuccess,
+  status,
 }: {
   isQrCode?: boolean;
   onUploadSuccess?: () => void;
+  status?: 'pending' | 'none' | 'verified' | 'rejected';
 }) {
   const { user } = useAuth();
   const [file, setFile] = useState<File | null>(null);
@@ -131,17 +133,22 @@ export function UploadScreenshot({
                 accept="image/*"
                 className="hidden"
                 onChange={e => setFile(e.target.files?.[0] || null)}
+                disabled={uploading || status === 'verified'}
               />
               <label
                 htmlFor="file-upload"
-                className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 transition font-semibold shadow gap-2"
+                className={`flex items-center justify-center px-4 py-2 rounded-lg font-semibold shadow gap-2 transition cursor-pointer
+    ${
+      uploading || status === 'verified'
+        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+        : 'bg-blue-600 text-white hover:bg-blue-700'
+    }
+  `}
               >
-                {
-                  <span className="flex items-center gap-2">
-                    यहाँ क्लिक करें और स्क्रीनशॉट चुनें
-                    <LassoSelectIcon className="inline-block w-5 h-5" />
-                  </span>
-                }
+                <span className="flex items-center gap-2">
+                  यहाँ क्लिक करें और स्क्रीनशॉट चुनें
+                  <LassoSelectIcon className="inline-block w-5 h-5" />
+                </span>
               </label>
               {file && (
                 <p className="mt-1 text-green-600 text-xs font-medium">
@@ -153,7 +160,7 @@ export function UploadScreenshot({
           <Button
             className="bg-green-500"
             onClick={handleUpload}
-            disabled={uploading || !file}
+            disabled={uploading || !file || status === 'verified'}
           >
             {uploading
               ? 'Uploading...'
