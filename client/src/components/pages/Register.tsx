@@ -103,7 +103,7 @@ export function Register() {
       </div>
       <div>
         <label htmlFor="fatherName" className="block text-sm font-medium mb-1">
-          FATHER NAME (पिता का नाम)
+          FATHER'S NAME (पिता का नाम)
         </label>
         <Input
           id="fatherName"

@@ -64,3 +64,7 @@ export function getCurrentMonth(): Month {
   const now = new Date();
   return getMonthList()[now.getMonth()] as Month;
 }
+
+export function getAvatarLink(name: string): string {
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}`;
+}

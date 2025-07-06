@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import { HomeIcon, LogOut } from 'lucide-react';
 import EditProfile from './EditProfile';
 import type { AxiosError } from 'axios';
+import { getAvatarLink } from '@/lib/utils';
 
 export default function DashboardHeader({
   title,
@@ -93,28 +94,13 @@ export default function DashboardHeader({
                 </span>
               </div>
             )}
-            {user?.profileUrl ? (
+            {
               <img
-                src={user.profileUrl}
+                src={user?.profileUrl || getAvatarLink(user?.name ?? 'User')}
                 alt="Profile"
                 className="object-cover w-full h-full rounded-full"
               />
-            ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-8 h-8 text-gray-400"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M15.75 7.5a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 19.5a7.5 7.5 0 1115 0v.75A2.25 2.25 0 0117.25 22.5h-10.5A2.25 2.25 0 014.5 20.25v-.75z"
-                />
-              </svg>
-            )}
+            }
             <input
               type="file"
               accept="image/*"

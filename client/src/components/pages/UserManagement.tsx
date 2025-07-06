@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Button } from '../ui/button';
-import { getMonthList } from '@/lib/utils';
+import { getAvatarLink, getMonthList } from '@/lib/utils';
 import { createContribution } from '@/services/contribution';
 import Loader from './Loader';
 import { getUserById, type User } from '@/services/user';
@@ -112,12 +112,8 @@ export default function UserManagement() {
       {user ? (
         <div className="mb-6 flex flex-col sm:flex-row gap-4 items-center sm:items-start">
           <img
-            src={
-              user.profileUrl ||
-              'https://ui-avatars.com/api/?name=' +
-                encodeURIComponent(user.name)
-            }
-            alt={user.name}
+            src={user.profileUrl || getAvatarLink(user.name)}
+            alt={''}
             className="w-20 h-20 rounded-full object-cover border border-gray-300 dark:border-gray-700"
           />
           <div className="flex-1">

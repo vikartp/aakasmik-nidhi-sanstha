@@ -16,7 +16,7 @@ import {
   type Screenshot,
 } from '@/services/screenshot';
 import { getContributionsByYearAndMonth } from '@/services/contribution';
-import { getMonthList } from '@/lib/utils';
+import { getAvatarLink, getMonthList } from '@/lib/utils';
 import { toast } from 'react-toastify';
 import { HandCoins, IndianRupee, Download } from 'lucide-react';
 import * as XLSX from 'xlsx';
@@ -281,31 +281,12 @@ export default function MonthlyStatusTable() {
                   return (
                     <TableRow key={user._id}>
                       <TableCell>
-                        {user.profileUrl ? (
-                          <img
-                            src={user.profileUrl}
-                            alt={user.name}
-                            className="w-10 h-10 rounded-full object-cover border border-gray-300"
-                            style={{ minWidth: 32, minHeight: 32 }}
-                          />
-                        ) : (
-                          <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              strokeWidth={1.5}
-                              stroke="currentColor"
-                              className="w-6 h-6 text-gray-400"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M15.75 7.5a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 19.5a7.5 7.5 0 1115 0v.75A2.25 2.25 0 0117.25 22.5h-10.5A2.25 2.25 0 014.5 20.25v-.75z"
-                              />
-                            </svg>
-                          </div>
-                        )}
+                        <img
+                          src={user.profileUrl || getAvatarLink(user.name)}
+                          alt={''}
+                          className="w-10 h-10 rounded-full object-cover border border-gray-300"
+                          style={{ minWidth: 32, minHeight: 32 }}
+                        />
                       </TableCell>
                       <TableCell>{user.name}</TableCell>
                       <TableCell>
