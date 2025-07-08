@@ -147,14 +147,6 @@ export const getSecretByMobile = async (
             res.status(403).json({ message: "Forbidden: Only admins can access user secrets" });
             return;
         }
-        // If user with this mobile number verified, restrict access to secret key
-        const mobileUser = await User.findOne({ mobile });
-        if (mobileUser && mobileUser.verified && req?.user?.role === "admin") {
-            res.status(403).json({
-                message: `Forbidden: User is already verified. Users can get/reset thier secret key by themselves.
-                 Ask him/her to contact creator of the portal if he/she has forgotten password and secret key both.` });
-            return;
-        }
         const secretKey = await UserSecret.findOne({ mobile });
         if (!secretKey) {
             const newSecret = generateRandomString();

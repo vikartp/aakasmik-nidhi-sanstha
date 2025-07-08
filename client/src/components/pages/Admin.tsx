@@ -9,6 +9,7 @@ import { getMonthList } from '@/lib/utils';
 import type { Month } from '@/services/screenshot';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import FeedbackList from './Feedback';
+import UserSecret from './UserSecret';
 
 /**
  * Notes: Admin has the ability to manage members and view screenshots.
@@ -56,9 +57,9 @@ export default function Admin() {
           >
             Screenshots
           </TabsTrigger>
-          {/* <TabsTrigger value="secret" className="flex-1 min-w-0 cursor-pointer">
+          <TabsTrigger value="secret" className="flex-1 min-w-0 cursor-pointer">
             Secrets
-          </TabsTrigger> */}
+          </TabsTrigger>
           <TabsTrigger
             value="feedback"
             className="flex-1 min-w-0 cursor-pointer"
@@ -87,12 +88,12 @@ export default function Admin() {
           </p>
           <ScreenshotTable role={user?.role} month={selectedMonth} />
         </TabsContent>
-        {/* <TabsContent
+        <TabsContent
           value="secret"
           className="border border-border border-t-0 rounded-b-lg shadow-sm p-4 sm:p-6 w-full bg-white/60 dark:bg-black/40 backdrop-blur-md"
         >
           <UserSecret />
-        </TabsContent> */}
+        </TabsContent>
         <TabsContent
           value="feedback"
           className="border border-border border-t-0 rounded-b-lg shadow-sm p-4 sm:p-6 w-full bg-white/60 dark:bg-black/40 backdrop-blur-md"

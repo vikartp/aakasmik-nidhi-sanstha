@@ -2,6 +2,7 @@ import { Navbar } from './Navbar';
 import { Footer } from './Footer';
 import type { ReactNode } from 'react';
 import { ToastContainer } from 'react-toastify';
+import ScrollToTop from '../pages/ScrollToTop';
 
 export function Layout({ children }: { children: ReactNode }) {
   return (
@@ -16,6 +17,7 @@ export function Layout({ children }: { children: ReactNode }) {
       </main>
       <Footer />
       <ToastContainer />
+      <ScrollToTop />
     </div>
   );
 }

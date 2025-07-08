@@ -106,17 +106,13 @@ export default function UserSecret({ member }: { member?: boolean }) {
         ) : (
           <ul className="list-disc list-inside text-lg">
             <li>
-              You can generate or retrieve a secret key for any new user by
+              You can generate or retrieve a secret key for any member by
               entering their mobile number.
             </li>
             <li>Please ensure the mobile number belongs to our member.</li>
             <li>
-              This key is used for secure operations and should be kept
-              confidential.
-            </li>
-            <li>
-              Our members need this secret key to register them with the
-              Aakasmik Nidhi online portal.
+              This key is used for secure operations like password reset etc.
+              and should be kept confidential.
             </li>
             <li>
               Please ask them to reset it and save it for future reference.
