@@ -29,10 +29,35 @@ declare global {
 
 app.use(cors(
     {
-        origin: process.env.CLIENT_URL,
+        origin: function (origin, callback) {
+            // Allow requests with no origin (like mobile apps or curl requests)
+            if (!origin) return callback(null, true);
+            
+            const allowedOrigins = [
+                process.env.CLIENT_URL,
+                process.env.CLIENT_URL?.replace('http://', 'https://'), // HTTP to HTTPS fallback
+                process.env.CLIENT_URL?.replace('https://', 'http://'), // HTTPS to HTTP fallback
+                'http://localhost:3000', // Local development
+                'http://localhost:5173', // Vite dev server
+                'https://localhost:3000', // Local HTTPS
+                'https://localhost:5173', // Vite HTTPS
+            ].filter(Boolean); // Remove undefined values
+            
+            // Check if origin is in allowed list or matches Netlify pattern
+            if (allowedOrigins.includes(origin) || 
+                origin.includes('netlify.app') || 
+                origin.includes('netlify.com') ||
+                origin.includes('localhost')) {
+                return callback(null, true);
+            }
+            
+            console.log('CORS blocked origin:', origin);
+            callback(new Error('Not allowed by CORS'));
+        },
         credentials: true, // Allow cookies to be sent
         methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        allowedHeaders: ["Content-Type", "Authorization"],
+        allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
+        optionsSuccessStatus: 200 // Some legacy browsers choke on 204
     }
 ));
 app.use(express.json())
