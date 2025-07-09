@@ -18,7 +18,13 @@ import {
 import { getContributionsByYearAndMonth } from '@/services/contribution';
 import { getAvatarLink, getMonthList } from '@/lib/utils';
 import { toast } from 'react-toastify';
-import { HandCoins, IndianRupee, Download } from 'lucide-react';
+import {
+  HandCoins,
+  IndianRupee,
+  Download,
+  FileSpreadsheet,
+  FileText,
+} from 'lucide-react';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -310,14 +316,52 @@ export default function MonthlyStatusTable() {
       </div>
       {/* Download buttons below the table */}
       {!loading && (
-        <div className="flex gap-4 mt-4">
-          <Button onClick={exportToExcel} variant="outline">
-            <Download className="w-4 h-4 mr-2" /> Download as Excel
-          </Button>
-          <Button onClick={exportToPDF} variant="outline">
-            <Download className="w-4 h-4 mr-2" /> Download as PDF
-          </Button>
-        </div>
+        <>
+          <div className="flex flex-col sm:flex-row gap-3 mt-6 items-center">
+            <div className="flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 sm:mb-0">
+              <Download className="w-4 h-4" />
+              Export Data:
+            </div>
+            <div className="flex gap-3">
+              <Button
+                onClick={exportToExcel}
+                variant="outline"
+                className="bg-green-50 hover:bg-green-100 border-green-300 text-green-700 hover:text-green-800 dark:bg-green-900/20 dark:border-green-700 dark:text-green-400 dark:hover:bg-green-900/30 dark:hover:text-green-300 transition-all duration-200 shadow-sm hover:shadow-md"
+              >
+                <FileSpreadsheet className="w-4 h-4 mr-1" />
+                Download Excel
+              </Button>
+              <Button
+                onClick={exportToPDF}
+                variant="outline"
+                className="bg-red-50 hover:bg-red-100 border-red-300 text-red-700 hover:text-red-800 dark:bg-red-900/20 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-900/30 dark:hover:text-red-300 transition-all duration-200 shadow-sm hover:shadow-md"
+              >
+                <FileText className="w-4 h-4 mr-1" />
+                Download PDF
+              </Button>
+            </div>
+          </div>
+          <div className="mt-6 p-4 bg-gradient-to-r from-green-50 via-blue-50 to-indigo-50 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 rounded-xl border border-green-200 dark:border-gray-600 shadow-lg">
+            <div className="flex items-center justify-center gap-3">
+              <IndianRupee className="w-6 h-6 text-green-600 dark:text-green-400" />
+              <p className="text-lg font-semibold text-gray-800 dark:text-gray-200 text-center">
+                सदस्यों द्वारा{' '}
+                <span className="text-blue-600 dark:text-blue-400 font-bold">{`${selectedMonth} - ${selectedYear}`}</span>{' '}
+                का कुल योगदान राशि:
+                <span className="ml-2 inline-flex items-center px-3 py-1 bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300 rounded-full font-bold text-xl border border-green-300 dark:border-green-600">
+                  ₹{' '}
+                  {users
+                    .reduce((sum, user) => {
+                      const contrib = contributions[user._id];
+                      return sum + (contrib ? contrib.amount : 0);
+                    }, 0)
+                    .toLocaleString('en-IN')}
+                </span>
+              </p>
+              <IndianRupee className="w-6 h-6 text-green-600 dark:text-green-400" />
+            </div>
+          </div>
+        </>
       )}
     </div>
   );

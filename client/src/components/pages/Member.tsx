@@ -151,9 +151,6 @@ export default function Member({
       {total > 0 && (
         <div className="text-center mt-8 px-2">
           <div className="bg-green-50 dark:bg-green-900 rounded-lg p-4 shadow-md inline-block w-full max-w-xs mx-auto">
-            <div className="text-base font-semibold text-green-700 dark:text-green-300 mb-1">
-              Total Contributions Till Date
-            </div>
             <div className="text-sm font-medium text-green-700 dark:text-green-300 mb-1">
               अब तक कुल योगदान राशि
             </div>
@@ -161,8 +158,6 @@ export default function Member({
               ₹ {total}
             </div>
             <div className="text-xs text-gray-700 dark:text-gray-300 leading-snug">
-              (This is the total amount contributed by all members so far.)
-              <br />
               (यह अब तक सभी सदस्यों द्वारा दिया गया कुल योगदान है।)
             </div>
           </div>
