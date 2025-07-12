@@ -6,6 +6,7 @@ import userRoutes from "./routes/user";
 import screenshotRoutes from "./routes/screenshot";
 import contributionRoutes from "./routes/contribution";
 import feedbackRoutes from "./routes/feedback";
+import expenseRoutes from "./routes/expense";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { IUser } from "./models/User";
@@ -29,28 +30,21 @@ declare global {
 
 app.use(cors(
     {
-        origin: function (origin, callback) {
+        origin: function(origin, callback) {
             // Allow requests with no origin (like mobile apps or curl requests)
             if (!origin) return callback(null, true);
-            
             const allowedOrigins = [
                 process.env.CLIENT_URL,
                 process.env.CLIENT_URL?.replace('http://', 'https://'), // HTTP to HTTPS fallback
                 process.env.CLIENT_URL?.replace('https://', 'http://'), // HTTPS to HTTP fallback
-                'http://localhost:3000', // Local development
-                'http://localhost:5173', // Vite dev server
-                'https://localhost:3000', // Local HTTPS
-                'https://localhost:5173', // Vite HTTPS
             ].filter(Boolean); // Remove undefined values
-            
+
             // Check if origin is in allowed list or matches Netlify pattern
-            if (allowedOrigins.includes(origin) || 
-                origin.includes('netlify.app') || 
-                origin.includes('netlify.com') ||
-                origin.includes('localhost')) {
+            if (allowedOrigins.includes(origin) ||
+                origin.includes('netlify.app') ||
+                origin.includes('netlify.com')) {
                 return callback(null, true);
             }
-            
             console.log('CORS blocked origin:', origin);
             callback(new Error('Not allowed by CORS'));
         },
@@ -70,6 +64,7 @@ app.use("/users", authenticateToken, userRoutes);
 app.use("/screenshots", authenticateToken, screenshotRoutes);
 app.use("/contributions", authenticateToken, contributionRoutes);
 app.use("/feedback", authenticateToken, feedbackRoutes);
+app.use("/expense", authenticateToken, expenseRoutes);
 
 // Public Route
 app.use("/public/users", getPublicUsers); // Gets information about users without authentication for home page

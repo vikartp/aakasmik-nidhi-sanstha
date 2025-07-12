@@ -212,7 +212,7 @@ export default function MonthlyStatusTable() {
         <span className="inline-flex items-center bg-white/70 dark:bg-gray-900/70 rounded-full px-2 py-1 mr-2 shadow-sm">
           <HandCoins className="text-green-600 dark:text-green-400 w-7 h-7" />
         </span>
-        <span className="">Monthly Contribution Status</span>
+        <span className="">मासिक भुगतान स्थिति</span>
         <span className="inline-flex items-center bg-white/70 dark:bg-gray-900/70 rounded-full px-2 py-1 ml-2 shadow-sm">
           <IndianRupee className="text-blue-600 dark:text-blue-400 w-7 h-7" />
         </span>

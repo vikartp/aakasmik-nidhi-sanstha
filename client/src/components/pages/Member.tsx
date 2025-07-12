@@ -11,6 +11,7 @@ import UserContribution from './UserContribution';
 import MonthlyStatusTable from './MonthlyStatusTable';
 import UserSecret from './UserSecret';
 import { BadgeX } from 'lucide-react';
+import ExpenseTable from './ExpenseTable';
 
 export default function Member({
   refreshKey,
@@ -163,6 +164,7 @@ export default function Member({
           </div>
         </div>
       )}
+      <ExpenseTable />
       <UserSecret member={true} />
     </>
   );
