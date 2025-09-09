@@ -31,21 +31,36 @@ declare global {
 app.use(cors(
     {
         origin: function(origin, callback) {
-            // Allow requests with no origin (like mobile apps or curl requests)
-            if (!origin) return callback(null, true);
+            console.log('🌐 CORS Check - Origin:', origin || 'No origin (mobile app)');
+            
+            // ✅ MOBILE APPS (PRODUCTION): No origin header - this is normal for native apps
+            if (!origin) {
+                console.log('✅ Allowed: Mobile app or native request (no origin)');
+                return callback(null, true);
+            }
+            
             const allowedOrigins = [
                 process.env.CLIENT_URL,
                 process.env.CLIENT_URL?.replace('http://', 'https://'), // HTTP to HTTPS fallback
                 process.env.CLIENT_URL?.replace('https://', 'http://'), // HTTPS to HTTP fallback
+                // Development: Local network IPs for mobile testing via Expo
+                'http://192.168.1.100:8081',   // Example Expo dev server
+                'http://10.0.0.100:8081',      // Example Expo dev server  
+                'http://172.16.0.100:8081',    // Example Expo dev server
             ].filter(Boolean); // Remove undefined values
 
-            // Check if origin is in allowed list or matches Netlify pattern
+            // ✅ WEB APPS & EXPO DEVELOPMENT: Check allowed origins
             if (allowedOrigins.includes(origin) ||
                 origin.includes('netlify.app') ||
-                origin.includes('netlify.com')) {
+                origin.includes('netlify.com') ||
+                origin.match(/^http:\/\/192\.168\.\d+\.\d+:\d+$/) ||  // Local network IPs
+                origin.match(/^http:\/\/10\.\d+\.\d+\.\d+:\d+$/) ||    // Local network IPs  
+                origin.match(/^http:\/\/172\.16\.\d+\.\d+:\d+$/)) {    // Local network IPs
+                console.log('✅ Allowed: Recognized origin');
                 return callback(null, true);
             }
-            console.log('CORS blocked origin:', origin);
+            
+            console.log('❌ CORS blocked origin:', origin);
             callback(new Error('Not allowed by CORS'));
         },
         credentials: true, // Allow cookies to be sent

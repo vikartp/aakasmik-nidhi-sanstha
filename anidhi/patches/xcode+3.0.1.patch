@@ -1,0 +1,20 @@
+diff --git a/node_modules/xcode/lib/pbxProject.js b/node_modules/xcode/lib/pbxProject.js
+index 13e7b91..cddd4d1 100644
+--- a/node_modules/xcode/lib/pbxProject.js
++++ b/node_modules/xcode/lib/pbxProject.js
+@@ -1151,6 +1151,7 @@ pbxProject.prototype.addTarget = function(name, type, subfolder, bundleId) {
+         buildConfigurationList = this.addXCConfigurationList(configurationObjectsArray, 'Release', configurations);
+ 
+     var buildPhases = [],
++        buildRules = [],
+         pbxGroupUuid = this.pbxCreateGroup(name, name);
+ 
+     // isa = PBXGroup
+@@ -1189,6 +1190,7 @@ pbxProject.prototype.addTarget = function(name, type, subfolder, bundleId) {
+     target.isa = targetType;
+     target.buildConfigurationList = buildConfigurationList;
+     target.buildPhases = buildPhases;
++    target.buildRules = buildRules;
+     target.dependencies = [];
+     target.name = '"' + name + '"';
+     target.productName = '"' + name + '"';
