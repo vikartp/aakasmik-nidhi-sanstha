@@ -1,8 +1,10 @@
-import { useState, useRef, useEffect } from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator, Image, Animated } from 'react-native';
+import { useState } from 'react';
+import { StyleSheet, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator, Image } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useAuth } from '@/context/AuthContext';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import { useColorScheme } from '@/hooks/useColorScheme';
 import DashboardScreen from '@/components/DashboardScreen';
 
 export default function HomeScreen() {
@@ -11,33 +13,12 @@ export default function HomeScreen() {
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<{mobile?: string; password?: string}>({});
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-
-  // Animation values
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(50)).current;
-  const logoScale = useRef(new Animated.Value(0.5)).current;
-
-  useEffect(() => {
-    // Start animations when component mounts
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 1000,
-        useNativeDriver: true,
-      }),
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 800,
-        useNativeDriver: true,
-      }),
-      Animated.spring(logoScale, {
-        toValue: 1,
-        tension: 100,
-        friction: 8,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, [fadeAnim, slideAnim, logoScale]);
+  
+  // Get current theme
+  const colorScheme = useColorScheme();
+  const backgroundColor = useThemeColor({}, 'background');
+  const textColor = useThemeColor({}, 'text');
+  const tintColor = useThemeColor({}, 'tint');
 
   const validateMobileNumber = (mobile: string) => {
     const mobileRegex = /^[6-9]\d{9}$/;
@@ -89,14 +70,14 @@ export default function HomeScreen() {
   if (isLoading) {
     return (
       <ThemedView style={styles.loadingContainer}>
-        <Animated.View style={[styles.logoContainer, { transform: [{ scale: logoScale }] }]}>
+        <ThemedView style={styles.logoContainer}>
           <Image 
             source={require('@/assets/images/aakasmik-nidhi-logo.png')} 
             style={styles.loadingLogo}
             resizeMode="contain"
           />
-        </Animated.View>
-        <ActivityIndicator size="large" color="#007AFF" />
+        </ThemedView>
+        <ActivityIndicator size="large" color={tintColor} />
         <ThemedText style={styles.loadingText}>Loading...</ThemedText>
       </ThemedView>
     );
@@ -118,55 +99,54 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
         bounces={false}
       >
-        <ThemedView style={styles.backgroundContainer}>
+        <ThemedView style={[styles.backgroundContainer, { backgroundColor }]}>
           {/* Header with Logo and Branding */}
-          <Animated.View 
-            style={[
-              styles.header,
-              {
-                opacity: fadeAnim,
-                transform: [{ translateY: slideAnim }]
-              }
-            ]}
-          >
-            <Animated.View style={[styles.logoContainer, { transform: [{ scale: logoScale }] }]}>
+          <ThemedView style={styles.header}>
+            <ThemedView style={styles.logoContainer}>
               <Image 
                 source={require('@/assets/images/aakasmik-nidhi-logo.png')} 
                 style={styles.logo}
                 resizeMode="contain"
               />
-            </Animated.View>
-            <ThemedText style={styles.orgName}>आकस्मिक निधि युवा संस्था</ThemedText>
-            <ThemedText style={styles.orgNameEng}>Aakasmik Nidhi Youth Organization</ThemedText>
+            </ThemedView>
+            <ThemedText style={[styles.orgName, { color: textColor }]}>आकस्मिक निधि युवा संस्था</ThemedText>
+            <ThemedText style={[styles.orgNameEng, { color: textColor }]}>Aakasmik Nidhi Youth Organization</ThemedText>
             <ThemedText style={styles.tagline}>एक साथ, हम मजबूत हैं</ThemedText>
-          </Animated.View>
+          </ThemedView>
 
           {/* Login Form */}
-          <Animated.View 
-            style={[
-              styles.loginContainer,
-              {
-                opacity: fadeAnim,
-                transform: [{ translateY: slideAnim }]
+          <ThemedView style={styles.loginContainer}>
+            <ThemedView style={[
+              styles.loginCard, 
+              { 
+                backgroundColor: colorScheme === 'dark' ? '#1f2937' : '#ffffff',
+                shadowColor: colorScheme === 'dark' ? '#000' : '#000',
+                shadowOpacity: colorScheme === 'dark' ? 0.3 : 0.1,
               }
-            ]}
-          >
-            <ThemedView style={styles.loginCard}>
-              <ThemedText style={styles.welcomeText}>Welcome Back!</ThemedText>
+            ]}>
+              <ThemedText style={[styles.welcomeText, { color: textColor }]}>Welcome Back!</ThemedText>
               <ThemedText style={styles.subtitle}>Please login to continue</ThemedText>
 
               <ThemedView style={styles.formContainer}>
                 {/* Mobile Number Input */}
                 <ThemedView style={styles.inputContainer}>
-                  <ThemedText style={styles.label}>📱 Mobile Number</ThemedText>
+                  <ThemedText style={[styles.label, { color: textColor }]}>📱 Mobile Number</ThemedText>
                   <TextInput
-                    style={[styles.input, errors.mobile ? styles.inputError : null]}
+                    style={[
+                      styles.input, 
+                      { 
+                        backgroundColor,
+                        color: textColor,
+                        borderColor: colorScheme === 'dark' ? '#374151' : '#e1e8ed'
+                      },
+                      errors.mobile ? styles.inputError : null
+                    ]}
                     placeholder="Enter your mobile number"
                     value={mobileNumber}
                     onChangeText={setMobileNumber}
                     keyboardType="numeric"
                     maxLength={10}
-                    placeholderTextColor="#999"
+                    placeholderTextColor={colorScheme === 'dark' ? '#9CA3AF' : '#999'}
                     editable={!isLoggingIn}
                   />
                   {errors.mobile ? <ThemedText style={styles.errorText}>{errors.mobile}</ThemedText> : null}
@@ -174,14 +154,22 @@ export default function HomeScreen() {
 
                 {/* Password Input */}
                 <ThemedView style={styles.inputContainer}>
-                  <ThemedText style={styles.label}>🔒 Password</ThemedText>
+                  <ThemedText style={[styles.label, { color: textColor }]}>🔒 Password</ThemedText>
                   <TextInput
-                    style={[styles.input, errors.password ? styles.inputError : null]}
+                    style={[
+                      styles.input, 
+                      { 
+                        backgroundColor,
+                        color: textColor,
+                        borderColor: colorScheme === 'dark' ? '#374151' : '#e1e8ed'
+                      },
+                      errors.password ? styles.inputError : null
+                    ]}
                     placeholder="Enter your password"
                     value={password}
                     onChangeText={setPassword}
                     secureTextEntry
-                    placeholderTextColor="#999"
+                    placeholderTextColor={colorScheme === 'dark' ? '#9CA3AF' : '#999'}
                     editable={!isLoggingIn}
                   />
                   {errors.password ? <ThemedText style={styles.errorText}>{errors.password}</ThemedText> : null}
@@ -189,7 +177,11 @@ export default function HomeScreen() {
 
                 {/* Submit Button */}
                 <TouchableOpacity 
-                  style={[styles.submitButton, isLoggingIn && styles.submitButtonDisabled]} 
+                  style={[
+                    styles.submitButton, 
+                    { backgroundColor: tintColor },
+                    isLoggingIn && styles.submitButtonDisabled
+                  ]} 
                   onPress={handleSubmit}
                   disabled={isLoggingIn}
                 >
@@ -201,20 +193,13 @@ export default function HomeScreen() {
                 </TouchableOpacity>
               </ThemedView>
             </ThemedView>
-          </Animated.View>
+          </ThemedView>
 
           {/* Footer */}
-          <Animated.View 
-            style={[
-              styles.footer,
-              {
-                opacity: fadeAnim,
-              }
-            ]}
-          >
+          <ThemedView style={styles.footer}>
             <ThemedText style={styles.footerText}>Made with ❤️ for our community</ThemedText>
             <ThemedText style={styles.footerSubtext}>© 2025 Aakasmik Nidhi Youth Organization</ThemedText>
-          </Animated.View>
+          </ThemedView>
         </ThemedView>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -227,7 +212,6 @@ const styles = StyleSheet.create({
   },
   backgroundContainer: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
   },
   scrollContainer: {
     flexGrow: 1,
@@ -258,27 +242,24 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 5,
-    color: '#2c3e50',
   },
   orgNameEng: {
     fontSize: 14,
     textAlign: 'center',
     marginBottom: 5,
-    color: '#34495e',
     fontWeight: '500',
   },
   tagline: {
     fontSize: 12,
     textAlign: 'center',
     fontStyle: 'italic',
-    color: '#7f8c8d',
+    opacity: 0.7,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     gap: 16,
-    backgroundColor: '#f8f9fa',
   },
   loadingText: {
     fontSize: 16,
@@ -290,7 +271,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   loginCard: {
-    backgroundColor: '#ffffff',
     borderRadius: 20,
     padding: 25,
     shadowColor: '#000',
@@ -307,14 +287,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 8,
-    color: '#2c3e50',
   },
   subtitle: {
     fontSize: 14,
     textAlign: 'center',
     marginBottom: 25,
     opacity: 0.7,
-    color: '#7f8c8d',
   },
   formContainer: {
     gap: 18,
@@ -325,18 +303,14 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 15,
     fontWeight: '500',
-    color: '#34495e',
     marginBottom: 5,
     backgroundColor: 'transparent',
   },
   input: {
     borderWidth: 2,
-    borderColor: '#e1e8ed',
     borderRadius: 12,
     padding: 15,
     fontSize: 16,
-    backgroundColor: '#ffffff',
-    color: '#2c3e50',
   },
   inputError: {
     borderColor: '#e74c3c',
@@ -346,12 +320,10 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   submitButton: {
-    backgroundColor: '#3498db',
     borderRadius: 12,
     padding: 16,
     alignItems: 'center',
     marginTop: 10,
-    shadowColor: '#3498db',
     shadowOffset: {
       width: 0,
       height: 4,
@@ -361,7 +333,7 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   submitButtonDisabled: {
-    backgroundColor: '#bdc3c7',
+    opacity: 0.6,
   },
   submitButtonText: {
     color: '#fff',
@@ -376,12 +348,12 @@ const styles = StyleSheet.create({
   footerText: {
     fontSize: 13,
     textAlign: 'center',
-    color: '#7f8c8d',
+    opacity: 0.6,
     marginBottom: 3,
   },
   footerSubtext: {
     fontSize: 11,
     textAlign: 'center',
-    color: '#95a5a6',
+    opacity: 0.5,
   },
 });

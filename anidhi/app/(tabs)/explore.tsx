@@ -3,10 +3,12 @@ import { WebView } from 'react-native-webview';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useState } from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function TabTwoScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
+  const insets = useSafeAreaInsets();
 
   const handleLoadStart = () => {
     setIsLoading(true);
@@ -36,7 +38,7 @@ export default function TabTwoScreen() {
 
   if (hasError) {
     return (
-      <ThemedView style={styles.container}>
+      <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
         <ThemedText style={styles.errorText}>Unable to load website</ThemedText>
         <ThemedText style={styles.errorSubtext}>
           Please check your internet connection and try again
@@ -46,9 +48,9 @@ export default function TabTwoScreen() {
   }
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
       {isLoading && (
-        <ThemedView style={styles.loadingContainer}>
+        <ThemedView style={[styles.loadingContainer, { top: insets.top }]}>
           <ActivityIndicator size="large" color="#007AFF" />
           <ThemedText style={styles.loadingText}>Loading Web Portal...</ThemedText>
         </ThemedView>
@@ -79,7 +81,6 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     position: 'absolute',
-    top: 0,
     left: 0,
     right: 0,
     bottom: 0,
@@ -97,10 +98,12 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     textAlign: 'center',
     marginBottom: 10,
+    marginTop: 50,
   },
   errorSubtext: {
     fontSize: 14,
     textAlign: 'center',
     opacity: 0.7,
+    paddingHorizontal: 20,
   },
 });
