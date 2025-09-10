@@ -51,6 +51,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const initAuth = async () => {
       try {
+        setIsLoading(true);
+        
         const token = await storageService.getItem('accessToken');
         const storedUser = await storageService.getItem('user');
         

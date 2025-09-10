@@ -22,28 +22,19 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ user }) => {
 
   const pickImage = async () => {
     try {
-      console.log('Starting image picker...');
-      
       // Request permission to access media library
       const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      console.log('Media library permission result:', permissionResult);
       
       if (permissionResult.granted === false) {
         Alert.alert('Permission Required', 'Permission to access camera roll is required!');
         return;
       }
 
-      console.log('Launching image library...');
       // Launch image picker
       const result = await ImagePicker.launchImageLibraryAsync();
 
-      console.log('Image picker result:', result);
-
       if (!result.canceled && result.assets && result.assets[0]) {
-        console.log('Selected image:', result.assets[0]);
         await uploadImage(result.assets[0]);
-      } else {
-        console.log('Image picker was canceled or no image selected');
       }
     } catch (error) {
       console.error('Error picking image:', error);
@@ -53,28 +44,19 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ user }) => {
 
   const takePhoto = async () => {
     try {
-      console.log('Starting camera...');
-      
       // Request permission to access camera
       const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
-      console.log('Camera permission result:', permissionResult);
       
       if (permissionResult.granted === false) {
         Alert.alert('Permission Required', 'Permission to access camera is required!');
         return;
       }
 
-      console.log('Launching camera...');
       // Launch camera
       const result = await ImagePicker.launchCameraAsync();
 
-      console.log('Camera result:', result);
-
       if (!result.canceled && result.assets && result.assets[0]) {
-        console.log('Captured photo:', result.assets[0]);
         await uploadImage(result.assets[0]);
-      } else {
-        console.log('Camera was canceled or no photo taken');
       }
     } catch (error) {
       console.error('Error taking photo:', error);
@@ -113,7 +95,6 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ user }) => {
   };
 
   const showImageOptions = () => {
-    console.log('Showing image options...');
     Alert.alert(
       'Select Image',
       'Choose how you want to select an image',
@@ -121,21 +102,18 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ user }) => {
         {
           text: 'Camera',
           onPress: () => {
-            console.log('Camera option selected');
             takePhoto();
           },
         },
         {
           text: 'Photo Library',
           onPress: () => {
-            console.log('Photo Library option selected');
             pickImage();
           },
         },
         {
           text: 'Cancel',
           style: 'cancel',
-          onPress: () => console.log('Image selection canceled'),
         },
       ]
     );
@@ -220,13 +198,7 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ user }) => {
 
           <TouchableOpacity 
             style={[styles.uploadButton, uploading && styles.uploadButtonDisabled]} 
-            onPress={() => {
-              console.log('Upload button pressed!');
-              // Simple test alert first
-              Alert.alert('Test', 'Button is working!', [
-                { text: 'OK', onPress: () => showImageOptions() }
-              ]);
-            }}
+            onPress={showImageOptions}
             disabled={uploading}
           >
             {uploading ? (
