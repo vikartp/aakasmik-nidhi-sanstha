@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { StyleSheet, TouchableOpacity, Alert, ActivityIndicator, ScrollView, Image } from 'react-native';
+import { StyleSheet, TouchableOpacity, Alert, ScrollView, Image } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useAuth } from '@/context/AuthContext';
-import ApiService, { User } from '@/services/api';
-import ImagePicker, { ImagePickerAsset } from '@/utils/imagePicker';
+import { User } from '@/services/api';
 import ShareIntentHandler from '@/components/ShareIntentHandler';
+import ContributionTable from '@/components/ContributionTable';
 
 interface DashboardScreenProps {
   user: User;
@@ -13,110 +13,14 @@ interface DashboardScreenProps {
 
 const DashboardScreen: React.FC<DashboardScreenProps> = ({ user }) => {
   const { logout } = useAuth();
-  const [uploading, setUploading] = useState(false);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
 
   const getCurrentMonth = () => {
-    return new Date().toLocaleString('default', { month: 'long' });
-  };
-
-  const pickImage = async () => {
-    try {
-      // Request permission to access media library
-      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      
-      if (permissionResult.granted === false) {
-        Alert.alert('Permission Required', 'Permission to access camera roll is required!');
-        return;
-      }
-
-      // Launch image picker
-      const result = await ImagePicker.launchImageLibraryAsync();
-
-      if (!result.canceled && result.assets && result.assets[0]) {
-        await uploadImage(result.assets[0]);
-      }
-    } catch (error) {
-      console.error('Error picking image:', error);
-      Alert.alert('Error', `Failed to pick image: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    }
-  };
-
-  const takePhoto = async () => {
-    try {
-      // Request permission to access camera
-      const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
-      
-      if (permissionResult.granted === false) {
-        Alert.alert('Permission Required', 'Permission to access camera is required!');
-        return;
-      }
-
-      // Launch camera
-      const result = await ImagePicker.launchCameraAsync();
-
-      if (!result.canceled && result.assets && result.assets[0]) {
-        await uploadImage(result.assets[0]);
-      }
-    } catch (error) {
-      console.error('Error taking photo:', error);
-      Alert.alert('Error', `Failed to take photo: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    }
-  };
-
-  const uploadImage = async (imageAsset: ImagePickerAsset) => {
-    try {
-      setUploading(true);
-
-      // Prepare file object for upload
-      const file = {
-        uri: imageAsset.uri,
-        type: imageAsset.type || 'image/jpeg',
-        name: imageAsset.name || `screenshot_${Date.now()}.jpg`,
-      };
-
-      // Upload to your backend
-      const response = await ApiService.uploadScreenshot(
-        file, 
-        user._id, 
-        getCurrentMonth()
-      );
-
-      if (response.url) {
-        setUploadedImage(response.url);
-        Alert.alert('Success', 'Screenshot uploaded successfully!');
-      }
-    } catch (error) {
-      console.error('Upload error:', error);
-      Alert.alert('Upload Failed', error instanceof Error ? error.message : 'Failed to upload screenshot');
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const showImageOptions = () => {
-    Alert.alert(
-      'Select Image',
-      'Choose how you want to select an image',
-      [
-        {
-          text: 'Camera',
-          onPress: () => {
-            takePhoto();
-          },
-        },
-        {
-          text: 'Photo Library',
-          onPress: () => {
-            pickImage();
-          },
-        },
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-      ]
-    );
+    const hindiMonths = [
+      'जनवरी', 'फरवरी', 'मार्च', 'अप्रैल', 'मई', 'जून',
+      'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसंबर'
+    ];
+    return hindiMonths[new Date().getMonth()];
   };
 
   const handleLogout = async () => {
@@ -191,30 +95,50 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ user }) => {
 
         {/* Upload Section */}
         <ThemedView style={styles.uploadSection}>
-          <ThemedText style={styles.sectionTitle}>Upload Payment Screenshot</ThemedText>
+          <ThemedText style={styles.sectionTitle}>पेमेंट स्क्रीनशॉट अपलोड करें</ThemedText>
+          <ThemedText style={styles.sectionTitleEng}>Upload Payment Screenshot</ThemedText>
           <ThemedText style={styles.sectionSubtitle}>
-            Upload your payment screenshot for {getCurrentMonth()}
+            {getCurrentMonth()} महीने के लिए अपना पेमेंट स्क्रीनशॉट अपलोड करें
           </ThemedText>
 
-          <TouchableOpacity 
-            style={[styles.uploadButton, uploading && styles.uploadButtonDisabled]} 
-            onPress={showImageOptions}
-            disabled={uploading}
-          >
-            {uploading ? (
-              <ActivityIndicator size="small" color="#fff" />
-            ) : (
-              <ThemedText style={styles.uploadButtonText}>Select Screenshot</ThemedText>
-            )}
-          </TouchableOpacity>
+          {/* Instructions for uploading */}
+          <ThemedView style={styles.instructionsContainer}>
+            <ThemedText style={styles.instructionsTitle}>📱 स्क्रीनशॉट कैसे अपलोड करें:</ThemedText>
+            
+            <ThemedView style={styles.instructionItem}>
+              <ThemedText style={styles.instructionNumber}>1️⃣</ThemedText>
+              <ThemedView style={styles.instructionContent}>
+                <ThemedText style={styles.instructionHeader}>UPI ऐप से शेयर करें (सुझावित)</ThemedText>
+                <ThemedText style={styles.instructionHeaderEng}>Share from UPI App (Recommended)</ThemedText>
+                <ThemedText style={styles.instructionText}>
+                  पेमेंट करने के बाद, अपने UPI ऐप में &ldquo;Share&rdquo; पर टैप करें और शेयर मेन्यू से इस ऐप को चुनें।
+                </ThemedText>
+              </ThemedView>
+            </ThemedView>
+
+            <ThemedView style={styles.instructionItem}>
+              <ThemedText style={styles.instructionNumber}>2️⃣</ThemedText>
+              <ThemedView style={styles.instructionContent}>
+                <ThemedText style={styles.instructionHeader}>वेब पोर्टल का उपयोग करें</ThemedText>
+                <ThemedText style={styles.instructionHeaderEng}>Use Web Portal</ThemedText>
+                <ThemedText style={styles.instructionText}>
+                  &ldquo;Web Portal&rdquo; टैब पर जाएं और वेबसाइट से सीधे अपना स्क्रीनशॉट अपलोड करें।
+                </ThemedText>
+              </ThemedView>
+            </ThemedView>
+          </ThemedView>
 
           {uploadedImage && (
             <ThemedView style={styles.imagePreview}>
-              <ThemedText style={styles.successText}>✅ Screenshot uploaded successfully!</ThemedText>
+              <ThemedText style={styles.successText}>✅ स्क्रीनशॉट सफलतापूर्वक अपलोड हो गया!</ThemedText>
+              <ThemedText style={styles.successTextEng}>Screenshot uploaded successfully!</ThemedText>
               <Image source={{ uri: uploadedImage }} style={styles.previewImage} />
             </ThemedView>
           )}
         </ThemedView>
+
+        {/* Contribution Table */}
+        <ContributionTable userId={user._id} />
       </ThemedView>
     </ScrollView>
   );
@@ -294,6 +218,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
   },
+  sectionTitleEng: {
+    fontSize: 14,
+    fontWeight: '500',
+    opacity: 0.6,
+    marginTop: 2,
+  },
   sectionSubtitle: {
     fontSize: 14,
     opacity: 0.7,
@@ -322,11 +252,60 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
+  successTextEng: {
+    color: '#00c864',
+    fontSize: 14,
+    fontWeight: '500',
+    opacity: 0.7,
+    marginTop: 2,
+  },
   previewImage: {
     width: 200,
     height: 150,
     borderRadius: 8,
     resizeMode: 'cover',
+  },
+  instructionsContainer: {
+    backgroundColor: 'rgba(100, 150, 255, 0.1)',
+    padding: 16,
+    borderRadius: 12,
+    gap: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(100, 150, 255, 0.2)',
+  },
+  instructionsTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  instructionItem: {
+    flexDirection: 'row',
+    gap: 12,
+    alignItems: 'flex-start',
+  },
+  instructionNumber: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: 2,
+  },
+  instructionContent: {
+    flex: 1,
+    gap: 4,
+  },
+  instructionHeader: {
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  instructionHeaderEng: {
+    fontSize: 13,
+    fontWeight: '500',
+    opacity: 0.6,
+    marginTop: 2,
+  },
+  instructionText: {
+    fontSize: 14,
+    opacity: 0.8,
+    lineHeight: 20,
   },
 });
 

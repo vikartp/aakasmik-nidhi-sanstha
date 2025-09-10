@@ -36,6 +36,15 @@ interface User {
   createdAt: string;
 }
 
+interface Contribution {
+  _id: string;
+  userId: string;
+  amount: number;
+  verifiedBy: string;
+  screenshotId?: string;
+  contributionDate: string;
+}
+
 class ApiService {
   private baseURL: string;
 
@@ -202,7 +211,28 @@ class ApiService {
       throw error;
     }
   }
+
+  async getContributionsByUser(userId: string): Promise<Contribution[]> {
+    try {
+      const headers = await this.getAuthHeaders();
+      
+      const response = await fetch(`${this.baseURL}/contributions/${userId}`, {
+        method: 'GET',
+        headers,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to fetch contributions');
+      }
+
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default new ApiService();
-export type { LoginRequest, LoginResponse, User };
+export type { LoginRequest, LoginResponse, User, Contribution };
