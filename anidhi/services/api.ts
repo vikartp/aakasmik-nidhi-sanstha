@@ -1,16 +1,10 @@
 import { storageService } from '../utils/tempStorage';
 
-// Configuration for different environments
-const isDevelopment = __DEV__;
-
 // Production-ready API configuration
-const DEVELOPMENT_API_URL = 'http://192.168.1.100:5000'; // Update with your IP
 const PRODUCTION_API_URL = 'https://aakasmik-nidhi-backend.onrender.com';
 
-// Use production server by default, can switch to local for development
+// Use production server by default
 const API_BASE_URL = PRODUCTION_API_URL;
-// For local development, uncomment this line:
-// const API_BASE_URL = isDevelopment ? DEVELOPMENT_API_URL : PRODUCTION_API_URL;
 
 console.log(`🌐 API Base URL: ${API_BASE_URL}`);
 
@@ -56,6 +50,7 @@ interface User {
   occupation?: string;
   verified: boolean;
   createdAt: string;
+  profileUrl?: string;
 }
 
 interface Contribution {
