@@ -370,6 +370,62 @@ class ApiService {
       throw error;
     }
   }
+
+  // Get all users (admin only)
+  async getAllUsers(): Promise<User[]> {
+    try {
+      const token = await storageService.getItem('accessToken');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const response = await fetch(`${this.baseURL}/users`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to fetch users');
+      }
+
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // Get screenshots by month (admin only)
+  async getScreenshotsByMonth(month: string): Promise<Screenshot[]> {
+    try {
+      const token = await storageService.getItem('accessToken');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const response = await fetch(`${this.baseURL}/screenshots/month/${month}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to fetch screenshots');
+      }
+
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default new ApiService();
