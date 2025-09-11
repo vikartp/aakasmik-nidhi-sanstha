@@ -17,7 +17,7 @@
     "production-apk": {
       "android": {
         "buildType": "apk",
-        "artifactPath": "ANidhi-v${app.version}.apk"
+        "applicationArchivePath": "ANidhi-v${app.version}.apk"
       },
       "autoIncrement": true
     }
