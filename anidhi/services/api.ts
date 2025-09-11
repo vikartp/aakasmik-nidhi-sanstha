@@ -266,6 +266,49 @@ class ApiService {
       throw error;
     }
   }
+
+  // User Secret Management
+  async getMySecret(): Promise<{ secret: string }> {
+    try {
+      const headers = await this.getAuthHeaders();
+      
+      const response = await fetch(`${this.baseURL}/users/my-secret`, {
+        method: 'GET',
+        headers,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to fetch secret');
+      }
+
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async resetMySecret(): Promise<{ secret: string }> {
+    try {
+      const headers = await this.getAuthHeaders();
+      
+      const response = await fetch(`${this.baseURL}/users/reset-secret`, {
+        method: 'GET',
+        headers,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to reset secret');
+      }
+
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default new ApiService();

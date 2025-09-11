@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { StyleSheet, TouchableOpacity, Alert, ScrollView, Image, RefreshControl } from 'react-native';
+import { StyleSheet, TouchableOpacity, Alert, ScrollView, Image, RefreshControl, Clipboard } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useAuth } from '@/context/AuthContext';
@@ -17,6 +17,11 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ user }) => {
   const [currentMonthScreenshot, setCurrentMonthScreenshot] = useState<Screenshot | null>(null);
   const [currentMonthStatus, setCurrentMonthStatus] = useState<'pending' | 'none' | 'verified' | 'rejected'>('none');
   const [refreshing, setRefreshing] = useState(false);
+  
+  // Secret management state
+  const [secret, setSecret] = useState('');
+  const [secretLoading, setSecretLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const getCurrentMonth = () => {
     const hindiMonths = [
@@ -77,6 +82,63 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ user }) => {
   const handleImageUploaded = (imageUrl: string) => {
     setUploadedImage(imageUrl);
     // The useEffect will automatically re-fetch the status
+  };
+
+  // Secret management functions
+  const handleGetSecret = async () => {
+    setSecretLoading(true);
+    try {
+      const response = await ApiService.getMySecret();
+      setSecret(response.secret);
+    } catch (error) {
+      console.error('Error fetching secret:', error);
+      Alert.alert('त्रुटि', error instanceof Error ? error.message : 'सीक्रेट की प्राप्त करने में समस्या');
+    } finally {
+      setSecretLoading(false);
+    }
+  };
+
+  const handleResetSecret = async () => {
+    Alert.alert(
+      'सीक्रेट की रीसेट करें',
+      'क्या आप वाकई अपनी सीक्रेट की रीसेट करना चाहते हैं? यह एक नई सीक्रेट की जेनरेट करेगा।',
+      [
+        {
+          text: 'रद्द करें',
+          style: 'cancel',
+        },
+        {
+          text: 'रीसेट करें',
+          style: 'destructive',
+          onPress: async () => {
+            setSecretLoading(true);
+            try {
+              const response = await ApiService.resetMySecret();
+              setSecret(response.secret);
+              Alert.alert('सफल', 'आपकी सीक्रेट की सफलतापूर्वक रीसेट हो गई है।');
+            } catch (error) {
+              console.error('Error resetting secret:', error);
+              Alert.alert('त्रुटि', error instanceof Error ? error.message : 'सीक्रेट की रीसेट करने में समस्या');
+            } finally {
+              setSecretLoading(false);
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleCopySecret = async () => {
+    if (secret) {
+      try {
+        await Clipboard.setString(secret);
+        setCopied(true);
+        Alert.alert('कॉपी हो गया', 'सीक्रेट की कॉपी हो गई है।');
+        setTimeout(() => setCopied(false), 2000);
+      } catch {
+        Alert.alert('त्रुटि', 'सीक्रेट की कॉपी करने में समस्या');
+      }
+    }
   };
 
   const handleLogout = async () => {
@@ -289,6 +351,54 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ user }) => {
           userId={user._id} 
           key={`contributions-${uploadedImage}-${currentMonthStatus}`}
         />
+
+        {/* Secret Management Section */}
+        <ThemedView style={styles.secretSection}>
+          <ThemedText style={styles.secretTitle}>अपनी सीक्रेट की प्रबंधित करें</ThemedText>
+          <ThemedText style={styles.secretTitleEng}>Manage Your Secret Key</ThemedText>
+          
+          <ThemedView style={styles.secretButtons}>
+            <TouchableOpacity 
+              style={[styles.secretButton, styles.getSecretButton]} 
+              onPress={handleGetSecret}
+              disabled={secretLoading}
+            >
+              <ThemedText style={styles.secretButtonText}>
+                {secretLoading ? 'प्राप्त कर रहे हैं...' : 'सीक्रेट प्राप्त करें'}
+              </ThemedText>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={[styles.secretButton, styles.resetSecretButton]} 
+              onPress={handleResetSecret}
+              disabled={secretLoading}
+            >
+              <ThemedText style={styles.secretButtonText}>
+                {secretLoading ? 'रीसेट कर रहे हैं...' : 'सीक्रेट रीसेट करें'}
+              </ThemedText>
+            </TouchableOpacity>
+          </ThemedView>
+
+          {secret && (
+            <ThemedView style={styles.secretDisplay}>
+              <ThemedText style={styles.secretLabel}>आपकी सीक्रेट की:</ThemedText>
+              <ThemedView style={styles.secretContainer}>
+                <ThemedText style={styles.secretText}>{secret}</ThemedText>
+                <TouchableOpacity 
+                  style={styles.copyButton} 
+                  onPress={handleCopySecret}
+                >
+                  <ThemedText style={styles.copyButtonText}>
+                    {copied ? '✓' : '📋'} कॉपी
+                  </ThemedText>
+                </TouchableOpacity>
+              </ThemedView>
+              <ThemedText style={styles.secretWarning}>
+                ⚠️ इस सीक्रेट की को सुरक्षित रखें और किसी के साथ साझा न करें
+              </ThemedText>
+            </ThemedView>
+          )}
+        </ThemedView>
       </ThemedView>
     </ScrollView>
   );
@@ -565,6 +675,92 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
     borderWidth: 1,
     borderColor: 'rgba(0, 123, 255, 0.3)',
+  },
+  // Secret management styles
+  secretSection: {
+    backgroundColor: 'rgba(138, 43, 226, 0.1)',
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(138, 43, 226, 0.2)',
+    gap: 16,
+  },
+  secretTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#6a1b9a',
+  },
+  secretTitleEng: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#6a1b9a',
+    opacity: 0.7,
+  },
+  secretButtons: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  secretButton: {
+    flex: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  getSecretButton: {
+    backgroundColor: '#8e24aa',
+  },
+  resetSecretButton: {
+    backgroundColor: '#e91e63',
+  },
+  secretButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  secretDisplay: {
+    gap: 12,
+    marginTop: 8,
+  },
+  secretLabel: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#4a148c',
+  },
+  secretContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(138, 43, 226, 0.3)',
+  },
+  secretText: {
+    flex: 1,
+    fontSize: 16,
+    fontFamily: 'monospace',
+    color: '#1a237e',
+    fontWeight: '600',
+  },
+  copyButton: {
+    backgroundColor: '#ff5722',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 6,
+  },
+  copyButtonText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  secretWarning: {
+    fontSize: 13,
+    color: '#d32f2f',
+    fontWeight: '500',
+    textAlign: 'center',
+    fontStyle: 'italic',
   },
 });
 
