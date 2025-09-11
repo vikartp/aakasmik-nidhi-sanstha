@@ -31,11 +31,9 @@ declare global {
 app.use(cors(
     {
         origin: function(origin, callback) {
-            console.log('🌐 CORS Check - Origin:', origin || 'No origin (mobile app)');
             
             // ✅ MOBILE APPS (PRODUCTION): No origin header - this is normal for native apps
             if (!origin) {
-                console.log('✅ Allowed: Mobile app or native request (no origin)');
                 return callback(null, true);
             }
             
@@ -56,7 +54,6 @@ app.use(cors(
                 origin.match(/^http:\/\/192\.168\.\d+\.\d+:\d+$/) ||  // Local network IPs
                 origin.match(/^http:\/\/10\.\d+\.\d+\.\d+:\d+$/) ||    // Local network IPs  
                 origin.match(/^http:\/\/172\.16\.\d+\.\d+:\d+$/)) {    // Local network IPs
-                console.log('✅ Allowed: Recognized origin');
                 return callback(null, true);
             }
             
