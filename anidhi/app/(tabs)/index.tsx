@@ -147,13 +147,18 @@ export default function HomeScreen() {
             <ThemedView style={[
               styles.loginCard, 
               { 
-                backgroundColor: colorScheme === 'dark' ? '#1f2937' : '#ffffff',
+                backgroundColor: 'transparent',
                 shadowColor: colorScheme === 'dark' ? '#000' : '#000',
-                shadowOpacity: colorScheme === 'dark' ? 0.3 : 0.1,
+                shadowOpacity: colorScheme === 'dark' ? 0.6 : 0.1,
+                shadowOffset: colorScheme === 'dark' ? { width: 0, height: 12 } : { width: 0, height: 8 },
+                shadowRadius: colorScheme === 'dark' ? 20 : 15,
+                elevation: colorScheme === 'dark' ? 12 : 8,
+                borderWidth: colorScheme === 'dark' ? 1 : 0,
+                borderColor: colorScheme === 'dark' ? 'rgba(51, 65, 85, 0.3)' : 'transparent',
               }
             ]}>
               <ThemedText style={[styles.welcomeText, { color: textColor }]}>स्वागत है! Welcome Back!</ThemedText>
-              <ThemedText style={styles.subtitle}>कृपया लॉगिन करें / Please login to continue</ThemedText>
+              <ThemedText style={[styles.subtitle, { color: colorScheme === 'dark' ? '#94a3b8' : 'rgba(0,0,0,0.7)' }]}>कृपया लॉगिन करें / Please login to continue</ThemedText>
 
               <ThemedView style={styles.formContainer}>
                 {/* Mobile Number Input */}
@@ -163,9 +168,10 @@ export default function HomeScreen() {
                     style={[
                       styles.input, 
                       { 
-                        backgroundColor,
+                        backgroundColor: colorScheme === 'dark' ? '#0f172a' : backgroundColor,
                         color: textColor,
-                        borderColor: colorScheme === 'dark' ? '#374151' : '#e1e8ed'
+                        borderColor: colorScheme === 'dark' ? '#475569' : '#e1e8ed',
+                        borderWidth: colorScheme === 'dark' ? 1.5 : 2,
                       },
                       errors.mobile ? styles.inputError : null
                     ]}
@@ -174,7 +180,7 @@ export default function HomeScreen() {
                     onChangeText={setMobileNumber}
                     keyboardType="numeric"
                     maxLength={10}
-                    placeholderTextColor={colorScheme === 'dark' ? '#9CA3AF' : '#999'}
+                    placeholderTextColor={colorScheme === 'dark' ? '#64748b' : '#999'}
                     editable={!isLoggingIn}
                   />
                   {errors.mobile ? <ThemedText style={styles.errorText}>{errors.mobile}</ThemedText> : null}
@@ -188,9 +194,10 @@ export default function HomeScreen() {
                       style={[
                         styles.passwordInput, 
                         { 
-                          backgroundColor,
+                          backgroundColor: colorScheme === 'dark' ? '#0f172a' : backgroundColor,
                           color: textColor,
-                          borderColor: colorScheme === 'dark' ? '#374151' : '#e1e8ed'
+                          borderColor: colorScheme === 'dark' ? '#475569' : '#e1e8ed',
+                          borderWidth: colorScheme === 'dark' ? 1.5 : 2,
                         },
                         errors.password ? styles.inputError : null
                       ]}
@@ -198,7 +205,7 @@ export default function HomeScreen() {
                       value={password}
                       onChangeText={setPassword}
                       secureTextEntry={!showPassword}
-                      placeholderTextColor={colorScheme === 'dark' ? '#9CA3AF' : '#999'}
+                      placeholderTextColor={colorScheme === 'dark' ? '#64748b' : '#999'}
                       editable={!isLoggingIn}
                     />
                     <TouchableOpacity 
@@ -206,7 +213,7 @@ export default function HomeScreen() {
                       onPress={() => setShowPassword(!showPassword)}
                       disabled={isLoggingIn}
                     >
-                      <ThemedText style={[styles.eyeIcon, { color: textColor }]}>
+                      <ThemedText style={[styles.eyeIcon, { color: colorScheme === 'dark' ? '#94a3b8' : textColor }]}>
                         {showPassword ? '👁️' : '🙈'}
                       </ThemedText>
                     </TouchableOpacity>
@@ -218,7 +225,13 @@ export default function HomeScreen() {
                 <TouchableOpacity 
                   style={[
                     styles.submitButton, 
-                    { backgroundColor: tintColor },
+                    { 
+                      backgroundColor: tintColor,
+                      shadowColor: colorScheme === 'dark' ? tintColor : '#000',
+                      shadowOpacity: colorScheme === 'dark' ? 0.4 : 0.3,
+                      shadowOffset: colorScheme === 'dark' ? { width: 0, height: 6 } : { width: 0, height: 4 },
+                      shadowRadius: colorScheme === 'dark' ? 12 : 8,
+                    },
                     isLoggingIn && styles.submitButtonDisabled
                   ]} 
                   onPress={handleSubmit}
@@ -281,7 +294,7 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
-    paddingBottom: 20,
+    paddingBottom: 5,
   },
   header: {
     alignItems: 'center',
@@ -446,7 +459,7 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   footer: {
-    padding: 15,
+    padding: 10,
     alignItems: 'center',
     marginTop: 'auto',
   },

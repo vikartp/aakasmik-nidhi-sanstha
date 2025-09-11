@@ -160,9 +160,14 @@ export default function RegisterScreen({ onNavigateToLogin }: RegisterScreenProp
             <ThemedView style={[
               styles.formCard, 
               { 
-                backgroundColor: colorScheme === 'dark' ? '#1f2937' : '#ffffff',
+                backgroundColor: 'transparent',
                 shadowColor: colorScheme === 'dark' ? '#000' : '#000',
-                shadowOpacity: colorScheme === 'dark' ? 0.3 : 0.1,
+                shadowOpacity: colorScheme === 'dark' ? 0.6 : 0.1,
+                shadowOffset: colorScheme === 'dark' ? { width: 0, height: 12 } : { width: 0, height: 8 },
+                shadowRadius: colorScheme === 'dark' ? 20 : 15,
+                elevation: colorScheme === 'dark' ? 12 : 8,
+                borderWidth: colorScheme === 'dark' ? 1 : 0,
+                borderColor: colorScheme === 'dark' ? 'rgba(51, 65, 85, 0.3)' : 'transparent',
               }
             ]}>
 
@@ -173,16 +178,17 @@ export default function RegisterScreen({ onNavigateToLogin }: RegisterScreenProp
                   style={[
                     styles.input, 
                     { 
-                      backgroundColor,
+                      backgroundColor: colorScheme === 'dark' ? '#0f172a' : backgroundColor,
                       color: textColor,
-                      borderColor: colorScheme === 'dark' ? '#374151' : '#e1e8ed'
+                      borderColor: colorScheme === 'dark' ? '#475569' : '#e1e8ed',
+                      borderWidth: colorScheme === 'dark' ? 1.5 : 2,
                     },
                     errors.name ? styles.inputError : null
                   ]}
                   placeholder="अपना नाम दर्ज करें"
                   value={form.name}
                   onChangeText={(value) => handleChange('name', value)}
-                  placeholderTextColor={colorScheme === 'dark' ? '#9CA3AF' : '#999'}
+                  placeholderTextColor={colorScheme === 'dark' ? '#64748b' : '#999'}
                   editable={!isRegistering}
                   autoCapitalize="words"
                 />
@@ -196,16 +202,17 @@ export default function RegisterScreen({ onNavigateToLogin }: RegisterScreenProp
                   style={[
                     styles.input, 
                     { 
-                      backgroundColor,
+                      backgroundColor: colorScheme === 'dark' ? '#0f172a' : backgroundColor,
                       color: textColor,
-                      borderColor: colorScheme === 'dark' ? '#374151' : '#e1e8ed'
+                      borderColor: colorScheme === 'dark' ? '#475569' : '#e1e8ed',
+                      borderWidth: colorScheme === 'dark' ? 1.5 : 2,
                     },
                     errors.fatherName ? styles.inputError : null
                   ]}
                   placeholder="पिता का नाम दर्ज करें"
                   value={form.fatherName}
                   onChangeText={(value) => handleChange('fatherName', value)}
-                  placeholderTextColor={colorScheme === 'dark' ? '#9CA3AF' : '#999'}
+                  placeholderTextColor={colorScheme === 'dark' ? '#64748b' : '#999'}
                   editable={!isRegistering}
                   autoCapitalize="words"
                 />
@@ -219,16 +226,17 @@ export default function RegisterScreen({ onNavigateToLogin }: RegisterScreenProp
                   style={[
                     styles.input, 
                     { 
-                      backgroundColor,
+                      backgroundColor: colorScheme === 'dark' ? '#0f172a' : backgroundColor,
                       color: textColor,
-                      borderColor: colorScheme === 'dark' ? '#374151' : '#e1e8ed'
+                      borderColor: colorScheme === 'dark' ? '#475569' : '#e1e8ed',
+                      borderWidth: colorScheme === 'dark' ? 1.5 : 2,
                     },
                     errors.email ? styles.inputError : null
                   ]}
                   placeholder="ईमेल पता दर्ज करें (वैकल्पिक)"
                   value={form.email}
                   onChangeText={(value) => handleChange('email', value)}
-                  placeholderTextColor={colorScheme === 'dark' ? '#9CA3AF' : '#999'}
+                  placeholderTextColor={colorScheme === 'dark' ? '#64748b' : '#999'}
                   editable={!isRegistering}
                   keyboardType="email-address"
                   autoCapitalize="none"
@@ -243,9 +251,10 @@ export default function RegisterScreen({ onNavigateToLogin }: RegisterScreenProp
                   style={[
                     styles.input, 
                     { 
-                      backgroundColor,
+                      backgroundColor: colorScheme === 'dark' ? '#0f172a' : backgroundColor,
                       color: textColor,
-                      borderColor: colorScheme === 'dark' ? '#374151' : '#e1e8ed'
+                      borderColor: colorScheme === 'dark' ? '#475569' : '#e1e8ed',
+                      borderWidth: colorScheme === 'dark' ? 1.5 : 2,
                     },
                     errors.mobile ? styles.inputError : null
                   ]}
@@ -254,7 +263,7 @@ export default function RegisterScreen({ onNavigateToLogin }: RegisterScreenProp
                   onChangeText={(value) => handleChange('mobile', value)}
                   keyboardType="numeric"
                   maxLength={10}
-                  placeholderTextColor={colorScheme === 'dark' ? '#9CA3AF' : '#999'}
+                  placeholderTextColor={colorScheme === 'dark' ? '#64748b' : '#999'}
                   editable={!isRegistering}
                 />
                 {errors.mobile ? <ThemedText style={styles.errorText}>{errors.mobile}</ThemedText> : null}
@@ -268,9 +277,10 @@ export default function RegisterScreen({ onNavigateToLogin }: RegisterScreenProp
                     style={[
                       styles.passwordInput, 
                       { 
-                        backgroundColor,
+                        backgroundColor: colorScheme === 'dark' ? '#0f172a' : backgroundColor,
                         color: textColor,
-                        borderColor: colorScheme === 'dark' ? '#374151' : '#e1e8ed'
+                        borderColor: colorScheme === 'dark' ? '#475569' : '#e1e8ed',
+                        borderWidth: colorScheme === 'dark' ? 1.5 : 2,
                       },
                       errors.password ? styles.inputError : null
                     ]}
@@ -278,7 +288,7 @@ export default function RegisterScreen({ onNavigateToLogin }: RegisterScreenProp
                     value={form.password}
                     onChangeText={(value) => handleChange('password', value)}
                     secureTextEntry={!showPassword}
-                    placeholderTextColor={colorScheme === 'dark' ? '#9CA3AF' : '#999'}
+                    placeholderTextColor={colorScheme === 'dark' ? '#64748b' : '#999'}
                     editable={!isRegistering}
                   />
                   <TouchableOpacity 
@@ -286,7 +296,7 @@ export default function RegisterScreen({ onNavigateToLogin }: RegisterScreenProp
                     onPress={() => setShowPassword(!showPassword)}
                     disabled={isRegistering}
                   >
-                    <ThemedText style={[styles.eyeIcon, { color: textColor }]}>
+                    <ThemedText style={[styles.eyeIcon, { color: colorScheme === 'dark' ? '#94a3b8' : textColor }]}>
                       {showPassword ? '👁️' : '🙈'}
                     </ThemedText>
                   </TouchableOpacity>
@@ -350,7 +360,7 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
-    paddingBottom: 20,
+    paddingBottom: 5,
   },
   header: {
     alignItems: 'center',

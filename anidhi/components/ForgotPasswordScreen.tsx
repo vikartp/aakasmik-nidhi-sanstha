@@ -137,9 +137,14 @@ export default function ForgotPasswordScreen({ onNavigateToLogin }: ForgotPasswo
             <ThemedView style={[
               styles.formCard, 
               { 
-                backgroundColor: colorScheme === 'dark' ? '#1f2937' : '#ffffff',
+                backgroundColor: 'transparent',
                 shadowColor: colorScheme === 'dark' ? '#000' : '#000',
-                shadowOpacity: colorScheme === 'dark' ? 0.3 : 0.1,
+                shadowOpacity: colorScheme === 'dark' ? 0.6 : 0.1,
+                shadowOffset: colorScheme === 'dark' ? { width: 0, height: 12 } : { width: 0, height: 8 },
+                shadowRadius: colorScheme === 'dark' ? 20 : 15,
+                elevation: colorScheme === 'dark' ? 12 : 8,
+                borderWidth: colorScheme === 'dark' ? 1 : 0,
+                borderColor: colorScheme === 'dark' ? 'rgba(51, 65, 85, 0.3)' : 'transparent',
               }
             ]}>
 
@@ -150,9 +155,10 @@ export default function ForgotPasswordScreen({ onNavigateToLogin }: ForgotPasswo
                   style={[
                     styles.input, 
                     { 
-                      backgroundColor,
+                      backgroundColor: colorScheme === 'dark' ? '#0f172a' : backgroundColor,
                       color: textColor,
-                      borderColor: colorScheme === 'dark' ? '#374151' : '#e1e8ed'
+                      borderColor: colorScheme === 'dark' ? '#475569' : '#e1e8ed',
+                      borderWidth: colorScheme === 'dark' ? 1.5 : 2,
                     },
                     errors.mobile ? styles.inputError : null
                   ]}
@@ -161,7 +167,7 @@ export default function ForgotPasswordScreen({ onNavigateToLogin }: ForgotPasswo
                   onChangeText={(value) => handleChange('mobile', value)}
                   keyboardType="numeric"
                   maxLength={10}
-                  placeholderTextColor={colorScheme === 'dark' ? '#9CA3AF' : '#999'}
+                  placeholderTextColor={colorScheme === 'dark' ? '#64748b' : '#999'}
                   editable={!isResetting}
                 />
                 {errors.mobile ? <ThemedText style={styles.errorText}>{errors.mobile}</ThemedText> : null}
@@ -174,16 +180,17 @@ export default function ForgotPasswordScreen({ onNavigateToLogin }: ForgotPasswo
                   style={[
                     styles.input, 
                     { 
-                      backgroundColor,
+                      backgroundColor: colorScheme === 'dark' ? '#0f172a' : backgroundColor,
                       color: textColor,
-                      borderColor: colorScheme === 'dark' ? '#374151' : '#e1e8ed'
+                      borderColor: colorScheme === 'dark' ? '#475569' : '#e1e8ed',
+                      borderWidth: colorScheme === 'dark' ? 1.5 : 2,
                     },
                     errors.secretKey ? styles.inputError : null
                   ]}
                   placeholder="अपनी गुप्त कुंजी दर्ज करें"
                   value={form.secretKey}
                   onChangeText={(value) => handleChange('secretKey', value)}
-                  placeholderTextColor={colorScheme === 'dark' ? '#9CA3AF' : '#999'}
+                  placeholderTextColor={colorScheme === 'dark' ? '#64748b' : '#999'}
                   editable={!isResetting}
                   autoCapitalize="none"
                 />
@@ -201,9 +208,10 @@ export default function ForgotPasswordScreen({ onNavigateToLogin }: ForgotPasswo
                     style={[
                       styles.passwordInput, 
                       { 
-                        backgroundColor,
+                        backgroundColor: colorScheme === 'dark' ? '#0f172a' : backgroundColor,
                         color: textColor,
-                        borderColor: colorScheme === 'dark' ? '#374151' : '#e1e8ed'
+                        borderColor: colorScheme === 'dark' ? '#475569' : '#e1e8ed',
+                        borderWidth: colorScheme === 'dark' ? 1.5 : 2,
                       },
                       errors.newPassword ? styles.inputError : null
                     ]}
@@ -211,7 +219,7 @@ export default function ForgotPasswordScreen({ onNavigateToLogin }: ForgotPasswo
                     value={form.newPassword}
                     onChangeText={(value) => handleChange('newPassword', value)}
                     secureTextEntry={!showPassword}
-                    placeholderTextColor={colorScheme === 'dark' ? '#9CA3AF' : '#999'}
+                    placeholderTextColor={colorScheme === 'dark' ? '#64748b' : '#999'}
                     editable={!isResetting}
                   />
                   <TouchableOpacity 
@@ -219,7 +227,7 @@ export default function ForgotPasswordScreen({ onNavigateToLogin }: ForgotPasswo
                     onPress={() => setShowPassword(!showPassword)}
                     disabled={isResetting}
                   >
-                    <ThemedText style={[styles.eyeIcon, { color: textColor }]}>
+                    <ThemedText style={[styles.eyeIcon, { color: colorScheme === 'dark' ? '#94a3b8' : textColor }]}>
                       {showPassword ? '👁️' : '🙈'}
                     </ThemedText>
                   </TouchableOpacity>
@@ -269,7 +277,7 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
-    paddingBottom: 20,
+    paddingBottom: 5,
   },
   header: {
     alignItems: 'center',
