@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { StyleSheet, ScrollView, View, Text, Image, Alert, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
@@ -19,6 +19,9 @@ export default function MonthlyStatusTable() {
   const [selectedMonth, setSelectedMonth] = useState<string>(MONTHS[new Date().getMonth()]);
   const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
   const [overallTotal, setOverallTotal] = useState<number>(0);
+
+  const monthScrollRef = useRef<ScrollView>(null);
+  const yearScrollRef = useRef<ScrollView>(null);
 
   const textColor = useThemeColor({}, 'text');
   const tintColor = useThemeColor({}, 'tint');
@@ -75,6 +78,42 @@ export default function MonthlyStatusTable() {
     fetchData();
   }, [fetchData]);
 
+  const scrollToSelectedMonth = useCallback(() => {
+    const monthIndex = MONTHS.indexOf(selectedMonth);
+    if (monthScrollRef.current && monthIndex !== -1) {
+      const buttonWidth = 80; // Approximate width including margins
+      const scrollPosition = Math.max(0, monthIndex * buttonWidth - 150); // Offset to center better
+      setTimeout(() => {
+        monthScrollRef.current?.scrollTo({ x: scrollPosition, animated: true });
+      }, 50);
+    }
+  }, [selectedMonth]);
+
+  const scrollToSelectedYear = useCallback(() => {
+    const yearIndex = yearList.indexOf(selectedYear);
+    if (yearScrollRef.current && yearIndex !== -1) {
+      const buttonWidth = 90; // Approximate width including margins  
+      const scrollPosition = Math.max(0, yearIndex * buttonWidth - 100);
+      setTimeout(() => {
+        yearScrollRef.current?.scrollTo({ x: scrollPosition, animated: true });
+      }, 50);
+    }
+  }, [selectedYear, yearList]);
+
+  // Auto-scroll to selected month and year when they change
+  useEffect(() => {
+    scrollToSelectedMonth();
+    scrollToSelectedYear();
+  }, [selectedMonth, selectedYear, scrollToSelectedMonth, scrollToSelectedYear]);
+
+  const handleMonthScrollLayout = () => {
+    scrollToSelectedMonth();
+  };
+
+  const handleYearScrollLayout = () => {
+    scrollToSelectedYear();
+  };
+
   const getStatusInfo = (userId: string) => {
     const contribution = contributions[userId];
     if (contribution) {
@@ -114,6 +153,28 @@ export default function MonthlyStatusTable() {
     }, 0);
   };
 
+  const handleMonthSelect = (month: string) => {
+    setSelectedMonth(month);
+    // Scroll to selected month
+    const monthIndex = MONTHS.indexOf(month);
+    if (monthScrollRef.current && monthIndex !== -1) {
+      const buttonWidth = 80; // Approximate width including margins
+      const scrollPosition = Math.max(0, monthIndex * buttonWidth - 100); // Center the selected item
+      monthScrollRef.current.scrollTo({ x: scrollPosition, animated: true });
+    }
+  };
+
+  const handleYearSelect = (year: number) => {
+    setSelectedYear(year);
+    // Scroll to selected year
+    const yearIndex = yearList.indexOf(year);
+    if (yearScrollRef.current && yearIndex !== -1) {
+      const buttonWidth = 90; // Approximate width including margins
+      const scrollPosition = Math.max(0, yearIndex * buttonWidth - 100); // Center the selected item
+      yearScrollRef.current.scrollTo({ x: scrollPosition, animated: true });
+    }
+  };
+
   if (loading) {
     return (
       <ThemedView style={styles.loadingContainer}>
@@ -128,14 +189,19 @@ export default function MonthlyStatusTable() {
       {/* Header */}
       <ThemedView style={styles.header}>
         <ThemedText style={styles.title}>मासिक भुगतान स्थिति</ThemedText>
-        <ThemedText style={styles.subtitle}>Monthly Payment Status</ThemedText>
       </ThemedView>
 
       {/* Month/Year Selectors */}
       <ThemedView style={styles.filtersContainer}>
         <ThemedView style={styles.filterGroup}>
           <ThemedText style={styles.filterLabel}>Month</ThemedText>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.monthScroll}>
+          <ScrollView 
+            ref={monthScrollRef}
+            horizontal 
+            showsHorizontalScrollIndicator={true}
+            style={styles.monthScroll}
+            onLayout={handleMonthScrollLayout}
+          >
             {MONTHS.map((month) => (
               <TouchableOpacity
                 key={month}
@@ -143,7 +209,7 @@ export default function MonthlyStatusTable() {
                   styles.monthButton,
                   selectedMonth === month && { backgroundColor: tintColor }
                 ]}
-                onPress={() => setSelectedMonth(month)}
+                onPress={() => handleMonthSelect(month)}
               >
                 <Text style={[
                   styles.monthButtonText,
@@ -158,7 +224,13 @@ export default function MonthlyStatusTable() {
 
         <ThemedView style={styles.filterGroup}>
           <ThemedText style={styles.filterLabel}>Year</ThemedText>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.yearScroll}>
+          <ScrollView 
+            ref={yearScrollRef}
+            horizontal 
+            showsHorizontalScrollIndicator={true}
+            style={styles.yearScroll}
+            onLayout={handleYearScrollLayout}
+          >
             {yearList.map((year) => (
               <TouchableOpacity
                 key={year}
@@ -166,7 +238,7 @@ export default function MonthlyStatusTable() {
                   styles.yearButton,
                   selectedYear === year && { backgroundColor: tintColor }
                 ]}
-                onPress={() => setSelectedYear(year)}
+                onPress={() => handleYearSelect(year)}
               >
                 <Text style={[
                   styles.yearButtonText,
@@ -256,6 +328,16 @@ export default function MonthlyStatusTable() {
           </ThemedText>
         </ThemedView>
       )}
+
+      {/* PDF Download Note */}
+      <ThemedView style={styles.downloadNoteContainer}>
+        <ThemedText style={styles.downloadNoteText}>
+          📄 PDF डाउनलोड के लिए कृपया वेब पोर्टल (ब्राउज़र) का उपयोग करें
+        </ThemedText>
+        <ThemedText style={styles.downloadNoteSubtext}>
+          Please use the web portal (browser) to download PDF reports
+        </ThemedText>
+      </ThemedView>
     </ThemedView>
   );
 }
@@ -283,20 +365,16 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 16,
-    opacity: 0.7,
-    textAlign: 'center',
+    paddingTop: 4,
+    paddingBottom: 2,
   },
   filtersContainer: {
     paddingHorizontal: 16,
     paddingBottom: 16,
-    gap: 12,
+    gap: 2,
   },
   filterGroup: {
-    gap: 8,
+    gap: 2,
   },
   filterLabel: {
     fontSize: 14,
@@ -335,7 +413,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   tableContainer: {
-    maxHeight: 460, // Increased height for better viewing
+    maxHeight: 500, // Increased height for better viewing
     paddingHorizontal: 16,
   },
   tableRow: {
@@ -449,5 +527,30 @@ const styles = StyleSheet.create({
     opacity: 0.8,
     textAlign: 'center',
     lineHeight: 16,
+  },
+  downloadNoteContainer: {
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    marginTop: 12,
+    marginHorizontal: 16,
+    marginBottom: 16,
+    borderRadius: 8,
+    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(59, 130, 246, 0.2)',
+    alignItems: 'center',
+    gap: 4,
+  },
+  downloadNoteText: {
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'center',
+    color: '#3b82f6',
+  },
+  downloadNoteSubtext: {
+    fontSize: 12,
+    opacity: 0.8,
+    textAlign: 'center',
+    color: '#6b7280',
   },
 });

@@ -447,7 +447,6 @@ class ApiService {
       }
 
       const data = await response.json();
-      console.log('Total contributions response:', data);
       
       return data.total || 0;
     } catch (error) {

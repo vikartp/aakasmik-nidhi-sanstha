@@ -428,9 +428,9 @@ const styles = StyleSheet.create({
     marginBottom: 0,
   },
   profilePhotoContainer: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
+    width: 90,
+    height: 90,
+    borderRadius: 45,
     overflow: 'hidden',
     borderWidth: 2,
     borderColor: '#007AFF',
@@ -451,6 +451,7 @@ const styles = StyleSheet.create({
     gap: 8,
     alignItems: 'center',
     width: 50,
+    paddingTop: 6,
   },
   welcomeText: {
     fontSize: 14,
@@ -477,8 +478,8 @@ const styles = StyleSheet.create({
   },
   logoutButton: {
     backgroundColor: '#ff4444',
-    width: 38,
-    height: 38,
+    width: 44,
+    height: 44,
     borderRadius: 19,
     alignItems: 'center',
     justifyContent: 'center',
@@ -490,8 +491,8 @@ const styles = StyleSheet.create({
   },
   refreshButton: {
     backgroundColor: '#007AFF',
-    width: 38,
-    height: 38,
+    width: 44,
+    height: 44,
     borderRadius: 19,
     alignItems: 'center',
     justifyContent: 'center',
