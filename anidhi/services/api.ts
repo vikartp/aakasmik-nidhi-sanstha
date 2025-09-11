@@ -45,6 +45,19 @@ interface Contribution {
   contributionDate: string;
 }
 
+interface Screenshot {
+  _id: string;
+  userId: string;
+  url: string;
+  publicId: string;
+  uploadedAt: string;
+  uploadMonth: string;
+  uploadYear: string;
+  type: 'payment' | 'qrCode';
+  verified: boolean;
+  rejected?: string;
+}
+
 class ApiService {
   private baseURL: string;
 
@@ -232,7 +245,28 @@ class ApiService {
       throw error;
     }
   }
+
+  async getContributionsByYearAndMonth(year: number, month: string): Promise<Contribution[]> {
+    try {
+      const headers = await this.getAuthHeaders();
+      
+      const response = await fetch(`${this.baseURL}/contributions/year/${year}/month/${month}`, {
+        method: 'GET',
+        headers,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to fetch contributions');
+      }
+
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default new ApiService();
-export type { LoginRequest, LoginResponse, User, Contribution };
+export type { LoginRequest, LoginResponse, User, Contribution, Screenshot };

@@ -16,43 +16,72 @@ const ShareIntentHandler: React.FC<ShareIntentHandlerProps> = ({ userId, onImage
     return new Date().toLocaleString('default', { month: 'long' });
   };
 
-  const uploadSharedImages = useCallback(async (imageFiles: any[]) => {
+  const getHindiMonthName = (englishMonth: string) => {
+    const monthMap: { [key: string]: string } = {
+      'January': 'जनवरी',
+      'February': 'फरवरी',
+      'March': 'मार्च',
+      'April': 'अप्रैल',
+      'May': 'मई',
+      'June': 'जून',
+      'July': 'जुलाई',
+      'August': 'अगस्त',
+      'September': 'सितंबर',
+      'October': 'अक्टूबर',
+      'November': 'नवंबर',
+      'December': 'दिसंबर'
+    };
+    return monthMap[englishMonth] || englishMonth;
+  };
+
+  const uploadSharedImage = useCallback(async (imageFile: any) => {
     setUploading(true);
     
     try {
-      const uploadPromises = imageFiles.map(async (file, index) => {
-        const fileObj = {
-          uri: file.path,
-          type: file.mimeType,
-          name: file.fileName || `shared_screenshot_${Date.now()}_${index}.jpg`,
-        };
-
-        return ApiService.uploadScreenshot(
-          fileObj,
-          userId,
-          getCurrentMonth()
-        );
-      });
-
-      const results = await Promise.all(uploadPromises);
-      const successCount = results.filter(result => result.url).length;
-
-      if (successCount > 0) {
+      // Check if user has already contributed for current month
+      const currentMonth = getCurrentMonth();
+      const currentYear = new Date().getFullYear();
+      
+      const existingContributions = await ApiService.getContributionsByYearAndMonth(currentYear, currentMonth);
+      const userContribution = existingContributions.find(contribution => contribution.userId === userId);
+      
+      if (userContribution) {
         Alert.alert(
-          'Upload Successful',
-          `Successfully uploaded ${successCount} image(s) as payment screenshots!`
+          'पहले से योगदान दिया गया',
+          `आपने इस महीने (${getHindiMonthName(currentMonth)}) पहले से ही ₹${userContribution.amount} का योगदान दिया है। एक महीने में केवल एक बार योगदान दे सकते हैं।`
+        );
+        resetShareIntent();
+        return;
+      }
+
+      const fileObj = {
+        uri: imageFile.path,
+        type: imageFile.mimeType,
+        name: imageFile.fileName || `monthly_payment_${Date.now()}.jpg`,
+      };
+
+      const result = await ApiService.uploadScreenshot(
+        fileObj,
+        userId,
+        getCurrentMonth()
+      );
+
+      if (result.url) {
+        Alert.alert(
+          'अपलोड सफल',
+          'मासिक भुगतान स्क्रीनशॉट सफलतापूर्वक अपलोड हो गया!'
         );
         
-        // Notify parent component about the first uploaded image
-        if (results[0]?.url && onImageUploaded) {
-          onImageUploaded(results[0].url);
+        // Notify parent component about the uploaded image
+        if (onImageUploaded) {
+          onImageUploaded(result.url);
         }
       } else {
-        Alert.alert('Upload Failed', 'No images were uploaded successfully');
+        Alert.alert('अपलोड असफल', 'स्क्रीनशॉट अपलोड नहीं हो सका');
       }
     } catch (error) {
       console.error('Upload error:', error);
-      Alert.alert('Upload Failed', error instanceof Error ? error.message : 'Failed to upload images');
+      Alert.alert('अपलोड असफल', error instanceof Error ? error.message : 'स्क्रीनशॉट अपलोड में समस्या');
     } finally {
       setUploading(false);
       resetShareIntent();
@@ -69,33 +98,36 @@ const ShareIntentHandler: React.FC<ShareIntentHandlerProps> = ({ userId, onImage
       );
 
       if (imageFiles.length === 0) {
-        Alert.alert('No Images', 'No image files were shared. Please share image files for screenshot upload.');
+        Alert.alert('कोई तस्वीर नहीं', 'कोई तस्वीर साझा नहीं की गई। कृपया भुगतान स्क्रीनशॉट के लिए तस्वीर साझा करें।');
         resetShareIntent();
         return;
       }
 
+      // Take only the first image for monthly payment
+      const firstImage = imageFiles[0];
+
       // Show confirmation dialog
       Alert.alert(
-        'Upload Shared Images',
-        `${imageFiles.length} image(s) were shared with the app. Do you want to upload them as payment screenshots?`,
+        'मासिक भुगतान अपलोड करें',
+        'क्या आप इस तस्वीर को मासिक भुगतान स्क्रीनशॉट के रूप में अपलोड करना चाहते हैं?',
         [
           {
-            text: 'Cancel',
+            text: 'रद्द करें',
             style: 'cancel',
             onPress: () => resetShareIntent(),
           },
           {
-            text: 'Upload',
-            onPress: () => uploadSharedImages(imageFiles),
+            text: 'अपलोड करें',
+            onPress: () => uploadSharedImage(firstImage),
           },
         ]
       );
     } catch (error) {
       console.error('Error handling shared images:', error);
-      Alert.alert('Error', 'Failed to process shared images');
+      Alert.alert('त्रुटि', 'साझा की गई तस्वीर को प्रोसेस करने में समस्या');
       resetShareIntent();
     }
-  }, [shareIntent, resetShareIntent, uploadSharedImages]);
+  }, [shareIntent, resetShareIntent, uploadSharedImage]);
 
   useEffect(() => {
     if (hasShareIntent && shareIntent?.files && shareIntent.files.length > 0) {
@@ -107,34 +139,38 @@ const ShareIntentHandler: React.FC<ShareIntentHandlerProps> = ({ userId, onImage
   if (hasShareIntent && shareIntent?.files && shareIntent.files.length > 0) {
     const imageFiles = shareIntent.files.filter(file => file.mimeType.startsWith('image/'));
     
-    return (
-      <View style={styles.container}>
-        <View style={styles.notification}>
-          <Text style={styles.notificationTitle}>📤 Shared Content Detected</Text>
-          <Text style={styles.notificationText}>
-            {imageFiles.length} image(s) ready to upload as payment screenshots
-          </Text>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity 
-              style={styles.uploadButton} 
-              onPress={() => uploadSharedImages(imageFiles)}
-              disabled={uploading}
-            >
-              <Text style={styles.uploadButtonText}>
-                {uploading ? 'Uploading...' : 'Upload Now'}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={styles.cancelButton} 
-              onPress={resetShareIntent}
-              disabled={uploading}
-            >
-              <Text style={styles.cancelButtonText}>Cancel</Text>
-            </TouchableOpacity>
+    if (imageFiles.length > 0) {
+      const firstImage = imageFiles[0];
+      
+      return (
+        <View style={styles.container}>
+          <View style={styles.notification}>
+            <Text style={styles.notificationTitle}>📤 मासिक भुगतान स्क्रीनशॉट</Text>
+            <Text style={styles.notificationText}>
+              भुगतान स्क्रीनशॉट अपलोड करने के लिए तैयार है
+            </Text>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity 
+                style={styles.uploadButton} 
+                onPress={() => uploadSharedImage(firstImage)}
+                disabled={uploading}
+              >
+                <Text style={styles.uploadButtonText}>
+                  {uploading ? 'अपलोड हो रहा है...' : 'अभी अपलोड करें'}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={styles.cancelButton} 
+                onPress={resetShareIntent}
+                disabled={uploading}
+              >
+                <Text style={styles.cancelButtonText}>रद्द करें</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
-    );
+      );
+    }
   }
 
   // Show error if any
@@ -142,9 +178,9 @@ const ShareIntentHandler: React.FC<ShareIntentHandlerProps> = ({ userId, onImage
     return (
       <View style={styles.container}>
         <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>Share Intent Error: {error}</Text>
+          <Text style={styles.errorText}>साझाकरण त्रुटि: {error}</Text>
           <TouchableOpacity style={styles.errorButton} onPress={resetShareIntent}>
-            <Text style={styles.errorButtonText}>Dismiss</Text>
+            <Text style={styles.errorButtonText}>बंद करें</Text>
           </TouchableOpacity>
         </View>
       </View>

@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { StyleSheet, TouchableOpacity, Alert, ScrollView, Image } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { StyleSheet, TouchableOpacity, Alert, ScrollView, Image, RefreshControl } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import { useAuth } from '@/context/AuthContext';
-import { User } from '@/services/api';
+import ApiService, { User, Screenshot } from '@/services/api';
 import ShareIntentHandler from '@/components/ShareIntentHandler';
 import ContributionTable from '@/components/ContributionTable';
 
@@ -14,6 +14,9 @@ interface DashboardScreenProps {
 const DashboardScreen: React.FC<DashboardScreenProps> = ({ user }) => {
   const { logout } = useAuth();
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [currentMonthScreenshot, setCurrentMonthScreenshot] = useState<Screenshot | null>(null);
+  const [currentMonthStatus, setCurrentMonthStatus] = useState<'pending' | 'none' | 'verified' | 'rejected'>('none');
+  const [refreshing, setRefreshing] = useState(false);
 
   const getCurrentMonth = () => {
     const hindiMonths = [
@@ -23,17 +26,70 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ user }) => {
     return hindiMonths[new Date().getMonth()];
   };
 
+  const getCurrentMonthEnglish = () => {
+    return new Date().toLocaleString('default', { month: 'long' });
+  };
+
+  // Function to fetch current month screenshot status
+  const fetchCurrentMonthStatus = useCallback(async () => {
+    try {
+      const currentMonth = getCurrentMonthEnglish();
+      const screenshots = await ApiService.getScreenshots(user._id, currentMonth);
+      
+      if (screenshots && screenshots.length > 0) {
+        const screenshot = screenshots[0];
+        setCurrentMonthScreenshot(screenshot);
+        
+        if (screenshot.verified) {
+          setCurrentMonthStatus('verified');
+        } else if (screenshot.rejected) {
+          setCurrentMonthStatus('rejected');
+        } else {
+          setCurrentMonthStatus('pending');
+        }
+      } else {
+        setCurrentMonthScreenshot(null);
+        setCurrentMonthStatus('none');
+      }
+    } catch (error) {
+      console.error('Error fetching screenshot status:', error);
+      setCurrentMonthStatus('none');
+    }
+  }, [user._id]);
+
+  // Pull to refresh handler
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await fetchCurrentMonthStatus();
+    } catch (error) {
+      console.error('Error refreshing data:', error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+  // Fetch current month screenshot status
+  useEffect(() => {
+    fetchCurrentMonthStatus();
+  }, [user._id, uploadedImage, fetchCurrentMonthStatus]); // Re-fetch when image is uploaded
+
+  const handleImageUploaded = (imageUrl: string) => {
+    setUploadedImage(imageUrl);
+    // The useEffect will automatically re-fetch the status
+  };
+
   const handleLogout = async () => {
     Alert.alert(
-      'Logout',
-      'Are you sure you want to logout?',
+      'लॉगआउट',
+      'क्या आप वाकई लॉगआउट करना चाहते हैं?',
       [
         {
-          text: 'Cancel',
+          text: 'रद्द करें',
           style: 'cancel',
         },
         {
-          text: 'Logout',
+          text: 'लॉगआउट',
           style: 'destructive',
           onPress: async () => {
             try {
@@ -48,12 +104,24 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ user }) => {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView 
+      style={styles.container}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          colors={['#007AFF']} // Android
+          tintColor={'#007AFF'} // iOS
+          title="डेटा रीफ्रेश कर रहे हैं..." // iOS
+          titleColor={'#007AFF'} // iOS
+        />
+      }
+    >
       <ThemedView style={styles.content}>
         {/* Share Intent Handler - handles images shared from other apps */}
         <ShareIntentHandler 
           userId={user._id} 
-          onImageUploaded={setUploadedImage}
+          onImageUploaded={handleImageUploaded}
         />
 
         {/* Header */}
@@ -63,31 +131,43 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ user }) => {
             <ThemedText style={styles.nameText}>{user.name}</ThemedText>
             <ThemedText style={styles.roleText}>{user.role.toUpperCase()}</ThemedText>
           </ThemedView>
-          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-            <ThemedText style={styles.logoutButtonText}>Logout</ThemedText>
-          </TouchableOpacity>
+          <ThemedView style={styles.headerButtons}>
+            <TouchableOpacity 
+              style={styles.refreshButton} 
+              onPress={onRefresh}
+              disabled={refreshing}
+            >
+              <ThemedText style={styles.refreshButtonText}>
+                {refreshing ? '🔄' : '🔄'} रीफ्रेश
+              </ThemedText>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+              <ThemedText style={styles.logoutButtonText}>लॉगआउट</ThemedText>
+            </TouchableOpacity>
+          </ThemedView>
         </ThemedView>
 
         {/* User Info */}
         <ThemedView style={styles.userInfo}>
-          <ThemedText style={styles.infoTitle}>Your Information</ThemedText>
+          <ThemedText style={styles.infoTitle}>आपकी जानकारी</ThemedText>
+          <ThemedText style={styles.infoTitleEng}>Your Information</ThemedText>
           <ThemedView style={styles.infoRow}>
-            <ThemedText style={styles.infoLabel}>Mobile:</ThemedText>
+            <ThemedText style={styles.infoLabel}>मोबाइल:</ThemedText>
             <ThemedText style={styles.infoValue}>{user.mobile}</ThemedText>
           </ThemedView>
           <ThemedView style={styles.infoRow}>
-            <ThemedText style={styles.infoLabel}>Father&apos;s Name:</ThemedText>
+            <ThemedText style={styles.infoLabel}>पिता का नाम:</ThemedText>
             <ThemedText style={styles.infoValue}>{user.fatherName}</ThemedText>
           </ThemedView>
           {user.email && (
             <ThemedView style={styles.infoRow}>
-              <ThemedText style={styles.infoLabel}>Email:</ThemedText>
+              <ThemedText style={styles.infoLabel}>ईमेल:</ThemedText>
               <ThemedText style={styles.infoValue}>{user.email}</ThemedText>
             </ThemedView>
           )}
           {user.occupation && (
             <ThemedView style={styles.infoRow}>
-              <ThemedText style={styles.infoLabel}>Occupation:</ThemedText>
+              <ThemedText style={styles.infoLabel}>व्यवसाय:</ThemedText>
               <ThemedText style={styles.infoValue}>{user.occupation}</ThemedText>
             </ThemedView>
           )}
@@ -137,8 +217,78 @@ const DashboardScreen: React.FC<DashboardScreenProps> = ({ user }) => {
           )}
         </ThemedView>
 
+        {/* Current Month Screenshot Status */}
+        {currentMonthStatus === 'pending' && (
+          <ThemedView style={styles.statusContainer}>
+            <ThemedView style={[styles.statusCard, styles.pendingCard]}>
+              <ThemedText style={[styles.statusIcon, styles.pendingText]}>⏳</ThemedText>
+              <ThemedView style={styles.statusContent}>
+                <ThemedText style={[styles.statusTitle, styles.pendingText]}>
+                  इस महीने का सत्यापन लंबित है
+                </ThemedText>
+                <ThemedText style={[styles.statusSubtitle, styles.pendingText]}>
+                  Verification Pending for This Month
+                </ThemedText>
+              </ThemedView>
+            </ThemedView>
+          </ThemedView>
+        )}
+
+        {currentMonthStatus === 'rejected' && currentMonthScreenshot && (
+          <ThemedView style={styles.statusContainer}>
+            <ThemedView style={[styles.statusCard, styles.rejectedCard]}>
+              <ThemedText style={[styles.statusIcon, styles.rejectedText]}>❌</ThemedText>
+              <ThemedView style={styles.statusContent}>
+                <ThemedText style={[styles.statusTitle, styles.rejectedText]}>
+                  आपका स्क्रीनशॉट अस्वीकार कर दिया गया है
+                </ThemedText>
+                <ThemedText style={[styles.statusSubtitle, styles.rejectedText]}>
+                  Screenshot Rejected - Please Re-upload
+                </ThemedText>
+                {currentMonthScreenshot.rejected && (
+                  <ThemedText style={[styles.rejectionReason, styles.rejectedText]}>
+                    कारण: {currentMonthScreenshot.rejected}
+                  </ThemedText>
+                )}
+              </ThemedView>
+            </ThemedView>
+          </ThemedView>
+        )}
+
+        {currentMonthStatus === 'verified' && (
+          <ThemedView style={styles.statusContainer}>
+            <ThemedView style={[styles.statusCard, styles.verifiedCard]}>
+              <ThemedText style={[styles.statusIcon, styles.verifiedText]}>✅</ThemedText>
+              <ThemedView style={styles.statusContent}>
+                <ThemedText style={[styles.statusTitle, styles.verifiedText]}>
+                  इस महीने का स्क्रीनशॉट सत्यापित है
+                </ThemedText>
+                <ThemedText style={[styles.statusSubtitle, styles.verifiedText]}>
+                  Screenshot Verified for This Month
+                </ThemedText>
+              </ThemedView>
+            </ThemedView>
+          </ThemedView>
+        )}
+
+        {/* Display uploaded screenshot if available */}
+        {currentMonthScreenshot && (
+          <ThemedView style={styles.screenshotContainer}>
+            <ThemedText style={styles.screenshotTitle}>
+              आपका अपलोड किया गया स्क्रीनशॉट
+            </ThemedText>
+            <ThemedText style={styles.screenshotTitleEng}>
+              Your Uploaded Screenshot
+            </ThemedText>
+            <Image source={{ uri: currentMonthScreenshot.url }} style={styles.currentScreenshot} />
+          </ThemedView>
+        )}
+
         {/* Contribution Table */}
-        <ContributionTable userId={user._id} />
+        <ContributionTable 
+          userId={user._id} 
+          key={`contributions-${uploadedImage}-${currentMonthStatus}`}
+        />
       </ThemedView>
     </ScrollView>
   );
@@ -158,9 +308,18 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     paddingVertical: 16,
   },
+  headerButtons: {
+    flexDirection: 'row',
+    gap: 8,
+  },
   welcomeText: {
     fontSize: 18,
     opacity: 0.7,
+  },
+  welcomeTextEng: {
+    fontSize: 14,
+    opacity: 0.5,
+    marginTop: 2,
   },
   nameText: {
     fontSize: 24,
@@ -179,6 +338,17 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 6,
   },
+  refreshButton: {
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 6,
+  },
+  refreshButtonText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 13,
+  },
   logoutButtonText: {
     color: '#fff',
     fontWeight: '600',
@@ -192,6 +362,12 @@ const styles = StyleSheet.create({
   infoTitle: {
     fontSize: 18,
     fontWeight: '600',
+    marginBottom: 8,
+  },
+  infoTitleEng: {
+    fontSize: 14,
+    fontWeight: '500',
+    opacity: 0.6,
     marginBottom: 8,
   },
   infoRow: {
@@ -306,6 +482,89 @@ const styles = StyleSheet.create({
     fontSize: 14,
     opacity: 0.8,
     lineHeight: 20,
+  },
+  // Status indicator styles
+  statusContainer: {
+    marginVertical: 8,
+  },
+  statusCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    gap: 12,
+  },
+  pendingCard: {
+    backgroundColor: 'rgba(255, 193, 7, 0.1)',
+    borderColor: 'rgba(255, 193, 7, 0.3)',
+  },
+  rejectedCard: {
+    backgroundColor: 'rgba(220, 53, 69, 0.1)',
+    borderColor: 'rgba(220, 53, 69, 0.3)',
+  },
+  verifiedCard: {
+    backgroundColor: 'rgba(40, 167, 69, 0.1)',
+    borderColor: 'rgba(40, 167, 69, 0.3)',
+  },
+  statusIcon: {
+    fontSize: 24,
+  },
+  statusContent: {
+    flex: 1,
+    gap: 4,
+  },
+  statusTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  statusSubtitle: {
+    fontSize: 13,
+    fontWeight: '500',
+    opacity: 0.8,
+  },
+  rejectionReason: {
+    fontSize: 13,
+    fontWeight: '500',
+    marginTop: 4,
+  },
+  pendingText: {
+    color: '#856404',
+  },
+  rejectedText: {
+    color: '#721c24',
+  },
+  verifiedText: {
+    color: '#155724',
+  },
+  // Screenshot display styles
+  screenshotContainer: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 123, 255, 0.1)',
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(0, 123, 255, 0.2)',
+    gap: 12,
+  },
+  screenshotTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#004085',
+  },
+  screenshotTitleEng: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: '#004085',
+    opacity: 0.7,
+  },
+  currentScreenshot: {
+    width: 250,
+    height: 180,
+    borderRadius: 8,
+    resizeMode: 'cover',
+    borderWidth: 1,
+    borderColor: 'rgba(0, 123, 255, 0.3)',
   },
 });
 
