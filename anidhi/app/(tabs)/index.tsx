@@ -6,11 +6,17 @@ import { useAuth } from '@/context/AuthContext';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import DashboardScreen from '@/components/DashboardScreen';
+import RegisterScreen from '@/components/RegisterScreen';
+import ForgotPasswordScreen from '@/components/ForgotPasswordScreen';
+
+type ScreenMode = 'login' | 'register' | 'forgotPassword';
 
 export default function HomeScreen() {
   const { user, isLoading, isAuthenticated, login } = useAuth();
+  const [screenMode, setScreenMode] = useState<ScreenMode>('login');
   const [mobileNumber, setMobileNumber] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{mobile?: string; password?: string}>({});
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   
@@ -35,19 +41,19 @@ export default function HomeScreen() {
 
     // Validate mobile number
     if (!mobileNumber.trim()) {
-      newErrors.mobile = 'Mobile number is required';
+      newErrors.mobile = 'मोबाइल नंबर आवश्यक है';
       isValid = false;
     } else if (!validateMobileNumber(mobileNumber)) {
-      newErrors.mobile = 'Please enter a valid 10-digit mobile number';
+      newErrors.mobile = 'कृपया वैध 10 अंकों का मोबाइल नंबर दर्ज करें';
       isValid = false;
     }
 
     // Validate password
     if (!password.trim()) {
-      newErrors.password = 'Password is required';
+      newErrors.password = 'पासवर्ड आवश्यक है';
       isValid = false;
     } else if (!validatePassword(password)) {
-      newErrors.password = 'Password must be at least 4 characters long';
+      newErrors.password = 'पासवर्ड कम से कम 4 अक्षर का होना चाहिए';
       isValid = false;
     }
 
@@ -59,7 +65,20 @@ export default function HomeScreen() {
         await login(mobileNumber, password);
         // Login successful - the user will be redirected automatically
       } catch (error) {
-        Alert.alert('Login Failed', error instanceof Error ? error.message : 'An error occurred during login');
+        let errorMessage = 'लॉगिन असफल। कृपया दोबारा कोशिश करें।';
+        
+        if (error instanceof Error) {
+          // Translate common error messages to Hindi
+          if (error.message.includes('Invalid credentials') || error.message.includes('not found')) {
+            errorMessage = 'गलत मोबाइल नंबर या पासवर्ड। कृपया सही जानकारी दर्ज करें।';
+          } else if (error.message.includes('not verified')) {
+            errorMessage = 'आपका खाता अभी तक सत्यापित नहीं है। कृपया व्यवस्थापक से संपर्क करें।';
+          } else if (error.message.includes('network') || error.message.includes('fetch')) {
+            errorMessage = 'नेटवर्क की समस्या। कृपया अपना इंटरनेट कनेक्शन जांचें।';
+          }
+        }
+        
+        Alert.alert('लॉगिन असफल', errorMessage);
       } finally {
         setIsLoggingIn(false);
       }
@@ -86,6 +105,15 @@ export default function HomeScreen() {
   // Show dashboard if user is authenticated
   if (isAuthenticated && user) {
     return <DashboardScreen user={user} />;
+  }
+
+  // Handle different screen modes
+  if (screenMode === 'register') {
+    return <RegisterScreen onNavigateToLogin={() => setScreenMode('login')} />;
+  }
+
+  if (screenMode === 'forgotPassword') {
+    return <ForgotPasswordScreen onNavigateToLogin={() => setScreenMode('login')} />;
   }
 
   // Show login form if not authenticated
@@ -124,13 +152,13 @@ export default function HomeScreen() {
                 shadowOpacity: colorScheme === 'dark' ? 0.3 : 0.1,
               }
             ]}>
-              <ThemedText style={[styles.welcomeText, { color: textColor }]}>Welcome Back!</ThemedText>
-              <ThemedText style={styles.subtitle}>Please login to continue</ThemedText>
+              <ThemedText style={[styles.welcomeText, { color: textColor }]}>स्वागत है! Welcome Back!</ThemedText>
+              <ThemedText style={styles.subtitle}>कृपया लॉगिन करें / Please login to continue</ThemedText>
 
               <ThemedView style={styles.formContainer}>
                 {/* Mobile Number Input */}
                 <ThemedView style={styles.inputContainer}>
-                  <ThemedText style={[styles.label, { color: textColor }]}>📱 Mobile Number</ThemedText>
+                  <ThemedText style={[styles.label, { color: textColor }]}>📱 मोबाइल नंबर (Mobile Number)</ThemedText>
                   <TextInput
                     style={[
                       styles.input, 
@@ -141,7 +169,7 @@ export default function HomeScreen() {
                       },
                       errors.mobile ? styles.inputError : null
                     ]}
-                    placeholder="Enter your mobile number"
+                    placeholder="अपना मोबाइल नंबर दर्ज करें"
                     value={mobileNumber}
                     onChangeText={setMobileNumber}
                     keyboardType="numeric"
@@ -154,24 +182,35 @@ export default function HomeScreen() {
 
                 {/* Password Input */}
                 <ThemedView style={styles.inputContainer}>
-                  <ThemedText style={[styles.label, { color: textColor }]}>🔒 Password</ThemedText>
-                  <TextInput
-                    style={[
-                      styles.input, 
-                      { 
-                        backgroundColor,
-                        color: textColor,
-                        borderColor: colorScheme === 'dark' ? '#374151' : '#e1e8ed'
-                      },
-                      errors.password ? styles.inputError : null
-                    ]}
-                    placeholder="Enter your password"
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry
-                    placeholderTextColor={colorScheme === 'dark' ? '#9CA3AF' : '#999'}
-                    editable={!isLoggingIn}
-                  />
+                  <ThemedText style={[styles.label, { color: textColor }]}>🔒 पासवर्ड (Password)</ThemedText>
+                  <ThemedView style={styles.passwordContainer}>
+                    <TextInput
+                      style={[
+                        styles.passwordInput, 
+                        { 
+                          backgroundColor,
+                          color: textColor,
+                          borderColor: colorScheme === 'dark' ? '#374151' : '#e1e8ed'
+                        },
+                        errors.password ? styles.inputError : null
+                      ]}
+                      placeholder="अपना पासवर्ड दर्ज करें"
+                      value={password}
+                      onChangeText={setPassword}
+                      secureTextEntry={!showPassword}
+                      placeholderTextColor={colorScheme === 'dark' ? '#9CA3AF' : '#999'}
+                      editable={!isLoggingIn}
+                    />
+                    <TouchableOpacity 
+                      style={styles.eyeButton}
+                      onPress={() => setShowPassword(!showPassword)}
+                      disabled={isLoggingIn}
+                    >
+                      <ThemedText style={[styles.eyeIcon, { color: textColor }]}>
+                        {showPassword ? '👁️' : '🙈'}
+                      </ThemedText>
+                    </TouchableOpacity>
+                  </ThemedView>
                   {errors.password ? <ThemedText style={styles.errorText}>{errors.password}</ThemedText> : null}
                 </ThemedView>
 
@@ -188,9 +227,36 @@ export default function HomeScreen() {
                   {isLoggingIn ? (
                     <ActivityIndicator size="small" color="#fff" />
                   ) : (
-                    <ThemedText style={styles.submitButtonText}>🚀 Login</ThemedText>
+                    <ThemedText style={styles.submitButtonText}>🚀 लॉगिन करें (Login)</ThemedText>
                   )}
                 </TouchableOpacity>
+
+                {/* Navigation Links */}
+                <ThemedView style={styles.linksContainer}>
+                  <TouchableOpacity 
+                    onPress={() => setScreenMode('forgotPassword')} 
+                    disabled={isLoggingIn}
+                    style={styles.linkItem}
+                  >
+                    <ThemedText style={[styles.linkButton, { color: '#f39c12' }]}>
+                      🔑 पासवर्ड भूल गए?
+                    </ThemedText>
+                  </TouchableOpacity>
+                  
+                  <ThemedView style={styles.linkSeparator}>
+                    <ThemedText style={[styles.linkText, { color: textColor }]}>
+                      नया उपयोगकर्ता हैं?{' '}
+                    </ThemedText>
+                    <TouchableOpacity 
+                      onPress={() => setScreenMode('register')} 
+                      disabled={isLoggingIn}
+                    >
+                      <ThemedText style={[styles.linkButton, { color: tintColor }]}>
+                        पंजीकरण करें
+                      </ThemedText>
+                    </TouchableOpacity>
+                  </ThemedView>
+                </ThemedView>
               </ThemedView>
             </ThemedView>
           </ThemedView>
@@ -312,6 +378,25 @@ const styles = StyleSheet.create({
     padding: 15,
     fontSize: 16,
   },
+  passwordContainer: {
+    position: 'relative',
+  },
+  passwordInput: {
+    borderWidth: 2,
+    borderRadius: 12,
+    padding: 15,
+    paddingRight: 50,
+    fontSize: 16,
+  },
+  eyeButton: {
+    position: 'absolute',
+    right: 15,
+    top: 15,
+    padding: 5,
+  },
+  eyeIcon: {
+    fontSize: 20,
+  },
   inputError: {
     borderColor: '#e74c3c',
   },
@@ -339,6 +424,26 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
+  },
+  linksContainer: {
+    marginTop: 20,
+    gap: 15,
+  },
+  linkItem: {
+    alignItems: 'center',
+  },
+  linkSeparator: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  linkText: {
+    fontSize: 14,
+  },
+  linkButton: {
+    fontSize: 14,
+    fontWeight: '600',
+    textDecorationLine: 'underline',
   },
   footer: {
     padding: 15,

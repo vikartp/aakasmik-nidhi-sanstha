@@ -19,9 +19,31 @@ interface LoginRequest {
   password: string;
 }
 
+interface RegisterRequest {
+  name: string;
+  fatherName: string;
+  email?: string;
+  mobile: string;
+  password: string;
+}
+
+interface ForgotPasswordRequest {
+  mobile: string;
+  secretKey: string;
+  newPassword: string;
+}
+
 interface LoginResponse {
   message: string;
   accessToken: string;
+}
+
+interface RegisterResponse {
+  message: string;
+}
+
+interface ForgotPasswordResponse {
+  message: string;
 }
 
 interface User {
@@ -103,6 +125,50 @@ class ApiService {
       // Store the access token
       if (data.accessToken) {
         await storageService.setItem('accessToken', data.accessToken);
+      }
+
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async register(userData: RegisterRequest): Promise<RegisterResponse> {
+    try {
+      const response = await fetch(`${this.baseURL}/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Registration failed');
+      }
+
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async forgotPassword(resetData: ForgotPasswordRequest): Promise<ForgotPasswordResponse> {
+    try {
+      const response = await fetch(`${this.baseURL}/auth/forgot-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(resetData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Password reset failed');
       }
 
       return data;
@@ -312,4 +378,14 @@ class ApiService {
 }
 
 export default new ApiService();
-export type { LoginRequest, LoginResponse, User, Contribution, Screenshot };
+export type { 
+  LoginRequest, 
+  LoginResponse, 
+  RegisterRequest, 
+  RegisterResponse, 
+  ForgotPasswordRequest, 
+  ForgotPasswordResponse, 
+  User, 
+  Contribution, 
+  Screenshot 
+};
