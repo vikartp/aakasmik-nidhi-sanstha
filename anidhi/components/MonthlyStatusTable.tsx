@@ -18,6 +18,7 @@ export default function MonthlyStatusTable() {
   const [loading, setLoading] = useState(true);
   const [selectedMonth, setSelectedMonth] = useState<string>(MONTHS[new Date().getMonth()]);
   const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
+  const [overallTotal, setOverallTotal] = useState<number>(0);
 
   const textColor = useThemeColor({}, 'text');
   const tintColor = useThemeColor({}, 'tint');
@@ -51,6 +52,16 @@ export default function MonthlyStatusTable() {
         contributionsMap[contribution.userId] = contribution;
       });
       setContributions(contributionsMap);
+
+      // Fetch overall total contributions
+      try {
+        const totalAmount = await ApiService.getTotalContributions();
+        setOverallTotal(totalAmount);
+      } catch (totalError) {
+        console.error('Error fetching total contributions:', totalError);
+        // Don't show error to user, just set total to 0
+        setOverallTotal(0);
+      }
 
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -230,6 +241,21 @@ export default function MonthlyStatusTable() {
           ₹{getTotalAmount().toLocaleString('en-IN')}
         </ThemedText>
       </ThemedView>
+
+      {/* Overall Total Contribution */}
+      {overallTotal > 0 && (
+        <ThemedView style={[styles.overallTotalContainer, { backgroundColor: '#22c55e20' }]}>
+          <ThemedText style={styles.overallTotalTitle}>
+            अब तक कुल योगदान राशि
+          </ThemedText>
+          <ThemedText style={[styles.overallTotalAmount, { color: '#22c55e' }]}>
+            ₹{overallTotal.toLocaleString('en-IN')}
+          </ThemedText>
+          <ThemedText style={styles.overallTotalSubtext}>
+            (यह अब तक सभी सदस्यों द्वारा दिया गया कुल योगदान है।)
+          </ThemedText>
+        </ThemedView>
+      )}
     </ThemedView>
   );
 }
@@ -398,5 +424,30 @@ const styles = StyleSheet.create({
   totalAmount: {
     fontSize: 24,
     fontWeight: 'bold',
+  },
+  overallTotalContainer: {
+    paddingVertical: 20,
+    paddingHorizontal: 16,
+    marginTop: 16,
+    borderRadius: 12,
+    marginHorizontal: 16,
+    marginBottom: 16,
+    alignItems: 'center',
+    gap: 8,
+  },
+  overallTotalTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  overallTotalAmount: {
+    fontSize: 28,
+    fontWeight: 'bold',
+  },
+  overallTotalSubtext: {
+    fontSize: 12,
+    opacity: 0.8,
+    textAlign: 'center',
+    lineHeight: 16,
   },
 });

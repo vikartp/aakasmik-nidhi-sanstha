@@ -426,6 +426,35 @@ class ApiService {
       throw error;
     }
   }
+
+  // Get total contributions amount across all users and months
+  async getTotalContributions(): Promise<number> {
+    try {
+      const token = await storageService.getItem('accessToken');
+      
+      const response = await fetch(`${API_BASE_URL}/contributions/total-amount`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Total contributions API error:', errorText);
+        throw new Error(`Failed to fetch total contributions: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Total contributions response:', data);
+      
+      return data.total || 0;
+    } catch (error) {
+      console.error('Error in getTotalContributions:', error);
+      throw error;
+    }
+  }
 }
 
 export default new ApiService();
