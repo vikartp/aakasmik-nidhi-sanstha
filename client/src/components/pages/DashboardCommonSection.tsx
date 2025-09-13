@@ -12,14 +12,18 @@ const DashboardCommonSection: React.FC = () => {
 
     const userAgent = navigator.userAgent;
 
-    // Simple approach: Hide only if it's clearly a desktop browser
+    // More specific desktop detection: Only hide on desktop browsers with large screens
     const isDesktopBrowser = 
       (/Windows|Macintosh|Linux/.test(userAgent) && 
        /Chrome|Firefox|Safari|Edge|Opera/.test(userAgent) &&
        !userAgent.includes('Mobile') &&
+       !userAgent.includes('Android') &&
+       !userAgent.includes('iPhone') &&
+       !userAgent.includes('iPad') &&
        !userAgent.includes('wv') &&
        !userAgent.includes('WebView') &&
-       window.top === window.self); // Not in iframe
+       window.top === window.self && // Not in iframe
+       window.screen.width >= 1024); // Desktop screen size
 
     // Show the browser link unless it's clearly a desktop browser
     return !isDesktopBrowser;
