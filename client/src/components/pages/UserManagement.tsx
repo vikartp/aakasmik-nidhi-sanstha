@@ -19,7 +19,7 @@ export default function UserManagement() {
   const [user, setUser] = useState<User | null>(null);
   const [month, setMonth] = useState('');
   const [year, setYear] = useState(new Date().getFullYear().toString());
-  const [amount, setAmount] = useState('');
+  const [amount, setAmount] = useState('100');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
@@ -71,7 +71,7 @@ export default function UserManagement() {
         amount: Number(amount),
       });
       setSuccess('Contribution added successfully!');
-      setAmount('');
+      setAmount('100');
       refreshUserContributions();
     } catch {
       setError('Failed to add contribution.');
