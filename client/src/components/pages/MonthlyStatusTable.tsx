@@ -15,15 +15,13 @@ import {
   type Month,
   type Screenshot,
 } from '@/services/screenshot';
-import { getContributionsByYearAndMonth, downloadContributionsPDF, getContributionsPDFUrl } from '@/services/contribution';
-import api from '@/services/api';
+import { getContributionsByYearAndMonth, downloadContributionsPDF } from '@/services/contribution';
 import { getAvatarLink, getMonthList } from '@/lib/utils';
 import { toast } from 'react-toastify';
 import {
   HandCoins,
   IndianRupee,
   CloudDownload,
-  ExternalLink,
 } from 'lucide-react';
 import { Button } from '../ui/button';
 
@@ -112,93 +110,11 @@ export default function MonthlyStatusTable() {
   const downloadContributionFromBackend = async () => {
     try {
       await downloadContributionsPDF(Number(selectedYear), selectedMonth);
-      
-      // Check if we're in a mobile environment
-      const isInWebView = window.navigator.userAgent.includes('Mobile') || 
-                         window.navigator.userAgent.includes('Android') || 
-                         window.navigator.userAgent.includes('iPhone');
-      
-      if (isInWebView) {
-        // Check if Share API is available
-        if (navigator.share && typeof navigator.share === 'function') {
-          toast.success('PDF ready! You can share or save it from the share menu.');
-        } else {
-          toast.success('PDF opened! Check your browser tabs or downloads folder.');
-        }
-      } else {
-        toast.success('PDF downloaded successfully!');
-      }
+
+      toast.success('PDF downloaded successfully!');
     } catch (error) {
       console.error('Error downloading PDF from backend:', error);
       toast.error('Failed to download PDF from backend.');
-    }
-  };
-
-  const openContributionPDFDirect = async () => {
-    try {
-      // Enhanced detection for Expo WebView environment
-      const isExpoWebView = window.navigator.userAgent.includes('Expo') ||
-                           window.navigator.userAgent.includes('ReactNativeWebView') ||
-                           'ReactNativeWebView' in window;
-      
-      const isMobile = window.navigator.userAgent.includes('Mobile') || 
-                      window.navigator.userAgent.includes('Android') || 
-                      window.navigator.userAgent.includes('iPhone');
-      
-      if (isExpoWebView || (isMobile && window.location.href.includes('localhost'))) {
-        // For Expo WebView: Open in external browser
-        const pdfUrl = await getContributionsPDFUrl(Number(selectedYear), selectedMonth);
-        
-        // Try to open in external browser using various methods
-        const reactNativeWebView = (window as { ReactNativeWebView?: { postMessage: (message: string) => void } }).ReactNativeWebView;
-        
-        if (reactNativeWebView) {
-          // Method 1: PostMessage to React Native (if available)
-          reactNativeWebView.postMessage(JSON.stringify({
-            type: 'OPEN_EXTERNAL_URL',
-            url: pdfUrl
-          }));
-          toast.success('Opening PDF in external browser...');
-        } else {
-          // Method 2: Use window.open with specific attributes that might trigger external browser
-          const opened = window.open(pdfUrl, '_system', 'location=yes,toolbar=yes');
-          
-          if (!opened) {
-            // Method 3: Direct assignment (fallback)
-            window.location.href = pdfUrl;
-          }
-          
-          toast.success('PDF download started in external browser!');
-        }
-      } else if (isMobile) {
-        // For regular mobile browsers: Use the optimized download function
-        await downloadContributionsPDF(Number(selectedYear), selectedMonth);
-        toast.success('PDF ready! Use share menu if available, or check downloads.');
-      } else {
-        // For desktop: Create blob and open in new tab for viewing
-        const response = await api.get(`/contributions/pdf/${Number(selectedYear)}/${selectedMonth}`, {
-          responseType: 'blob',
-        });
-        
-        const blob = new Blob([response.data], { type: 'application/pdf' });
-        const url = window.URL.createObjectURL(blob);
-        const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
-        
-        if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
-          // Fallback: traditional download
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = `Aakasmik-Nidhi-${selectedYear}-${selectedMonth}.pdf`;
-          link.click();
-        }
-        
-        // Clean up
-        setTimeout(() => window.URL.revokeObjectURL(url), 5000);
-        toast.success('PDF opened in new tab!');
-      }
-    } catch (error) {
-      console.error('Error opening PDF:', error);
-      toast.error('Failed to open PDF.');
     }
   };
 
@@ -324,14 +240,11 @@ export default function MonthlyStatusTable() {
                 <CloudDownload className="w-4 h-4 mr-1" />
                 Download PDF
               </Button>
-              <Button
-                onClick={openContributionPDFDirect}
-                variant="outline"
-                className="bg-purple-50 hover:bg-purple-100 border-purple-300 text-purple-700 hover:text-purple-800 dark:bg-purple-900/20 dark:border-purple-700 dark:text-purple-400 dark:hover:bg-purple-900/30 dark:hover:text-purple-300 transition-all duration-200 shadow-sm hover:shadow-md"
-              >
-                <ExternalLink className="w-4 h-4 mr-1" />
-                Open in Browser
-              </Button>
+            </div>
+            <div className="text-center">
+              <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                📱 नीचे जाकर ऐप को ब्राउज़र में खोलें, फिर डाउनलोड करें (यदि ब्राउज़र में नहीं हैं)
+              </p>
             </div>
           </div>
           <div className="mt-6 p-4 bg-gradient-to-r from-green-50 via-blue-50 to-indigo-50 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 rounded-xl border border-green-200 dark:border-gray-600 shadow-lg">
