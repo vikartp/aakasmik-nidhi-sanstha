@@ -47,8 +47,12 @@ export async function deleteContribution(id: string) {
 }
 
 export async function getContributionsPDFUrl(year: number, month: string): Promise<string> {
-  // Return the direct URL for the PDF - useful for sharing or opening in new tabs
-  const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  // Use the same logic as api.ts to determine the correct base URL
+  const isLocalhost = window.location.hostname === 'localhost';
+  const baseUrl = isLocalhost
+    ? 'http://localhost:5000'
+    : 'https://aakasmik-nidhi-backend.onrender.com';
+  
   return `${baseUrl}/contributions/pdf/${year}/${month}`;
 }
 

@@ -15,7 +15,8 @@ import {
   type Month,
   type Screenshot,
 } from '@/services/screenshot';
-import { getContributionsByYearAndMonth, downloadContributionsPDF, getContributionsPDFUrl } from '@/services/contribution';
+import { getContributionsByYearAndMonth, downloadContributionsPDF } from '@/services/contribution';
+import api from '@/services/api';
 import { getAvatarLink, getMonthList } from '@/lib/utils';
 import { toast } from 'react-toastify';
 import {
@@ -135,19 +136,39 @@ export default function MonthlyStatusTable() {
 
   const openContributionPDFDirect = async () => {
     try {
-      const pdfUrl = await getContributionsPDFUrl(Number(selectedYear), selectedMonth);
+      // Check if we're in a mobile environment
+      const isInWebView = window.navigator.userAgent.includes('Mobile') || 
+                         window.navigator.userAgent.includes('Android') || 
+                         window.navigator.userAgent.includes('iPhone');
       
-      // Open PDF URL directly in new tab - this works better in mobile environments
-      const newWindow = window.open(pdfUrl, '_blank', 'noopener,noreferrer');
-      
-      if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
-        // If popup blocked, navigate to the URL
-        window.location.href = pdfUrl;
+      if (isInWebView) {
+        // For mobile: Use the download function which has mobile-optimized sharing
+        await downloadContributionsPDF(Number(selectedYear), selectedMonth);
+        toast.success('PDF ready! Use share menu if available, or check downloads.');
+      } else {
+        // For desktop: Create a more direct approach that opens in new tab
+        const response = await api.get(`/contributions/pdf/${Number(selectedYear)}/${selectedMonth}`, {
+          responseType: 'blob',
+        });
+        
+        const blob = new Blob([response.data], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+        const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
+        
+        if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+          // Fallback: traditional download
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `Aakasmik-Nidhi-${selectedYear}-${selectedMonth}.pdf`;
+          link.click();
+        }
+        
+        // Clean up
+        setTimeout(() => window.URL.revokeObjectURL(url), 5000);
+        toast.success('PDF opened in new tab!');
       }
-      
-      toast.success('PDF opened in new tab!');
     } catch (error) {
-      console.error('Error opening PDF URL:', error);
+      console.error('Error opening PDF:', error);
       toast.error('Failed to open PDF.');
     }
   };
