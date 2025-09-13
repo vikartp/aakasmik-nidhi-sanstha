@@ -12,27 +12,17 @@ const DashboardCommonSection: React.FC = () => {
 
     const userAgent = navigator.userAgent;
 
-    // Check for Expo-specific indicators
-    const isExpo = userAgent.includes('Expo');
+    // Simple approach: Hide only if it's clearly a desktop browser
+    const isDesktopBrowser = 
+      (/Windows|Macintosh|Linux/.test(userAgent) && 
+       /Chrome|Firefox|Safari|Edge|Opera/.test(userAgent) &&
+       !userAgent.includes('Mobile') &&
+       !userAgent.includes('wv') &&
+       !userAgent.includes('WebView') &&
+       window.top === window.self); // Not in iframe
 
-    // Check for mobile webview indicators (but exclude desktop browsers)
-    const isMobileWebView =
-      /wv|WebView|Android.*Version.*Chrome|iPhone.*Version.*Mobile.*Safari/.test(
-        userAgent
-      ) && !/Windows|Macintosh|Linux/.test(userAgent);
-
-    // Check if in iframe (but not if it's the top window in a regular browser)
-    const isInIframe = window.top !== window.self;
-
-    // Check if it's a regular desktop/mobile browser (should return false for these)
-    const isRegularBrowser = 
-      /Chrome|Firefox|Safari|Edge|Opera/.test(userAgent) && 
-      !userAgent.includes('wv') && 
-      !userAgent.includes('WebView') &&
-      !isInIframe;
-
-    // Only show browser link if it's specifically Expo or mobile webview, not regular browsers
-    return (isExpo || isMobileWebView) && !isRegularBrowser;
+    // Show the browser link unless it's clearly a desktop browser
+    return !isDesktopBrowser;
   }, []);
 
   // Set button state in UploadScreenshot based on status of this month's screenshot
