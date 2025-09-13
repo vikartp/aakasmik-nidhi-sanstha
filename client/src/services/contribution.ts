@@ -46,21 +46,90 @@ export async function deleteContribution(id: string) {
   return response.data;
 }
 
+export async function getContributionsPDFUrl(year: number, month: string): Promise<string> {
+  // Return the direct URL for the PDF - useful for sharing or opening in new tabs
+  const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  return `${baseUrl}/contributions/pdf/${year}/${month}`;
+}
+
 export async function downloadContributionsPDF(year: number, month: string) {
   const response = await api.get(`/contributions/pdf/${year}/${month}`, {
     responseType: 'blob', // Important for file downloads
   });
   
-  // Create blob URL and trigger download
   const blob = new Blob([response.data], { type: 'application/pdf' });
-  const url = window.URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = `Aakasmik-Nidhi-${year}-${month}.pdf`;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  window.URL.revokeObjectURL(url);
+  const fileName = `Aakasmik-Nidhi-${year}-${month}.pdf`;
+  
+  // Check if we're in a mobile app environment (Expo WebView)
+  const isInWebView = window.navigator.userAgent.includes('Mobile') || 
+                     window.navigator.userAgent.includes('Android') || 
+                     window.navigator.userAgent.includes('iPhone') ||
+                     !('showSaveFilePicker' in window); // No File System Access API
+  
+  if (isInWebView) {
+    // Try Web Share API first (modern mobile browsers)
+    if ('share' in navigator && navigator.share) {
+      try {
+        // Convert blob to File for sharing
+        const file = new File([blob], fileName, { type: 'application/pdf' });
+        
+        // Check if files can be shared
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            files: [file],
+            title: 'Aakasmik Nidhi Contribution Report',
+            text: `Monthly contribution report for ${year}-${month}`,
+          });
+          return response.data;
+        }
+      } catch (shareError) {
+        console.log('Share API failed, falling back to alternative method', shareError);
+      }
+    }
+    
+    // Fallback: Open PDF in new tab/window
+    const url = window.URL.createObjectURL(blob);
+    
+    // Try to open in new window first
+    const newWindow = window.open(url, '_blank');
+    
+    if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
+      // If popup is blocked, try alternative methods
+      
+      // Method 1: Try to navigate to blob URL
+      try {
+        window.location.href = url;
+      } catch (navError) {
+        console.log('Navigation failed, using iframe method', navError);
+        // Method 2: Create a hidden iframe
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = url;
+        document.body.appendChild(iframe);
+        
+        // Remove iframe after some time
+        setTimeout(() => {
+          document.body.removeChild(iframe);
+        }, 5000);
+      }
+    }
+    
+    // Clean up after a delay
+    setTimeout(() => {
+      window.URL.revokeObjectURL(url);
+    }, 15000);
+  } else {
+    // For desktop browsers: Use traditional download approach
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  }
   
   return response.data;
 }

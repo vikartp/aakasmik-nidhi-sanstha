@@ -15,27 +15,17 @@ import {
   type Month,
   type Screenshot,
 } from '@/services/screenshot';
-import { getContributionsByYearAndMonth, downloadContributionsPDF } from '@/services/contribution';
+import { getContributionsByYearAndMonth, downloadContributionsPDF, getContributionsPDFUrl } from '@/services/contribution';
 import { getAvatarLink, getMonthList } from '@/lib/utils';
 import { toast } from 'react-toastify';
 import {
   HandCoins,
   IndianRupee,
   Download,
-  FileSpreadsheet,
-  FileText,
   CloudDownload,
+  ExternalLink,
 } from 'lucide-react';
-import * as XLSX from 'xlsx';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
-import 'jspdf-autotable';
 import { Button } from '../ui/button';
-
-// Register the plugin
-(
-  jsPDF as typeof jsPDF & { API: { autoTable: typeof autoTable } }
-).API.autoTable = autoTable;
 
 export default function MonthlyStatusTable() {
   const [users, setUsers] = useState<User[]>([]);
@@ -119,100 +109,47 @@ export default function MonthlyStatusTable() {
     };
   };
 
-  // Prepare table data for export (excluding profile pic)
-  const getExportRows = () => {
-    return users.map(user => {
-      const { status, amount, verifiedBy } = getStatusAndAmount(user._id);
-      return {
-        Name: user.name,
-        Status: status,
-        Amount: amount,
-        'Verified By': verifiedBy,
-        Mobile: user.mobile || '-',
-        "Father's Name": user.fatherName || '-',
-      };
-    });
-  };
-
-  const getExportFileName = (ext: string) => {
-    return `Aakasmik-Nidhi-${selectedYear}-${selectedMonth}.${ext}`;
-  };
-
-  const exportToExcel = () => {
-    const exportRows = getExportRows();
-    const worksheet = XLSX.utils.json_to_sheet(exportRows);
-    // Calculate dynamic column widths
-    const cols = Object.keys(exportRows[0] || {}).map(col => {
-      const maxLen = Math.max(
-        col.length,
-        ...exportRows.map(
-          row => String((row as Record<string, unknown>)[col] ?? '').length
-        )
-      );
-      return { wch: maxLen + 2 }; // +2 for padding
-    });
-    worksheet['!cols'] = cols;
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
-    XLSX.writeFile(workbook, getExportFileName('xlsx'));
-  };
-
-  const exportToPDF = () => {
-    const exportRows = getExportRows();
-    if (!exportRows.length) {
-      toast.error('No data to export.');
-      return;
-    }
-    const doc = new jsPDF({
-      orientation: 'landscape',
-      unit: 'pt',
-      format: 'A4',
-    });
-    const tableColumn = Object.keys(exportRows[0]);
-    const tableRows = exportRows.map(row =>
-      tableColumn.map(col =>
-        String((row as Record<string, unknown>)[col] ?? '')
-      )
-    );
-
-    autoTable(doc, {
-      head: [tableColumn],
-      body: tableRows,
-      startY: 40,
-      theme: 'striped',
-      styles: { fontSize: 10, cellPadding: 4 },
-      headStyles: { fillColor: [41, 128, 185], textColor: 255 },
-      margin: { left: 20, right: 20 },
-      didDrawPage: function () {
-        doc.setFontSize(16);
-        doc.setTextColor(40, 128, 185);
-        doc.text(
-          `Aakasmik Nidhi Status - ${selectedMonth} ${selectedYear} => Generated on: ${getTodayDate()}`,
-          doc.internal.pageSize.getWidth() / 2,
-          30,
-          { align: 'center' }
-        );
-      },
-    });
-    doc.save(getExportFileName('pdf'));
-  };
-
-  const getTodayDate = () => {
-    const today = new Date();
-    return today.toLocaleDateString('en-IN', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  };
-
   const downloadContributionFromBackend = async () => {
     try {
       await downloadContributionsPDF(Number(selectedYear), selectedMonth);
-      toast.success('PDF downloaded successfully!');
+      
+      // Check if we're in a mobile environment
+      const isInWebView = window.navigator.userAgent.includes('Mobile') || 
+                         window.navigator.userAgent.includes('Android') || 
+                         window.navigator.userAgent.includes('iPhone');
+      
+      if (isInWebView) {
+        // Check if Share API is available
+        if (navigator.share && typeof navigator.share === 'function') {
+          toast.success('PDF ready! You can share or save it from the share menu.');
+        } else {
+          toast.success('PDF opened! Check your browser tabs or downloads folder.');
+        }
+      } else {
+        toast.success('PDF downloaded successfully!');
+      }
     } catch (error) {
       console.error('Error downloading PDF from backend:', error);
       toast.error('Failed to download PDF from backend.');
+    }
+  };
+
+  const openContributionPDFDirect = async () => {
+    try {
+      const pdfUrl = await getContributionsPDFUrl(Number(selectedYear), selectedMonth);
+      
+      // Open PDF URL directly in new tab - this works better in mobile environments
+      const newWindow = window.open(pdfUrl, '_blank', 'noopener,noreferrer');
+      
+      if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+        // If popup blocked, navigate to the URL
+        window.location.href = pdfUrl;
+      }
+      
+      toast.success('PDF opened in new tab!');
+    } catch (error) {
+      console.error('Error opening PDF URL:', error);
+      toast.error('Failed to open PDF.');
     }
   };
 
@@ -329,34 +266,22 @@ export default function MonthlyStatusTable() {
       {!loading && (
         <>
           <div className="flex flex-col sm:flex-row gap-3 mt-6 items-center">
-            <div className="flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400 mb-2 sm:mb-0">
-              <Download className="w-4 h-4" />
-              Export Data:
-            </div>
-            <div className="flex gap-3">
-              <Button
-                onClick={exportToExcel}
-                variant="outline"
-                className="bg-green-50 hover:bg-green-100 border-green-300 text-green-700 hover:text-green-800 dark:bg-green-900/20 dark:border-green-700 dark:text-green-400 dark:hover:bg-green-900/30 dark:hover:text-green-300 transition-all duration-200 shadow-sm hover:shadow-md"
-              >
-                <FileSpreadsheet className="w-4 h-4 mr-1" />
-                Download Excel
-              </Button>
-              <Button
-                onClick={exportToPDF}
-                variant="outline"
-                className="bg-red-50 hover:bg-red-100 border-red-300 text-red-700 hover:text-red-800 dark:bg-red-900/20 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-900/30 dark:hover:text-red-300 transition-all duration-200 shadow-sm hover:shadow-md"
-              >
-                <FileText className="w-4 h-4 mr-1" />
-                Download PDF
-              </Button>
+            <div className="flex gap-3 flex-wrap justify-center">
               <Button
                 onClick={downloadContributionFromBackend}
                 variant="outline"
                 className="bg-blue-50 hover:bg-blue-100 border-blue-300 text-blue-700 hover:text-blue-800 dark:bg-blue-900/20 dark:border-blue-700 dark:text-blue-400 dark:hover:bg-blue-900/30 dark:hover:text-blue-300 transition-all duration-200 shadow-sm hover:shadow-md"
               >
                 <CloudDownload className="w-4 h-4 mr-1" />
-                Download Contribution
+                Download PDF
+              </Button>
+              <Button
+                onClick={openContributionPDFDirect}
+                variant="outline"
+                className="bg-purple-50 hover:bg-purple-100 border-purple-300 text-purple-700 hover:text-purple-800 dark:bg-purple-900/20 dark:border-purple-700 dark:text-purple-400 dark:hover:bg-purple-900/30 dark:hover:text-purple-300 transition-all duration-200 shadow-sm hover:shadow-md"
+              >
+                <ExternalLink className="w-4 h-4 mr-1" />
+                Open PDF (Mobile)
               </Button>
             </div>
           </div>
