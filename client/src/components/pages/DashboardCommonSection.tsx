@@ -15,22 +15,24 @@ const DashboardCommonSection: React.FC = () => {
     // Check for Expo-specific indicators
     const isExpo = userAgent.includes('Expo');
 
-    // Check for mobile webview indicators
-    const isWebView =
+    // Check for mobile webview indicators (but exclude desktop browsers)
+    const isMobileWebView =
       /wv|WebView|Android.*Version.*Chrome|iPhone.*Version.*Mobile.*Safari/.test(
         userAgent
-      );
+      ) && !/Windows|Macintosh|Linux/.test(userAgent);
 
-    // Check if not in standalone browser (iframe or embedded)
-    const isEmbedded = window.top !== window.self;
+    // Check if in iframe (but not if it's the top window in a regular browser)
+    const isInIframe = window.top !== window.self;
 
-    // Check if not a PWA
-    const isPWA =
-      (window.navigator as { standalone?: boolean }).standalone === true ||
-      window.matchMedia('(display-mode: standalone)').matches;
+    // Check if it's a regular desktop/mobile browser (should return false for these)
+    const isRegularBrowser = 
+      /Chrome|Firefox|Safari|Edge|Opera/.test(userAgent) && 
+      !userAgent.includes('wv') && 
+      !userAgent.includes('WebView') &&
+      !isInIframe;
 
-    // Show browser link if it's Expo, webview, embedded, or not a PWA
-    return isExpo || isWebView || isEmbedded || !isPWA;
+    // Only show browser link if it's specifically Expo or mobile webview, not regular browsers
+    return (isExpo || isMobileWebView) && !isRegularBrowser;
   }, []);
 
   // Set button state in UploadScreenshot based on status of this month's screenshot
