@@ -21,7 +21,6 @@ import { toast } from 'react-toastify';
 import {
   HandCoins,
   IndianRupee,
-  Download,
   CloudDownload,
   ExternalLink,
 } from 'lucide-react';
