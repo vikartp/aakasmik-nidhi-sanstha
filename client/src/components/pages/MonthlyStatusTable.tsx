@@ -15,7 +15,7 @@ import {
   type Month,
   type Screenshot,
 } from '@/services/screenshot';
-import { getContributionsByYearAndMonth, downloadContributionsPDF } from '@/services/contribution';
+import { getContributionsByYearAndMonth, downloadContributionsPDF, getContributionsPDFUrl } from '@/services/contribution';
 import api from '@/services/api';
 import { getAvatarLink, getMonthList } from '@/lib/utils';
 import { toast } from 'react-toastify';
@@ -136,17 +136,46 @@ export default function MonthlyStatusTable() {
 
   const openContributionPDFDirect = async () => {
     try {
-      // Check if we're in a mobile environment
-      const isInWebView = window.navigator.userAgent.includes('Mobile') || 
-                         window.navigator.userAgent.includes('Android') || 
-                         window.navigator.userAgent.includes('iPhone');
+      // Enhanced detection for Expo WebView environment
+      const isExpoWebView = window.navigator.userAgent.includes('Expo') ||
+                           window.navigator.userAgent.includes('ReactNativeWebView') ||
+                           'ReactNativeWebView' in window;
       
-      if (isInWebView) {
-        // For mobile: Use the download function which has mobile-optimized sharing
+      const isMobile = window.navigator.userAgent.includes('Mobile') || 
+                      window.navigator.userAgent.includes('Android') || 
+                      window.navigator.userAgent.includes('iPhone');
+      
+      if (isExpoWebView || (isMobile && window.location.href.includes('localhost'))) {
+        // For Expo WebView: Open in external browser
+        const pdfUrl = await getContributionsPDFUrl(Number(selectedYear), selectedMonth);
+        
+        // Try to open in external browser using various methods
+        const reactNativeWebView = (window as { ReactNativeWebView?: { postMessage: (message: string) => void } }).ReactNativeWebView;
+        
+        if (reactNativeWebView) {
+          // Method 1: PostMessage to React Native (if available)
+          reactNativeWebView.postMessage(JSON.stringify({
+            type: 'OPEN_EXTERNAL_URL',
+            url: pdfUrl
+          }));
+          toast.success('Opening PDF in external browser...');
+        } else {
+          // Method 2: Use window.open with specific attributes that might trigger external browser
+          const opened = window.open(pdfUrl, '_system', 'location=yes,toolbar=yes');
+          
+          if (!opened) {
+            // Method 3: Direct assignment (fallback)
+            window.location.href = pdfUrl;
+          }
+          
+          toast.success('PDF download started in external browser!');
+        }
+      } else if (isMobile) {
+        // For regular mobile browsers: Use the optimized download function
         await downloadContributionsPDF(Number(selectedYear), selectedMonth);
         toast.success('PDF ready! Use share menu if available, or check downloads.');
       } else {
-        // For desktop: Create a more direct approach that opens in new tab
+        // For desktop: Create blob and open in new tab for viewing
         const response = await api.get(`/contributions/pdf/${Number(selectedYear)}/${selectedMonth}`, {
           responseType: 'blob',
         });
@@ -301,7 +330,7 @@ export default function MonthlyStatusTable() {
                 className="bg-purple-50 hover:bg-purple-100 border-purple-300 text-purple-700 hover:text-purple-800 dark:bg-purple-900/20 dark:border-purple-700 dark:text-purple-400 dark:hover:bg-purple-900/30 dark:hover:text-purple-300 transition-all duration-200 shadow-sm hover:shadow-md"
               >
                 <ExternalLink className="w-4 h-4 mr-1" />
-                Open PDF (Mobile)
+                Open in Browser
               </Button>
             </div>
           </div>
