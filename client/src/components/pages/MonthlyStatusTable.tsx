@@ -15,7 +15,7 @@ import {
   type Month,
   type Screenshot,
 } from '@/services/screenshot';
-import { getContributionsByYearAndMonth } from '@/services/contribution';
+import { getContributionsByYearAndMonth, downloadContributionsPDF } from '@/services/contribution';
 import { getAvatarLink, getMonthList } from '@/lib/utils';
 import { toast } from 'react-toastify';
 import {
@@ -24,6 +24,7 @@ import {
   Download,
   FileSpreadsheet,
   FileText,
+  CloudDownload,
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
@@ -205,6 +206,16 @@ export default function MonthlyStatusTable() {
     });
   };
 
+  const downloadContributionFromBackend = async () => {
+    try {
+      await downloadContributionsPDF(Number(selectedYear), selectedMonth);
+      toast.success('PDF downloaded successfully!');
+    } catch (error) {
+      console.error('Error downloading PDF from backend:', error);
+      toast.error('Failed to download PDF from backend.');
+    }
+  };
+
   return (
     <div className="mt-8 flex flex-col items-center w-full">
       {/* Month/Year Selectors Row */}
@@ -338,6 +349,14 @@ export default function MonthlyStatusTable() {
               >
                 <FileText className="w-4 h-4 mr-1" />
                 Download PDF
+              </Button>
+              <Button
+                onClick={downloadContributionFromBackend}
+                variant="outline"
+                className="bg-blue-50 hover:bg-blue-100 border-blue-300 text-blue-700 hover:text-blue-800 dark:bg-blue-900/20 dark:border-blue-700 dark:text-blue-400 dark:hover:bg-blue-900/30 dark:hover:text-blue-300 transition-all duration-200 shadow-sm hover:shadow-md"
+              >
+                <CloudDownload className="w-4 h-4 mr-1" />
+                Download Contribution
               </Button>
             </div>
           </div>

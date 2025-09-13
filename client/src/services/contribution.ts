@@ -45,3 +45,22 @@ export async function deleteContribution(id: string) {
   const response = await api.delete(`/contributions/${id}`);
   return response.data;
 }
+
+export async function downloadContributionsPDF(year: number, month: string) {
+  const response = await api.get(`/contributions/pdf/${year}/${month}`, {
+    responseType: 'blob', // Important for file downloads
+  });
+  
+  // Create blob URL and trigger download
+  const blob = new Blob([response.data], { type: 'application/pdf' });
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `Aakasmik-Nidhi-${year}-${month}.pdf`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(url);
+  
+  return response.data;
+}

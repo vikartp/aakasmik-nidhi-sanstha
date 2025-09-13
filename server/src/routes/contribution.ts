@@ -8,6 +8,7 @@ import {
     getTotalContributionAmount,
     updateContribution,
     deleteContribution,
+    generateContributionsPDF,
 } from "../controllers/contribution";
 
 const router = Router();
@@ -26,6 +27,9 @@ router.get('/:userid', getContributionsByUser);
 
 // Get contributions by year and month
 router.get('/year/:year/month/:month', getContributionsByYearAndMonth);
+
+// Generate and download PDF report for contributions by year and month
+router.get('/pdf/:year/:month', generateContributionsPDF);
 
 // Get a single contribution by contribution ID
 router.get('/contribution/:id', getContributionById);
