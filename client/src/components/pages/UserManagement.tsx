@@ -4,14 +4,16 @@ import { Button } from '../ui/button';
 import { getAvatarLink, getMonthList } from '@/lib/utils';
 import { createContribution } from '@/services/contribution';
 import Loader from './Loader';
-import { getUserById, type User } from '@/services/user';
+import { getUserById, getUsers, type User } from '@/services/user';
 import { updateMembershipDate } from '@/services/user';
 import { getContributionsByUser } from '@/services/contribution';
 import type { Contribution } from '@/services/contribution';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Calendar } from '@/components/ui/calendar';
 import UserContribution from './UserContribution';
-import { SquareArrowLeft } from 'lucide-react';
+import { SquareArrowLeft, Search } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 
 export default function UserManagement() {
   const { userId } = useParams();
@@ -25,7 +27,7 @@ export default function UserManagement() {
   const [error, setError] = useState('');
   const [tab, setTab] = useState('contribution');
   const [membershipDate, setMembershipDate] = useState<Date | undefined>(
-    undefined
+    new Date(2024, 11, 1) // December 1, 2024 (month is 0-indexed)
   );
   const [membershipLoading, setMembershipLoading] = useState(false);
   const [membershipSuccess, setMembershipSuccess] = useState('');
@@ -33,17 +35,49 @@ export default function UserManagement() {
   const [userContributions, setUserContributions] = useState<Contribution[]>(
     []
   );
+  
+  // Autocomplete state
+  const [allUsers, setAllUsers] = useState<User[]>([]);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
 
   const fetchUserContributions = (uid: string) => {
     getContributionsByUser(uid).then(setUserContributions);
   };
 
+  const fetchAllUsers = async () => {
+    try {
+      const users = await getUsers();
+      setAllUsers(users);
+    } catch (error) {
+      console.error('Failed to fetch users:', error);
+    }
+  };
+
+  const handleUserSelect = (selectedUser: User) => {
+    setSearchOpen(false);
+    setSearchValue('');
+    // Update URL param and navigate to the selected user
+    navigate(`/admin/user/${selectedUser._id}`);
+  };
+
+  const filteredUsers = allUsers.filter(u => 
+    u.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+    u.mobile.includes(searchValue)
+  );
+
   useEffect(() => {
+    // Fetch all users for autocomplete
+    fetchAllUsers();
+    
     if (!userId) return;
     getUserById(userId).then(data => {
       setUser(data);
       if (data.membershipDate) {
         setMembershipDate(new Date(data.membershipDate));
+      } else {
+        // Keep the default December 2024 date if user has no membership date
+        setMembershipDate(new Date(2024, 11, 1));
       }
     });
     // Set default month and year to current
@@ -102,13 +136,69 @@ export default function UserManagement() {
 
   return (
     <div className="max-w-2xl mx-auto p-4 sm:p-6 bg-white dark:bg-gray-900 rounded shadow">
-      <Button
-        variant="outline"
-        className="mb-4 max-w-md"
-        onClick={() => navigate('/dashboard')}
-      >
-        Back to Dashboard <SquareArrowLeft />
-      </Button>
+      <div className="flex flex-col sm:flex-row gap-4 mb-4 items-start sm:items-center">
+        <Button
+          variant="outline"
+          className="max-w-md"
+          onClick={() => navigate('/dashboard')}
+        >
+          Back to Dashboard <SquareArrowLeft />
+        </Button>
+        
+        <div className="flex-1 max-w-md">
+          <Popover open={searchOpen} onOpenChange={setSearchOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={searchOpen}
+                className="w-full justify-between"
+              >
+                <div className="flex items-center gap-2">
+                  <Search className="h-4 w-4" />
+                  <span className="text-sm text-muted-foreground">
+                    Search users by name or mobile...
+                  </span>
+                </div>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-0" align="start">
+              <Command>
+                <CommandInput
+                  placeholder="Type name or mobile number..."
+                  value={searchValue}
+                  onValueChange={setSearchValue}
+                />
+                <CommandList>
+                  <CommandEmpty>No users found.</CommandEmpty>
+                  <CommandGroup>
+                    {filteredUsers.slice(0, 10).map((user) => (
+                      <CommandItem
+                        key={user._id}
+                        onSelect={() => handleUserSelect(user)}
+                      >
+                        <div className="flex items-center gap-3 w-full">
+                          <img
+                            src={user.profileUrl || getAvatarLink(user.name)}
+                            alt={user.name}
+                            className="w-8 h-8 rounded-full object-cover border border-gray-300 dark:border-gray-600 flex-shrink-0"
+                          />
+                          <div className="flex-1">
+                            <div className="font-medium">{user.name}</div>
+                            <div className="text-sm text-muted-foreground">
+                              {user.mobile}
+                            </div>
+                          </div>
+                        </div>
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        </div>
+      </div>
       {user ? (
         <div className="mb-6 flex flex-col sm:flex-row gap-4 items-center sm:items-start">
           <img
@@ -242,6 +332,7 @@ export default function UserManagement() {
                 mode="single"
                 selected={membershipDate}
                 onSelect={setMembershipDate}
+                defaultMonth={membershipDate || new Date(2024, 11, 1)}
                 className="w-full bg-white dark:bg-gray-800 rounded"
                 required
               />

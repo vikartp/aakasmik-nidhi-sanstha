@@ -22,6 +22,7 @@ import {
   HandCoins,
   IndianRupee,
   CloudDownload,
+  Copy,
 } from 'lucide-react';
 import { Button } from '../ui/button';
 
@@ -115,6 +116,37 @@ export default function MonthlyStatusTable() {
     } catch (error) {
       console.error('Error downloading PDF from backend:', error);
       toast.error('Failed to download PDF from backend.');
+    }
+  };
+
+  const copyDueUsersList = async () => {
+    try {
+      // Filter users with 'Due' status
+      const dueUsers = users.filter(user => {
+        const { status } = getStatusAndAmount(user._id);
+        return status === 'Due';
+      });
+
+      if (dueUsers.length === 0) {
+        toast.info('No users with Due status found!');
+        return;
+      }
+
+      // Format the list as "Name - Mobile"
+      const userList = dueUsers
+        .map(user => `${user.name} - ${user.mobile || 'No mobile'}`)
+        .join('\n');
+
+      // Add header with month/year info
+      const fullText = `Users with Due status for ${selectedMonth} ${selectedYear}:\n\n${userList}`;
+
+      // Copy to clipboard
+      await navigator.clipboard.writeText(fullText);
+      
+      toast.success(`Copied ${dueUsers.length} users with Due status to clipboard!`);
+    } catch (error) {
+      console.error('Error copying to clipboard:', error);
+      toast.error('Failed to copy list. Please try again.');
     }
   };
 
@@ -240,10 +272,18 @@ export default function MonthlyStatusTable() {
                 <CloudDownload className="w-4 h-4 mr-1" />
                 Download PDF
               </Button>
+              <Button
+                onClick={copyDueUsersList}
+                variant="outline"
+                className="bg-red-50 hover:bg-red-100 border-red-300 text-red-700 hover:text-red-800 dark:bg-red-900/20 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-900/30 dark:hover:text-red-300 transition-all duration-200 shadow-sm hover:shadow-md"
+              >
+                <Copy className="w-4 h-4 mr-1" />
+                Copy Due Users
+              </Button>
             </div>
             <div className="text-center">
               <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
-                📱 नीचे जाकर ऐप को ब्राउज़र में खोलें, फिर डाउनलोड करें (यदि ब्राउज़र में नहीं हैं)
+                📱 यदि ब्राउज़र में नहीं हैं तो नीचे जाकर ऐप को ब्राउज़र में खोलें, फिर डाउनलोड करें
               </p>
             </div>
           </div>
