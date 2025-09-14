@@ -172,7 +172,7 @@ export default function UserManagement() {
                 <CommandList>
                   <CommandEmpty>No users found.</CommandEmpty>
                   <CommandGroup>
-                    {filteredUsers.slice(0, 10).map((user) => (
+                    {filteredUsers.map((user) => (
                       <CommandItem
                         key={user._id}
                         onSelect={() => handleUserSelect(user)}
