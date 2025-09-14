@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Button } from '../ui/button';
 import { getAvatarLink, getMonthList } from '@/lib/utils';
 import { createContribution } from '@/services/contribution';
@@ -40,6 +40,17 @@ export default function UserManagement() {
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
+  const [debouncedSearchValue, setDebouncedSearchValue] = useState('');
+  const [usersLoading, setUsersLoading] = useState(false);
+
+  // Debounce search value
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchValue(searchValue);
+    }, 150); // 150ms debounce
+
+    return () => clearTimeout(timer);
+  }, [searchValue]);
 
   const fetchUserContributions = (uid: string) => {
     getContributionsByUser(uid).then(setUserContributions);
@@ -47,24 +58,53 @@ export default function UserManagement() {
 
   const fetchAllUsers = async () => {
     try {
+      setUsersLoading(true);
       const users = await getUsers();
       setAllUsers(users);
     } catch (error) {
       console.error('Failed to fetch users:', error);
+    } finally {
+      setUsersLoading(false);
     }
   };
 
   const handleUserSelect = (selectedUser: User) => {
     setSearchOpen(false);
     setSearchValue('');
+    setDebouncedSearchValue('');
     // Update URL param and navigate to the selected user
     navigate(`/admin/user/${selectedUser._id}`);
   };
 
-  const filteredUsers = allUsers.filter(u => 
-    u.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-    u.mobile.includes(searchValue)
-  );
+  // Auto-open search when user starts typing
+  const handleSearchValueChange = (value: string) => {
+    setSearchValue(value);
+    if (value.length > 0 && !searchOpen) {
+      setSearchOpen(true);
+    }
+  };
+
+  // Improved filtering with debounced search
+  const filteredUsers = useMemo(() => {
+    if (!debouncedSearchValue.trim()) {
+      return allUsers.slice(0, 10); // Show first 10 users when no search
+    }
+
+    const searchTerm = debouncedSearchValue.toLowerCase().trim();
+    
+    return allUsers
+      .filter(user => {
+        // Search in name (with partial matching)
+        const nameMatch = user.name.toLowerCase().includes(searchTerm);
+        
+        // Search in mobile (exact and partial matching)
+        const mobileMatch = user.mobile && user.mobile.includes(searchTerm);
+        
+        // Return true if any field matches
+        return nameMatch || mobileMatch;
+      })
+      .slice(0, 10); // Limit to 10 results for performance
+  }, [allUsers, debouncedSearchValue]);
 
   useEffect(() => {
     // Fetch all users for autocomplete
@@ -163,20 +203,29 @@ export default function UserManagement() {
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-full p-0" align="start">
-              <Command>
+              <Command shouldFilter={false}>
                 <CommandInput
                   placeholder="Type name or mobile number..."
                   value={searchValue}
-                  onValueChange={setSearchValue}
+                  onValueChange={handleSearchValueChange}
                 />
                 <CommandList>
-                  <CommandEmpty>No users found.</CommandEmpty>
-                  <CommandGroup>
-                    {filteredUsers.map((user) => (
-                      <CommandItem
-                        key={user._id}
-                        onSelect={() => handleUserSelect(user)}
-                      >
+                  {usersLoading ? (
+                    <div className="p-4 text-center">
+                      <div className="text-sm text-muted-foreground">Loading users...</div>
+                    </div>
+                  ) : (
+                    <>
+                      <CommandEmpty>
+                        {debouncedSearchValue.trim() ? 'No users found.' : 'Start typing to search users...'}
+                      </CommandEmpty>
+                      <CommandGroup>
+                        {filteredUsers.map((user) => (
+                          <CommandItem
+                            key={user._id}
+                            value={`${user.name}-${user.mobile}`}
+                            onSelect={() => handleUserSelect(user)}
+                          >
                         <div className="flex items-center gap-3 w-full">
                           <img
                             src={user.profileUrl || getAvatarLink(user.name)}
@@ -193,6 +242,8 @@ export default function UserManagement() {
                       </CommandItem>
                     ))}
                   </CommandGroup>
+                    </>
+                  )}
                 </CommandList>
               </Command>
             </PopoverContent>
