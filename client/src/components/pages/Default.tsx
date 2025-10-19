@@ -21,6 +21,7 @@ import { getAdminsAndSuperAdmin } from '@/services/admin';
 import type { User } from '@/services/user';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
+import DailyFunZone from '../DailyFunZone';
 
 const aboutSlides = [
   'बरकनगांगो गांव के दिल में एकता, करुणा और आपसी सहयोग की एक मजबूत भावना है - ऐसे मूल्य जो बरकनगांगो के आकस्मिक निधि युवा संघ की नींव बनाते हैं।',
@@ -340,6 +341,9 @@ export function Default() {
           )}
         </div>
       </div>
+
+      {/* Fun Interactive Section */}
+      <DailyFunZone />
     </div>
   );
 }
