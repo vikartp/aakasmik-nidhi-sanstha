@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface Question {
   id: number;
@@ -227,6 +227,31 @@ function TriviaQuiz() {
   const [showResult, setShowResult] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [currentQuestionData, setCurrentQuestionData] = useState<{
+    question: string;
+    options: string[];
+    correctAnswer: number;
+    difficulty: string;
+    category: string;
+  } | null>(null);
+
+  // Update question data when triviaQuestions or currentQuestion changes
+  useEffect(() => {
+    if (triviaQuestions.length > 0 && currentQuestion < triviaQuestions.length) {
+      const question = triviaQuestions[currentQuestion];
+      const allOptions = [...question.incorrect_answers, question.correct_answer];
+      const shuffledOptions = shuffleArray(allOptions);
+      const correctIndex = shuffledOptions.indexOf(question.correct_answer);
+      
+      setCurrentQuestionData({
+        question: decodeHtml(question.question),
+        options: shuffledOptions.map(option => decodeHtml(option)),
+        correctAnswer: correctIndex,
+        difficulty: question.difficulty,
+        category: question.category
+      });
+    }
+  }, [triviaQuestions, currentQuestion]);
 
   const fetchTriviaQuestions = async () => {
     setLoading(true);
@@ -267,29 +292,11 @@ function TriviaQuiz() {
     return shuffled;
   };
 
-  const getCurrentQuestionData = () => {
-    if (triviaQuestions.length === 0) return null;
-    
-    const question = triviaQuestions[currentQuestion];
-    const allOptions = [...question.incorrect_answers, question.correct_answer];
-    const shuffledOptions = shuffleArray(allOptions);
-    const correctIndex = shuffledOptions.indexOf(question.correct_answer);
-    
-    return {
-      question: decodeHtml(question.question),
-      options: shuffledOptions.map(option => decodeHtml(option)),
-      correctAnswer: correctIndex,
-      difficulty: question.difficulty,
-      category: question.category
-    };
-  };
-
   const handleAnswerSelect = (answerIndex: number) => {
     if (selectedAnswer !== null) return;
     setSelectedAnswer(answerIndex);
     
-    const questionData = getCurrentQuestionData();
-    if (questionData && answerIndex === questionData.correctAnswer) {
+    if (currentQuestionData && answerIndex === currentQuestionData.correctAnswer) {
       setScore(score + 1);
     }
   };
@@ -415,8 +422,16 @@ function TriviaQuiz() {
     );
   }
 
-  const questionData = getCurrentQuestionData();
-  if (!questionData) return null;
+  if (!currentQuestionData) {
+    return (
+      <div className="w-full max-w-sm mx-auto mt-6 bg-gradient-to-br from-orange-50 via-red-50 to-pink-50 dark:from-orange-900/20 dark:via-red-900/20 dark:to-pink-900/20 rounded-xl shadow-lg border border-orange-200 dark:border-orange-800 p-4">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-400">प्रश्न तैयार हो रहे हैं...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-sm mx-auto mt-6 bg-gradient-to-br from-orange-50 via-red-50 to-pink-50 dark:from-orange-900/20 dark:via-red-900/20 dark:to-pink-900/20 rounded-xl shadow-lg border border-orange-200 dark:border-orange-800 p-4">
@@ -427,18 +442,18 @@ function TriviaQuiz() {
         <div className="text-sm text-gray-600 dark:text-gray-400">
           प्रश्न {currentQuestion + 1} / {triviaQuestions.length}
         </div>
-        <div className={`text-xs font-medium ${getDifficultyColor(questionData.difficulty)}`}>
-          Difficulty: {questionData.difficulty.toUpperCase()}
+        <div className={`text-xs font-medium ${getDifficultyColor(currentQuestionData.difficulty)}`}>
+          Difficulty: {currentQuestionData.difficulty.toUpperCase()}
         </div>
       </div>
 
       <div className="bg-white dark:bg-gray-800 rounded-lg p-4 mb-4 border border-gray-200 dark:border-gray-700">
         <h3 className="text-base font-semibold text-gray-800 dark:text-gray-200 mb-4 text-center leading-relaxed">
-          {questionData.question}
+          {currentQuestionData.question}
         </h3>
 
         <div className="space-y-2">
-          {questionData.options.map((option, index) => (
+          {currentQuestionData.options.map((option, index) => (
             <button
               key={index}
               onClick={() => handleAnswerSelect(index)}
@@ -447,10 +462,10 @@ function TriviaQuiz() {
                 selectedAnswer === null
                   ? 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 hover:bg-orange-50 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300'
                   : selectedAnswer === index
-                  ? index === questionData.correctAnswer
+                  ? index === currentQuestionData?.correctAnswer
                     ? 'border-green-500 bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-200'
                     : 'border-red-500 bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-200'
-                  : index === questionData.correctAnswer
+                  : index === currentQuestionData?.correctAnswer
                   ? 'border-green-500 bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-200'
                   : 'border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
               }`}
