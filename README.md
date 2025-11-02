@@ -1,5 +1,6 @@
 # aakasmik-nidhi-sanstha
 This is a MERN stack project to provide digital solution to Contingency Fund Youth Association Barkangango(आकस्मिक निधि युवा संस्था बरकनगांगो).
+This also includes one expo project which is used to build mobile application.
 
 ## Considerations
 
@@ -9,6 +10,7 @@ This is a MERN stack project to provide digital solution to Contingency Fund You
     - Member: All users who will contribute to the Association and get benefitted when required
 
 ## Features
+
 
 ## TODO
 
