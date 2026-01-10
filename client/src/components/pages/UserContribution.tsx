@@ -92,7 +92,7 @@ export default function UserContribution({
   return (
     <div>
       {showHeader && <h2 className="text-xl font-bold mb-2">{headerText}</h2>}
-      <div className="rounded border overflow-hidden">
+      <div className="rounded border overflow-y-auto max-h-96">
         <Table className="min-w-full">
           <TableHeader>
             <TableRow>
