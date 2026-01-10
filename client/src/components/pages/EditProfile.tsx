@@ -72,7 +72,7 @@ export default function EditProfile() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" className="ml-2 flex items-center gap-2">
-          <Edit className="w-4 h-4" /> जानकारी संपादित करें
+          <Edit className="w-4 h-4" /> Edit Profile
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
