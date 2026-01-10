@@ -7,7 +7,13 @@ import { toast } from 'react-toastify';
 import Loader from './Loader';
 import type { AxiosError } from 'axios';
 import type { User } from '@/services/user';
-import { LassoSelectIcon, Upload } from 'lucide-react';
+import { LassoSelectIcon, Upload, Info } from 'lucide-react';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 
 export function UploadScreenshot({
   isQrCode,
@@ -63,57 +69,65 @@ export function UploadScreenshot({
   return (
     <>
       <div className="flex flex-col items-center gap-4">
-        <div className="w-full max-w-md mx-auto bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-700 rounded-xl p-1 shadow-lg border border-blue-200 dark:border-gray-600">
-          <h1 className="text-xl font-bold text-center text-blue-800 dark:text-blue-200 mb-3 flex items-center justify-center gap-2">
-            <span className="text-xl">📋</span>
-            स्क्रीनशॉट अपलोड प्रक्रिया
-          </h1>
-          <div className="space-y-2">
-            <div className="flex items-start gap-2 p-2 bg-white dark:bg-gray-600 rounded-lg shadow-sm border-l-4 border-green-400">
-              <span className="text-lg flex-shrink-0">1️⃣</span>
-              <p className="text-gray-700 dark:text-gray-200 font-medium text-sm">
-                कृपया QR कोड का उपयोग करके भुगतान करें
-              </p>
-            </div>
-            <div className="flex items-start gap-2 p-2 bg-white dark:bg-gray-600 rounded-lg shadow-sm border-l-4 border-blue-400">
-              <span className="text-lg flex-shrink-0">2️⃣</span>
-              <p className="text-gray-700 dark:text-gray-200 font-medium text-sm">
-                भुगतान का स्क्रीनशॉट लें
-              </p>
-            </div>
-            <div className="flex items-start gap-2 p-2 bg-white dark:bg-gray-600 rounded-lg shadow-sm border-l-4 border-purple-400">
-              <span className="text-lg flex-shrink-0">3️⃣</span>
-              <p className="text-gray-700 dark:text-gray-200 font-medium text-sm">
-                नीचे{' '}
-                <span className="bg-blue-600 px-1 py-0.5 rounded text-xs font-semibold">
-                  "यहाँ क्लिक करें और स्क्रीनशॉट चुनें"
-                </span>{' '}
-                पर क्लिक करें
-              </p>
-            </div>
-            <div className="flex items-start gap-2 p-2 bg-white dark:bg-gray-600 rounded-lg shadow-sm border-l-4 border-orange-400">
-              <span className="text-lg flex-shrink-0">4️⃣</span>
-              <p className="text-gray-700 dark:text-gray-200 font-medium text-sm">
-                पॉप-अप से स्क्रीनशॉट चुनें
-              </p>
-            </div>
-            <div className="flex items-start gap-2 p-2 bg-white dark:bg-gray-600 rounded-lg shadow-sm border-l-4 border-red-400">
-              <span className="text-lg flex-shrink-0">5️⃣</span>
-              <p className="text-gray-700 dark:text-gray-200 font-medium text-sm">
-                {' '}
-                <span className="bg-green-500 px-1 py-0.5 rounded text-xs font-semibold">
-                  स्क्रीनशॉट अपलोड करें
-                </span>{' '}
-                बटन पर क्लिक करें
-              </p>
-            </div>
-          </div>
-          <div className="mt-3 p-2 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 rounded-lg">
-            <p className="text-amber-800 dark:text-amber-200 text-xs text-center font-medium flex items-center justify-center gap-1">
-              <span className="text-sm">⚠️</span>
-              कृपया ध्यान से पढ़ें और अनुसरण करें
-            </p>
-          </div>
+        <div className="w-full max-w-md mx-auto">
+          <Accordion type="single" collapsible className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-700 rounded-xl shadow-lg border border-blue-200 dark:border-gray-600">
+            <AccordionItem value="instructions" className="border-0">
+              <AccordionTrigger className="px-4 py-3 hover:no-underline">
+                <h1 className="text-md font-bold text-blue-800 dark:text-blue-200 flex items-center gap-2">
+                  <Info className="w-6 h-6 animate-pulse" />
+                  स्क्रीनशॉट अपलोड प्रक्रिया (विस्तार के लिए क्लिक करें)
+                </h1>
+              </AccordionTrigger>
+              <AccordionContent className="px-4 pb-4">
+                <div className="space-y-2">
+                  <div className="flex items-start gap-2 p-2 bg-white dark:bg-gray-600 rounded-lg shadow-sm border-l-4 border-green-400">
+                    <span className="text-lg flex-shrink-0">1️⃣</span>
+                    <p className="text-gray-700 dark:text-gray-200 font-medium text-sm">
+                      कृपया QR कोड का उपयोग करके भुगतान करें
+                    </p>
+                  </div>
+                  <div className="flex items-start gap-2 p-2 bg-white dark:bg-gray-600 rounded-lg shadow-sm border-l-4 border-blue-400">
+                    <span className="text-lg flex-shrink-0">2️⃣</span>
+                    <p className="text-gray-700 dark:text-gray-200 font-medium text-sm">
+                      भुगतान का स्क्रीनशॉट लें
+                    </p>
+                  </div>
+                  <div className="flex items-start gap-2 p-2 bg-white dark:bg-gray-600 rounded-lg shadow-sm border-l-4 border-purple-400">
+                    <span className="text-lg flex-shrink-0">3️⃣</span>
+                    <p className="text-gray-700 dark:text-gray-200 font-medium text-sm">
+                      नीचे{' '}
+                      <span className="bg-blue-600 px-1 py-0.5 rounded text-xs font-semibold">
+                        "यहाँ क्लिक करें और स्क्रीनशॉट चुनें"
+                      </span>{' '}
+                      पर क्लिक करें
+                    </p>
+                  </div>
+                  <div className="flex items-start gap-2 p-2 bg-white dark:bg-gray-600 rounded-lg shadow-sm border-l-4 border-orange-400">
+                    <span className="text-lg flex-shrink-0">4️⃣</span>
+                    <p className="text-gray-700 dark:text-gray-200 font-medium text-sm">
+                      पॉप-अप से स्क्रीनशॉट चुनें
+                    </p>
+                  </div>
+                  <div className="flex items-start gap-2 p-2 bg-white dark:bg-gray-600 rounded-lg shadow-sm border-l-4 border-red-400">
+                    <span className="text-lg flex-shrink-0">5️⃣</span>
+                    <p className="text-gray-700 dark:text-gray-200 font-medium text-sm">
+                      {' '}
+                      <span className="bg-green-500 px-1 py-0.5 rounded text-xs font-semibold">
+                        स्क्रीनशॉट अपलोड करें
+                      </span>{' '}
+                      बटन पर क्लिक करें
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-3 p-2 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 rounded-lg">
+                  <p className="text-amber-800 dark:text-amber-200 text-xs text-center font-medium flex items-center justify-center gap-1">
+                    <span className="text-sm">⚠️</span>
+                    कृपया ध्यान से पढ़ें और अनुसरण करें
+                  </p>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </div>
         {!isQrCode && (
           <p className="whitespace-nowrap animate-marquee font-medium text-base text-blue-700 dark:text-blue-300 px-2">
