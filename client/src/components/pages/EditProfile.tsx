@@ -72,20 +72,20 @@ export default function EditProfile() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" className="ml-2 flex items-center gap-2">
-          <Edit className="w-4 h-4" /> Edit Info
+          <Edit className="w-4 h-4" /> जानकारी संपादित करें
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit} className="space-y-4">
           <DialogHeader>
-            <DialogTitle>Edit Info</DialogTitle>
+            <DialogTitle>जानकारी संपादित करें</DialogTitle>
             <DialogDescription>
-              Update your profile information below.
+              नीचे अपनी प्रोफ़ाइल जानकारी अपडेट करें।
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4">
             <div className="grid gap-3">
-              <Label htmlFor="name">Name</Label>
+              <Label htmlFor="name">नाम</Label>
               <Input
                 id="name"
                 name="name"
@@ -95,7 +95,7 @@ export default function EditProfile() {
               />
             </div>
             <div className="grid gap-3">
-              <Label htmlFor="fatherName">Father's Name</Label>
+              <Label htmlFor="fatherName">पिता का नाम</Label>
               <Input
                 id="fatherName"
                 name="fatherName"
@@ -105,7 +105,7 @@ export default function EditProfile() {
               />
             </div>
             <div className="grid gap-3">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">ईमेल</Label>
               <Input
                 id="email"
                 name="email"
@@ -115,7 +115,7 @@ export default function EditProfile() {
               />
             </div>
             <div className="grid gap-3">
-              <Label htmlFor="occupation">Occupation</Label>
+              <Label htmlFor="occupation">व्यवसाय</Label>
               <Input
                 id="occupation"
                 name="occupation"
@@ -130,11 +130,11 @@ export default function EditProfile() {
           <DialogFooter>
             <DialogClose asChild>
               <Button variant="outline" type="button">
-                Cancel
+                रद्द करें
               </Button>
             </DialogClose>
             <Button type="submit" disabled={loading}>
-              {loading ? 'Saving...' : 'Save changes'}
+              {loading ? 'सहेजा जा रहा है...' : 'परिवर्तन सहेजें'}
             </Button>
           </DialogFooter>
         </form>

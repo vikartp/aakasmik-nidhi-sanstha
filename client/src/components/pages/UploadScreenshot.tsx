@@ -70,7 +70,11 @@ export function UploadScreenshot({
     <>
       <div className="flex flex-col items-center gap-4">
         <div className="w-full max-w-md mx-auto">
-          <Accordion type="single" collapsible className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-700 rounded-xl shadow-lg border border-blue-200 dark:border-gray-600">
+          <Accordion
+            type="single"
+            collapsible
+            className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-700 rounded-xl shadow-lg border border-blue-200 dark:border-gray-600"
+          >
             <AccordionItem value="instructions" className="border-0">
               <AccordionTrigger className="px-4 py-3 hover:no-underline">
                 <h1 className="text-md font-bold text-blue-800 dark:text-blue-200 flex items-center gap-2">

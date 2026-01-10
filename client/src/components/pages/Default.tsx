@@ -129,15 +129,26 @@ export function Default() {
 
   return (
     <div className="flex flex-col justify-center gap-2">
+      <h2 className="text-2xl text-center font-semibold bg-gradient-to-r from-green-400 via-blue-500 to-indigo-500 bg-clip-text text-transparent drop-shadow-lg dark:from-green-300 dark:via-blue-400 dark:to-indigo-400 py-2 rounded-xl shadow-md gap-2 animate-[fadeInScale_1s_ease-out] hover:scale-105 transition-transform duration-300">
+        आकस्मिक निधि युवा संस्था के ऑनलाइन पोर्टल में आपका स्वागत है
+      </h2>
+
+      <AboutCarousel />
+
       {user ? (
-        <Button
-          className="max-w-md mx-auto"
-          onClick={() => navigate('/dashboard')}
-        >
-          Go to your Dashboard <LayoutDashboard />
-        </Button>
+        <div className="flex flex-col items-center gap-2">
+          <p className="text-base font-semibold text-blue-700 dark:text-blue-300 animate-bounce">
+            👇 अपने डैशबोर्ड देखने के लिए यहाँ क्लिक करें 👇
+          </p>
+          <Button
+            className="max-w-md mx-auto flex items-center gap-3 px-6 py-6 text-lg font-bold rounded-xl shadow-2xl transition-all duration-300 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700 hover:scale-110 hover:shadow-[0_0_30px_rgba(168,85,247,0.6)] dark:from-indigo-500 dark:via-purple-500 dark:to-pink-500 dark:hover:from-indigo-600 dark:hover:via-purple-600 dark:hover:to-pink-600 animate-pulse focus:outline-none focus:ring-4 focus:ring-purple-400 dark:focus:ring-purple-700"
+            onClick={() => navigate('/dashboard')}
+          >
+            अपने डैशबोर्ड पर जाएं <LayoutDashboard className="w-6 h-6" />
+          </Button>
+        </div>
       ) : (
-        <div className="flex items-center justify-end space-x-4">
+        <div className="flex items-center justify-between space-x-4">
           <Button
             onClick={() => navigate('/register')}
             className="flex items-center gap-2 px-4 py-2 rounded font-semibold shadow-sm transition-all duration-150 bg-gradient-to-r from-green-500 to-green-700 text-white hover:from-green-600 hover:to-green-800 hover:scale-105 dark:from-green-400 dark:to-green-600 dark:hover:from-green-500 dark:hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-300 dark:focus:ring-green-800"
@@ -154,11 +165,7 @@ export function Default() {
           </Button>
         </div>
       )}
-      <h2 className="text-2xl text-center font-semibold bg-gradient-to-r from-green-400 via-blue-500 to-indigo-500 bg-clip-text text-transparent drop-shadow-lg dark:from-green-300 dark:via-blue-400 dark:to-indigo-400 py-2 rounded-xl shadow-md gap-2">
-        आकस्मिक निधि युवा संस्था के ऑनलाइन पोर्टल में आपका स्वागत है
-      </h2>
 
-      <AboutCarousel />
       {!user && <EngagePublic />}
 
       <div className="max-w-md mx-auto flex flex-col justify-center">

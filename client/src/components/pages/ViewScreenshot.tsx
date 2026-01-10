@@ -213,9 +213,7 @@ export default function ViewScreenshot() {
               'Verify Payment Contribution'
             )}
           </Button>
-          <p className="text-lg text-red-500">
-            क्या आप REJECT करना चाहते हैं?
-          </p>
+          <p className="text-lg text-red-500">क्या आप REJECT करना चाहते हैं?</p>
           <Input
             placeholder="Rejection का कारण"
             value={rejectionReason}

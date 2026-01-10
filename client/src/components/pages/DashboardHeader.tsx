@@ -75,9 +75,21 @@ export default function DashboardHeader({
 
   return (
     <>
-      <div className="flex justify-center">
-        <Button className="text-center max-w-md" onClick={() => navigate('/')}>
-          Home Page पर जाएं <HomeIcon />
+      <div className="flex gap-2 mb-2">
+        <Button
+          className="flex items-center gap-2 px-6 py-3 text-base font-bold rounded-lg shadow-lg transition-all duration-300 bg-gradient-to-r from-green-500 via-teal-500 to-blue-500 text-white hover:from-green-600 hover:via-teal-600 hover:to-blue-600 hover:scale-105 hover:shadow-xl dark:from-green-400 dark:via-teal-400 dark:to-blue-400 dark:hover:from-green-500 dark:hover:via-teal-500 dark:hover:to-blue-500 focus:outline-none focus:ring-4 focus:ring-green-300 dark:focus:ring-green-700"
+          onClick={() => navigate('/')}
+        >
+          <HomeIcon className="w-5 h-5" />
+          होम पेज पर जाएं
+        </Button>
+        <EditProfile />
+        <Button
+          onClick={handleLogout}
+          className="ml-auto flex items-center gap-2 px-4 py-2 rounded font-semibold shadow-sm transition-all duration-150 bg-gradient-to-r from-red-500 to-red-700 text-white hover:from-red-600 hover:to-red-800 hover:scale-105 dark:from-red-400 dark:to-red-600 dark:hover:from-red-500 dark:hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-red-300 dark:focus:ring-red-800"
+        >
+          <LogOut className="w-5 h-5" />
+          लॉग आउट
         </Button>
       </div>
       <div className="flex justify-between items-center mb-4">
@@ -114,16 +126,6 @@ export default function DashboardHeader({
             <p>{title}</p>
             <p>({name})</p>
           </div>
-        </div>
-        <div className="flex flex-col gap-2 items-end">
-          <Button
-            onClick={handleLogout}
-            className="flex items-center gap-2 px-4 py-2 rounded font-semibold shadow-sm transition-all duration-150 bg-gradient-to-r from-red-500 to-red-700 text-white hover:from-red-600 hover:to-red-800 hover:scale-105 dark:from-red-400 dark:to-red-600 dark:hover:from-red-500 dark:hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-red-300 dark:focus:ring-red-800"
-          >
-            <LogOut className="w-5 h-5" />
-            Logout
-          </Button>
-          <EditProfile />
         </div>
       </div>
       {showProfileHint && (
