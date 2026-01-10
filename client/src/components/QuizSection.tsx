@@ -20,64 +20,64 @@ interface TriviaQuestion {
 const quizQuestions: Question[] = [
   {
     id: 1,
-    question: "आकस्मिक निधि का मुख्य उद्देश्य क्या है?",
+    question: 'आकस्मिक निधि का मुख्य उद्देश्य क्या है?',
     options: [
-      "पैसा कमाना",
-      "संकट के समय सहायता करना", 
-      "मनोरंजन करना",
-      "व्यापार करना"
+      'पैसा कमाना',
+      'संकट के समय सहायता करना',
+      'मनोरंजन करना',
+      'व्यापार करना',
     ],
     correctAnswer: 1,
-    explanation: "आकस्मिक निधि का मुख्य उद्देश्य समुदाय के सदस्यों को आपातकाल के समय वित्तीय सहायता प्रदान करना है।"
+    explanation:
+      'आकस्मिक निधि का मुख्य उद्देश्य समुदाय के सदस्यों को आपातकाल के समय वित्तीय सहायता प्रदान करना है।',
   },
   {
     id: 2,
-    question: "एकता में शक्ति का मतलब क्या है?",
+    question: 'एकता में शक्ति का मतलब क्या है?',
     options: [
-      "अकेले रहना बेहतर है",
-      "मिलकर काम करने से बड़े लक्ष्य हासिल होते हैं",
-      "झगड़ा करना चाहिए",
-      "सबसे अलग रहना चाहिए"
+      'अकेले रहना बेहतर है',
+      'मिलकर काम करने से बड़े लक्ष्य हासिल होते हैं',
+      'झगड़ा करना चाहिए',
+      'सबसे अलग रहना चाहिए',
     ],
     correctAnswer: 1,
-    explanation: "एकता में शक्ति का अर्थ है कि जब लोग मिलकर काम करते हैं, तो वे बड़ी से बड़ी चुनौतियों का सामना कर सकते हैं।"
+    explanation:
+      'एकता में शक्ति का अर्थ है कि जब लोग मिलकर काम करते हैं, तो वे बड़ी से बड़ी चुनौतियों का सामना कर सकते हैं।',
   },
   {
     id: 3,
-    question: "महीने में कितनी बार योगदान देना होता है?",
-    options: [
-      "रोज",
-      "हर महीने एक बार",
-      "साल में एक बार",
-      "जब मन करे"
-    ],
+    question: 'महीने में कितनी बार योगदान देना होता है?',
+    options: ['रोज', 'हर महीने एक बार', 'साल में एक बार', 'जब मन करे'],
     correctAnswer: 1,
-    explanation: "सदस्यों को हर महीने नियमित रूप से एक बार अपना योगदान देना होता है।"
+    explanation:
+      'सदस्यों को हर महीने नियमित रूप से एक बार अपना योगदान देना होता है।',
   },
   {
     id: 4,
-    question: "सहयोग की भावना से क्या फायदा होता है?",
+    question: 'सहयोग की भावना से क्या फायदा होता है?',
     options: [
-      "कोई फायदा नहीं",
-      "समुदाय मजबूत बनता है",
-      "झगड़े बढ़ते हैं",
-      "पैसा बर्बाद होता है"
+      'कोई फायदा नहीं',
+      'समुदाय मजबूत बनता है',
+      'झगड़े बढ़ते हैं',
+      'पैसा बर्बाद होता है',
     ],
     correctAnswer: 1,
-    explanation: "सहयोग की भावना से समुदाय मजबूत बनता है और हर व्यक्ति को कठिन समय में सहारा मिलता है।"
+    explanation:
+      'सहयोग की भावना से समुदाय मजबूत बनता है और हर व्यक्ति को कठिन समय में सहारा मिलता है।',
   },
   {
     id: 5,
-    question: "आपसी भाईचारा क्यों जरूरी है?",
+    question: 'आपसी भाईचारा क्यों जरूरी है?',
     options: [
-      "समय बर्बाद करने के लिए",
-      "एक-दूसरे की मदद के लिए",
-      "लड़ाई करने के लिए",
-      "दिखावा करने के लिए"
+      'समय बर्बाद करने के लिए',
+      'एक-दूसरे की मदद के लिए',
+      'लड़ाई करने के लिए',
+      'दिखावा करने के लिए',
     ],
     correctAnswer: 1,
-    explanation: "आपसी भाईचारा इसलिए जरूरी है क्योंकि इससे समुदाय में प्रेम और एक-दूसरे की मदद की भावना बनी रहती है।"
-  }
+    explanation:
+      'आपसी भाईचारा इसलिए जरूरी है क्योंकि इससे समुदाय में प्रेम और एक-दूसरे की मदद की भावना बनी रहती है।',
+  },
 ];
 
 function CommunityQuiz() {
@@ -91,7 +91,7 @@ function CommunityQuiz() {
     if (selectedAnswer !== null) return; // Prevent changing answer
     setSelectedAnswer(answerIndex);
     setShowExplanation(true);
-    
+
     if (answerIndex === quizQuestions[currentQuestion].correctAnswer) {
       setScore(score + 1);
     }
@@ -117,10 +117,10 @@ function CommunityQuiz() {
 
   const getScoreMessage = () => {
     const percentage = (score / quizQuestions.length) * 100;
-    if (percentage >= 80) return "बहुत बढ़िया! 🏆 आप एक सच्चे सदस्य हैं!";
-    if (percentage >= 60) return "अच्छा! 👍 आप सही राह पर हैं!";
-    if (percentage >= 40) return "ठीक है! 📚 थोड़ा और सीखने की जरूरत है!";
-    return "कोशिश करते रहें! 💪 अभ्यास से सब कुछ सीख सकते हैं!";
+    if (percentage >= 80) return 'बहुत बढ़िया! 🏆 आप एक सच्चे सदस्य हैं!';
+    if (percentage >= 60) return 'अच्छा! 👍 आप सही राह पर हैं!';
+    if (percentage >= 40) return 'ठीक है! 📚 थोड़ा और सीखने की जरूरत है!';
+    return 'कोशिश करते रहें! 💪 अभ्यास से सब कुछ सीख सकते हैं!';
   };
 
   const question = quizQuestions[currentQuestion];
@@ -132,7 +132,7 @@ function CommunityQuiz() {
           <h2 className="text-lg font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
             🧠 Quiz पूरी हो गई!
           </h2>
-          
+
           <div className="bg-white dark:bg-gray-800 rounded-lg p-4 mb-4 border border-gray-200 dark:border-gray-700">
             <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-2">
               {score} / {quizQuestions.length}
@@ -182,15 +182,18 @@ function CommunityQuiz() {
                 selectedAnswer === null
                   ? 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 hover:bg-blue-50 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300'
                   : selectedAnswer === index
-                  ? index === question.correctAnswer
-                    ? 'border-green-500 bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-200'
-                    : 'border-red-500 bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-200'
-                  : index === question.correctAnswer
-                  ? 'border-green-500 bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-200'
-                  : 'border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                    ? index === question.correctAnswer
+                      ? 'border-green-500 bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-200'
+                      : 'border-red-500 bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-200'
+                    : index === question.correctAnswer
+                      ? 'border-green-500 bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-200'
+                      : 'border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
               }`}
             >
-              <span className="font-medium">{String.fromCharCode(65 + index)}.</span> {option}
+              <span className="font-medium">
+                {String.fromCharCode(65 + index)}.
+              </span>{' '}
+              {option}
             </button>
           ))}
         </div>
@@ -212,7 +215,9 @@ function CommunityQuiz() {
           onClick={handleNextQuestion}
           className="w-full py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold rounded-lg transition-all transform hover:scale-105 touch-manipulation"
         >
-          {currentQuestion < quizQuestions.length - 1 ? 'अगला प्रश्न' : 'परिणाम देखें'}
+          {currentQuestion < quizQuestions.length - 1
+            ? 'अगला प्रश्न'
+            : 'परिणाम देखें'}
         </button>
       )}
     </div>
@@ -237,18 +242,24 @@ function TriviaQuiz() {
 
   // Update question data when triviaQuestions or currentQuestion changes
   useEffect(() => {
-    if (triviaQuestions.length > 0 && currentQuestion < triviaQuestions.length) {
+    if (
+      triviaQuestions.length > 0 &&
+      currentQuestion < triviaQuestions.length
+    ) {
       const question = triviaQuestions[currentQuestion];
-      const allOptions = [...question.incorrect_answers, question.correct_answer];
+      const allOptions = [
+        ...question.incorrect_answers,
+        question.correct_answer,
+      ];
       const shuffledOptions = shuffleArray(allOptions);
       const correctIndex = shuffledOptions.indexOf(question.correct_answer);
-      
+
       setCurrentQuestionData({
         question: decodeHtml(question.question),
         options: shuffledOptions.map(option => decodeHtml(option)),
         correctAnswer: correctIndex,
         difficulty: question.difficulty,
-        category: question.category
+        category: question.category,
       });
     }
   }, [triviaQuestions, currentQuestion]);
@@ -257,9 +268,11 @@ function TriviaQuiz() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch('https://opentdb.com/api.php?amount=5&category=9&type=multiple');
+      const response = await fetch(
+        'https://opentdb.com/api.php?amount=5&category=9&type=multiple'
+      );
       const data = await response.json();
-      
+
       if (data.response_code === 0) {
         setTriviaQuestions(data.results);
         setCurrentQuestion(0);
@@ -295,8 +308,11 @@ function TriviaQuiz() {
   const handleAnswerSelect = (answerIndex: number) => {
     if (selectedAnswer !== null) return;
     setSelectedAnswer(answerIndex);
-    
-    if (currentQuestionData && answerIndex === currentQuestionData.correctAnswer) {
+
+    if (
+      currentQuestionData &&
+      answerIndex === currentQuestionData.correctAnswer
+    ) {
       setScore(score + 1);
     }
   };
@@ -320,19 +336,24 @@ function TriviaQuiz() {
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'easy': return 'text-green-600 dark:text-green-400';
-      case 'medium': return 'text-yellow-600 dark:text-yellow-400';
-      case 'hard': return 'text-red-600 dark:text-red-400';
-      default: return 'text-gray-600 dark:text-gray-400';
+      case 'easy':
+        return 'text-green-600 dark:text-green-400';
+      case 'medium':
+        return 'text-yellow-600 dark:text-yellow-400';
+      case 'hard':
+        return 'text-red-600 dark:text-red-400';
+      default:
+        return 'text-gray-600 dark:text-gray-400';
     }
   };
 
   const getScoreMessage = () => {
     const percentage = (score / triviaQuestions.length) * 100;
-    if (percentage >= 80) return "शानदार! 🌟 आप सामान्य ज्ञान में बहुत अच्छे हैं!";
-    if (percentage >= 60) return "बढ़िया! 🎯 अच्छी जानकारी है!";
-    if (percentage >= 40) return "ठीक है! 📖 और पढ़ने की जरूरत है!";
-    return "कोई बात नहीं! 💪 अभ्यास से सब कुछ सीख सकते हैं!";
+    if (percentage >= 80)
+      return 'शानदार! 🌟 आप सामान्य ज्ञान में बहुत अच्छे हैं!';
+    if (percentage >= 60) return 'बढ़िया! 🎯 अच्छी जानकारी है!';
+    if (percentage >= 40) return 'ठीक है! 📖 और पढ़ने की जरूरत है!';
+    return 'कोई बात नहीं! 💪 अभ्यास से सब कुछ सीख सकते हैं!';
   };
 
   if (loading) {
@@ -340,7 +361,9 @@ function TriviaQuiz() {
       <div className="w-full max-w-sm mx-auto mt-6 bg-gradient-to-br from-orange-50 via-red-50 to-pink-50 dark:from-orange-900/20 dark:via-red-900/20 dark:to-pink-900/20 rounded-xl shadow-lg border border-orange-200 dark:border-orange-800 p-4">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">प्रश्न लोड हो रहे हैं...</p>
+          <p className="text-gray-600 dark:text-gray-400">
+            प्रश्न लोड हो रहे हैं...
+          </p>
         </div>
       </div>
     );
@@ -369,7 +392,7 @@ function TriviaQuiz() {
           <h2 className="text-lg font-bold bg-gradient-to-r from-orange-600 via-red-600 to-pink-600 bg-clip-text text-transparent mb-4">
             🌍 Trivia Quiz पूरी हो गई!
           </h2>
-          
+
           <div className="bg-white dark:bg-gray-800 rounded-lg p-4 mb-4 border border-gray-200 dark:border-gray-700">
             <div className="text-2xl font-bold text-orange-600 dark:text-orange-400 mb-2">
               {score} / {triviaQuestions.length}
@@ -427,7 +450,9 @@ function TriviaQuiz() {
       <div className="w-full max-w-sm mx-auto mt-6 bg-gradient-to-br from-orange-50 via-red-50 to-pink-50 dark:from-orange-900/20 dark:via-red-900/20 dark:to-pink-900/20 rounded-xl shadow-lg border border-orange-200 dark:border-orange-800 p-4">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">प्रश्न तैयार हो रहे हैं...</p>
+          <p className="text-gray-600 dark:text-gray-400">
+            प्रश्न तैयार हो रहे हैं...
+          </p>
         </div>
       </div>
     );
@@ -442,7 +467,9 @@ function TriviaQuiz() {
         <div className="text-sm text-gray-600 dark:text-gray-400">
           प्रश्न {currentQuestion + 1} / {triviaQuestions.length}
         </div>
-        <div className={`text-xs font-medium ${getDifficultyColor(currentQuestionData.difficulty)}`}>
+        <div
+          className={`text-xs font-medium ${getDifficultyColor(currentQuestionData.difficulty)}`}
+        >
           Difficulty: {currentQuestionData.difficulty.toUpperCase()}
         </div>
       </div>
@@ -462,15 +489,18 @@ function TriviaQuiz() {
                 selectedAnswer === null
                   ? 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 hover:bg-orange-50 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300'
                   : selectedAnswer === index
-                  ? index === currentQuestionData?.correctAnswer
-                    ? 'border-green-500 bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-200'
-                    : 'border-red-500 bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-200'
-                  : index === currentQuestionData?.correctAnswer
-                  ? 'border-green-500 bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-200'
-                  : 'border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
+                    ? index === currentQuestionData?.correctAnswer
+                      ? 'border-green-500 bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-200'
+                      : 'border-red-500 bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-200'
+                    : index === currentQuestionData?.correctAnswer
+                      ? 'border-green-500 bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-200'
+                      : 'border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
               }`}
             >
-              <span className="font-medium">{String.fromCharCode(65 + index)}.</span> {option}
+              <span className="font-medium">
+                {String.fromCharCode(65 + index)}.
+              </span>{' '}
+              {option}
             </button>
           ))}
         </div>
@@ -481,7 +511,9 @@ function TriviaQuiz() {
           onClick={handleNextQuestion}
           className="w-full py-3 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold rounded-lg transition-all transform hover:scale-105 touch-manipulation"
         >
-          {currentQuestion < triviaQuestions.length - 1 ? 'अगला प्रश्न' : 'परिणाम देखें'}
+          {currentQuestion < triviaQuestions.length - 1
+            ? 'अगला प्रश्न'
+            : 'परिणाम देखें'}
         </button>
       )}
     </div>

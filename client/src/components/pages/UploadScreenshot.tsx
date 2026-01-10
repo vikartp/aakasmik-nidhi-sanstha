@@ -84,7 +84,7 @@ export function UploadScreenshot({
             <div className="flex items-start gap-2 p-2 bg-white dark:bg-gray-600 rounded-lg shadow-sm border-l-4 border-purple-400">
               <span className="text-lg flex-shrink-0">3️⃣</span>
               <p className="text-gray-700 dark:text-gray-200 font-medium text-sm">
-                फिर नीचे{' '}
+                नीचे{' '}
                 <span className="bg-blue-600 px-1 py-0.5 rounded text-xs font-semibold">
                   "यहाँ क्लिक करें और स्क्रीनशॉट चुनें"
                 </span>{' '}
@@ -94,13 +94,13 @@ export function UploadScreenshot({
             <div className="flex items-start gap-2 p-2 bg-white dark:bg-gray-600 rounded-lg shadow-sm border-l-4 border-orange-400">
               <span className="text-lg flex-shrink-0">4️⃣</span>
               <p className="text-gray-700 dark:text-gray-200 font-medium text-sm">
-                फिर पॉप-अप से स्क्रीनशॉट चुनें
+                पॉप-अप से स्क्रीनशॉट चुनें
               </p>
             </div>
             <div className="flex items-start gap-2 p-2 bg-white dark:bg-gray-600 rounded-lg shadow-sm border-l-4 border-red-400">
               <span className="text-lg flex-shrink-0">5️⃣</span>
               <p className="text-gray-700 dark:text-gray-200 font-medium text-sm">
-                फिर{' '}
+                {' '}
                 <span className="bg-green-500 px-1 py-0.5 rounded text-xs font-semibold">
                   स्क्रीनशॉट अपलोड करें
                 </span>{' '}

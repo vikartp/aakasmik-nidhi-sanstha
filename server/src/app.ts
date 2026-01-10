@@ -31,12 +31,12 @@ declare global {
 app.use(cors(
     {
         origin: function(origin, callback) {
-            
+
             // ✅ MOBILE APPS (PRODUCTION): No origin header - this is normal for native apps
             if (!origin) {
                 return callback(null, true);
             }
-            
+
             const allowedOrigins = [
                 process.env.CLIENT_URL,
                 process.env.CLIENT_URL?.replace('http://', 'https://'), // HTTP to HTTPS fallback
@@ -56,7 +56,7 @@ app.use(cors(
                 origin.match(/^http:\/\/172\.16\.\d+\.\d+:\d+$/)) {    // Local network IPs
                 return callback(null, true);
             }
-            
+
             console.log('❌ CORS blocked origin:', origin);
             callback(new Error('Not allowed by CORS'));
         },

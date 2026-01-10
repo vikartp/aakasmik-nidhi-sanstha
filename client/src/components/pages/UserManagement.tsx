@@ -12,8 +12,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Calendar } from '@/components/ui/calendar';
 import UserContribution from './UserContribution';
 import { SquareArrowLeft, Search } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
 
 export default function UserManagement() {
   const { userId } = useParams();
@@ -35,7 +46,7 @@ export default function UserManagement() {
   const [userContributions, setUserContributions] = useState<Contribution[]>(
     []
   );
-  
+
   // Autocomplete state
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -91,15 +102,15 @@ export default function UserManagement() {
     }
 
     const searchTerm = debouncedSearchValue.toLowerCase().trim();
-    
+
     return allUsers
       .filter(user => {
         // Search in name (with partial matching)
         const nameMatch = user.name.toLowerCase().includes(searchTerm);
-        
+
         // Search in mobile (exact and partial matching)
         const mobileMatch = user.mobile && user.mobile.includes(searchTerm);
-        
+
         // Return true if any field matches
         return nameMatch || mobileMatch;
       })
@@ -109,7 +120,7 @@ export default function UserManagement() {
   useEffect(() => {
     // Fetch all users for autocomplete
     fetchAllUsers();
-    
+
     if (!userId) return;
     getUserById(userId).then(data => {
       setUser(data);
@@ -184,7 +195,7 @@ export default function UserManagement() {
         >
           Back to Dashboard <SquareArrowLeft />
         </Button>
-        
+
         <div className="flex-1 max-w-md">
           <Popover open={searchOpen} onOpenChange={setSearchOpen}>
             <PopoverTrigger asChild>
@@ -212,36 +223,42 @@ export default function UserManagement() {
                 <CommandList>
                   {usersLoading ? (
                     <div className="p-4 text-center">
-                      <div className="text-sm text-muted-foreground">Loading users...</div>
+                      <div className="text-sm text-muted-foreground">
+                        Loading users...
+                      </div>
                     </div>
                   ) : (
                     <>
                       <CommandEmpty>
-                        {debouncedSearchValue.trim() ? 'No users found.' : 'Start typing to search users...'}
+                        {debouncedSearchValue.trim()
+                          ? 'No users found.'
+                          : 'Start typing to search users...'}
                       </CommandEmpty>
                       <CommandGroup>
-                        {filteredUsers.map((user) => (
+                        {filteredUsers.map(user => (
                           <CommandItem
                             key={user._id}
                             value={`${user.name}-${user.mobile}`}
                             onSelect={() => handleUserSelect(user)}
                           >
-                        <div className="flex items-center gap-3 w-full">
-                          <img
-                            src={user.profileUrl || getAvatarLink(user.name)}
-                            alt={user.name}
-                            className="w-8 h-8 rounded-full object-cover border border-gray-300 dark:border-gray-600 flex-shrink-0"
-                          />
-                          <div className="flex-1">
-                            <div className="font-medium">{user.name}</div>
-                            <div className="text-sm text-muted-foreground">
-                              {user.mobile}
+                            <div className="flex items-center gap-3 w-full">
+                              <img
+                                src={
+                                  user.profileUrl || getAvatarLink(user.name)
+                                }
+                                alt={user.name}
+                                className="w-8 h-8 rounded-full object-cover border border-gray-300 dark:border-gray-600 flex-shrink-0"
+                              />
+                              <div className="flex-1">
+                                <div className="font-medium">{user.name}</div>
+                                <div className="text-sm text-muted-foreground">
+                                  {user.mobile}
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        </div>
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
                     </>
                   )}
                 </CommandList>

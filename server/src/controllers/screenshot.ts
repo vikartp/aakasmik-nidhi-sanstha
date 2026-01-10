@@ -10,7 +10,7 @@ export const uploadScreenshot = async (
     const userId = req.body.userId;
     const uploadMonth =
         req.body.uploadMonth ||
-        new Date().toLocaleString("default", { month: "long" });
+        new Date().toLocaleString("en-US", { month: "long" });
     try {
         if (!req.file) {
             res.status(400).json({ message: "No file uploaded" });

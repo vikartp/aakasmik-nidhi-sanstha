@@ -30,16 +30,11 @@ export type Month =
 export async function uploadScreenshot(
   file: File,
   user: User,
-  isQrCode = false,
-  uploadMonth?: Month
+  isQrCode = false
 ): Promise<{ url: string }> {
   const formData = new FormData();
   formData.append('screenshot', file);
   formData.append('userId', user._id);
-  formData.append(
-    'uploadMonth',
-    uploadMonth ?? new Date().toLocaleString('default', { month: 'long' })
-  );
   if (isQrCode) {
     formData.append('type', 'qrCode');
   }

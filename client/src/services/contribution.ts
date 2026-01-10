@@ -46,13 +46,16 @@ export async function deleteContribution(id: string) {
   return response.data;
 }
 
-export async function getContributionsPDFUrl(year: number, month: string): Promise<string> {
+export async function getContributionsPDFUrl(
+  year: number,
+  month: string
+): Promise<string> {
   // Use the same logic as api.ts to determine the correct base URL
   const isLocalhost = window.location.hostname === 'localhost';
   const baseUrl = isLocalhost
     ? 'http://localhost:5000'
     : 'https://aakasmik-nidhi-backend.onrender.com';
-  
+
   return `${baseUrl}/contributions/pdf/${year}/${month}`;
 }
 
@@ -60,23 +63,24 @@ export async function downloadContributionsPDF(year: number, month: string) {
   const response = await api.get(`/contributions/pdf/${year}/${month}`, {
     responseType: 'blob', // Important for file downloads
   });
-  
+
   const blob = new Blob([response.data], { type: 'application/pdf' });
   const fileName = `Aakasmik-Nidhi-${year}-${month}.pdf`;
-  
+
   // Check if we're in a mobile app environment (Expo WebView)
-  const isInWebView = window.navigator.userAgent.includes('Mobile') || 
-                     window.navigator.userAgent.includes('Android') || 
-                     window.navigator.userAgent.includes('iPhone') ||
-                     !('showSaveFilePicker' in window); // No File System Access API
-  
+  const isInWebView =
+    window.navigator.userAgent.includes('Mobile') ||
+    window.navigator.userAgent.includes('Android') ||
+    window.navigator.userAgent.includes('iPhone') ||
+    !('showSaveFilePicker' in window); // No File System Access API
+
   if (isInWebView) {
     // Try Web Share API first (modern mobile browsers)
     if ('share' in navigator && navigator.share) {
       try {
         // Convert blob to File for sharing
         const file = new File([blob], fileName, { type: 'application/pdf' });
-        
+
         // Check if files can be shared
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
           await navigator.share({
@@ -87,19 +91,26 @@ export async function downloadContributionsPDF(year: number, month: string) {
           return response.data;
         }
       } catch (shareError) {
-        console.log('Share API failed, falling back to alternative method', shareError);
+        console.log(
+          'Share API failed, falling back to alternative method',
+          shareError
+        );
       }
     }
-    
+
     // Fallback: Open PDF in new tab/window
     const url = window.URL.createObjectURL(blob);
-    
+
     // Try to open in new window first
     const newWindow = window.open(url, '_blank');
-    
-    if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
+
+    if (
+      !newWindow ||
+      newWindow.closed ||
+      typeof newWindow.closed == 'undefined'
+    ) {
       // If popup is blocked, try alternative methods
-      
+
       // Method 1: Try to navigate to blob URL
       try {
         window.location.href = url;
@@ -110,14 +121,14 @@ export async function downloadContributionsPDF(year: number, month: string) {
         iframe.style.display = 'none';
         iframe.src = url;
         document.body.appendChild(iframe);
-        
+
         // Remove iframe after some time
         setTimeout(() => {
           document.body.removeChild(iframe);
         }, 5000);
       }
     }
-    
+
     // Clean up after a delay
     setTimeout(() => {
       window.URL.revokeObjectURL(url);
@@ -134,6 +145,6 @@ export async function downloadContributionsPDF(year: number, month: string) {
     link.remove();
     window.URL.revokeObjectURL(url);
   }
-  
+
   return response.data;
 }

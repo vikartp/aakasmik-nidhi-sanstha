@@ -154,7 +154,7 @@ export const getSecretByMobile = async (
             res.status(404).json({ message: "User not found for the provided mobile number" });
             return;
         }
-        
+
         // Check if the mobile number belongs to a superadmin
         if (targetUser.role === "superadmin") {
             res.status(403).json({ message: "Forbidden: Cannot access secrets for superadmin accounts" });

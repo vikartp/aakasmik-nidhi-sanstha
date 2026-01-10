@@ -27,7 +27,8 @@ const DashboardCommonSection: React.FC = () => {
 
       <div className="mt-4 py-1 text-center">
         <p className="mb-0.5 text-sm text-gray-200">
-          यदि आप वर्तमान में ANidhi एप्लिकेशन में हैं और पोर्टल को ब्राउज़र में खोलना चाहते हैं, तो कृपया नीचे क्लिक करें
+          यदि आप वर्तमान में ANidhi एप्लिकेशन में हैं और पोर्टल को ब्राउज़र में
+          खोलना चाहते हैं, तो कृपया नीचे क्लिक करें
         </p>
         <a
           href="https://aakasmiknidhi.netlify.app/"

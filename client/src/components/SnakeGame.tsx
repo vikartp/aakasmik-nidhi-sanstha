@@ -20,7 +20,7 @@ export default function SnakeGame() {
   const generateFood = useCallback(() => {
     const newFood = {
       x: Math.floor(Math.random() * (CANVAS_SIZE / GRID_SIZE)),
-      y: Math.floor(Math.random() * (CANVAS_SIZE / GRID_SIZE))
+      y: Math.floor(Math.random() * (CANVAS_SIZE / GRID_SIZE)),
     };
     return newFood;
   }, []);
@@ -53,13 +53,17 @@ export default function SnakeGame() {
     setSnake(currentSnake => {
       const newSnake = [...currentSnake];
       const head = { ...newSnake[0] };
-      
+
       head.x += direction.x;
       head.y += direction.y;
 
       // Check wall collision
-      if (head.x < 0 || head.x >= CANVAS_SIZE / GRID_SIZE || 
-          head.y < 0 || head.y >= CANVAS_SIZE / GRID_SIZE) {
+      if (
+        head.x < 0 ||
+        head.x >= CANVAS_SIZE / GRID_SIZE ||
+        head.y < 0 ||
+        head.y >= CANVAS_SIZE / GRID_SIZE
+      ) {
         setGameOver(true);
         setGameRunning(false);
         return currentSnake;
@@ -89,14 +93,18 @@ export default function SnakeGame() {
   }, [direction, food, gameRunning, gameOver, generateFood]);
 
   // Handle keyboard and touch input
-  const changeDirection = useCallback((newDirection: Position) => {
-    if (!gameRunning) return;
-    
-    // Prevent reversing into itself
-    if (newDirection.x === -direction.x && newDirection.y === -direction.y) return;
-    
-    setDirection(newDirection);
-  }, [gameRunning, direction]);
+  const changeDirection = useCallback(
+    (newDirection: Position) => {
+      if (!gameRunning) return;
+
+      // Prevent reversing into itself
+      if (newDirection.x === -direction.x && newDirection.y === -direction.y)
+        return;
+
+      setDirection(newDirection);
+    },
+    [gameRunning, direction]
+  );
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
@@ -144,12 +152,22 @@ export default function SnakeGame() {
     ctx.fillStyle = '#4ade80';
     snake.forEach((segment, index) => {
       ctx.fillStyle = index === 0 ? '#22c55e' : '#4ade80'; // Head darker
-      ctx.fillRect(segment.x * GRID_SIZE, segment.y * GRID_SIZE, GRID_SIZE - 2, GRID_SIZE - 2);
+      ctx.fillRect(
+        segment.x * GRID_SIZE,
+        segment.y * GRID_SIZE,
+        GRID_SIZE - 2,
+        GRID_SIZE - 2
+      );
     });
 
     // Draw food
     ctx.fillStyle = '#ef4444';
-    ctx.fillRect(food.x * GRID_SIZE, food.y * GRID_SIZE, GRID_SIZE - 2, GRID_SIZE - 2);
+    ctx.fillRect(
+      food.x * GRID_SIZE,
+      food.y * GRID_SIZE,
+      GRID_SIZE - 2,
+      GRID_SIZE - 2
+    );
   }, [snake, food]);
 
   return (
@@ -184,7 +202,7 @@ export default function SnakeGame() {
             ↑
           </button>
           <div></div>
-          
+
           <button
             onClick={() => changeDirection({ x: -1, y: 0 })}
             className="w-12 h-12 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center text-lg touch-manipulation"
@@ -200,7 +218,7 @@ export default function SnakeGame() {
           >
             →
           </button>
-          
+
           <div></div>
           <button
             onClick={() => changeDirection({ x: 0, y: 1 })}
@@ -222,7 +240,7 @@ export default function SnakeGame() {
             शुरू करें (Start Game)
           </button>
         )}
-        
+
         {gameRunning && (
           <button
             onClick={pauseGame}

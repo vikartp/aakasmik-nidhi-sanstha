@@ -15,15 +15,13 @@ import {
   type Month,
   type Screenshot,
 } from '@/services/screenshot';
-import { getContributionsByYearAndMonth, downloadContributionsPDF } from '@/services/contribution';
+import {
+  getContributionsByYearAndMonth,
+  downloadContributionsPDF,
+} from '@/services/contribution';
 import { getAvatarLink, getMonthList } from '@/lib/utils';
 import { toast } from 'react-toastify';
-import {
-  HandCoins,
-  IndianRupee,
-  CloudDownload,
-  Copy,
-} from 'lucide-react';
+import { HandCoins, IndianRupee, CloudDownload, Copy } from 'lucide-react';
 import { Button } from '../ui/button';
 
 export default function MonthlyStatusTable() {
@@ -142,8 +140,10 @@ export default function MonthlyStatusTable() {
 
       // Copy to clipboard
       await navigator.clipboard.writeText(fullText);
-      
-      toast.success(`Copied ${dueUsers.length} users with Due status to clipboard!`);
+
+      toast.success(
+        `Copied ${dueUsers.length} users with Due status to clipboard!`
+      );
     } catch (error) {
       console.error('Error copying to clipboard:', error);
       toast.error('Failed to copy list. Please try again.');
@@ -283,7 +283,8 @@ export default function MonthlyStatusTable() {
             </div>
             <div className="text-center">
               <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
-                📱 यदि ब्राउज़र में नहीं हैं तो नीचे जाकर ऐप को ब्राउज़र में खोलें, फिर डाउनलोड करें
+                📱 यदि ब्राउज़र में नहीं हैं तो नीचे जाकर ऐप को ब्राउज़र में
+                खोलें, फिर डाउनलोड करें
               </p>
             </div>
           </div>
