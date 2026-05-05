@@ -1,5 +1,5 @@
 import { useAuth } from '@/context/AuthContext';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, lazy, Suspense } from 'react';
 import {
   getScreenshotsByUserIdAndMonth,
   type Screenshot,
@@ -14,6 +14,8 @@ import { BadgeX } from 'lucide-react';
 import ExpenseTable from './ExpenseTable';
 import SnakeGame from '../SnakeGame';
 import QuizSection from '../QuizSection';
+
+const MonthlyContributionChart = lazy(() => import('./MonthlyContributionChart'));
 
 export default function Member({
   refreshKey,
@@ -152,20 +154,34 @@ export default function Member({
         <MonthlyStatusTable />
       </div>
       {total > 0 && (
-        <div className="text-center mt-8 px-2">
-          <div className="bg-green-50 dark:bg-green-900 rounded-lg p-4 shadow-md inline-block w-full max-w-xs mx-auto">
-            <div className="text-sm font-medium text-green-700 dark:text-green-300 mb-1">
+        <div className="text-center mt-6 px-1">
+          <div className="bg-green-50/80 dark:bg-green-900/40 border border-green-100 dark:border-green-800/50 rounded-2xl p-4 shadow-sm inline-block w-full max-w-xs mx-auto backdrop-blur-sm">
+            <div className="text-xs font-semibold text-green-700/80 dark:text-green-400 mb-1 uppercase tracking-wider">
               अब तक कुल योगदान राशि
             </div>
-            <div className="text-2xl font-bold text-green-800 dark:text-green-200 mb-2">
-              ₹ {total}
+            <div className="text-3xl font-black text-green-800 dark:text-green-300 mb-1 tracking-tight">
+              ₹ {total.toLocaleString('en-IN')}
             </div>
-            <div className="text-xs text-gray-700 dark:text-gray-300 leading-snug">
-              (यह अब तक सभी सदस्यों द्वारा दिया गया कुल योगदान है।)
+            <div className="text-[10px] text-gray-500 dark:text-gray-400 font-medium">
+              (यह अब तक सभी सदस्यों द्वारा दिया गया कुल योगदान है)
             </div>
           </div>
         </div>
       )}
+      
+      <div className="px-1 mt-6">
+        <Suspense fallback={
+          <div className="w-full bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 mb-6 flex items-center justify-center h-[340px]">
+            <div className="flex flex-col items-center gap-3">
+              <div className="animate-spin rounded-full h-8 w-8 border-2 border-gray-200 border-t-blue-500"></div>
+              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Loading chart...</p>
+            </div>
+          </div>
+        }>
+          <MonthlyContributionChart />
+        </Suspense>
+      </div>
+
       <ExpenseTable />
       <UserSecret member={true} />
       <SnakeGame />

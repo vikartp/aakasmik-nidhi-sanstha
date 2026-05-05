@@ -9,9 +9,13 @@ import {
     updateContribution,
     deleteContribution,
     generateContributionsPDF,
+    getMonthlyAggregation,
 } from "../controllers/contribution";
 
 const router = Router();
+
+// Get monthly aggregation for chart
+router.get('/chart/monthly-aggregation/:year', getMonthlyAggregation);
 
 // Create a new contribution
 router.post('/', createContribution);

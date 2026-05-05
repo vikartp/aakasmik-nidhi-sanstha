@@ -301,7 +301,7 @@ export const generateContributionsPDF = async (req: Request, res: Response) => {
             styles: { fontSize: 10, cellPadding: 4 },
             headStyles: { fillColor: [41, 128, 185], textColor: 255 },
             margin: { left: 20, right: 20 },
-            didDrawPage: function() {
+            didDrawPage: function () {
                 doc.setFontSize(16);
                 doc.setTextColor(40, 128, 185);
                 doc.text(
@@ -329,6 +329,48 @@ export const generateContributionsPDF = async (req: Request, res: Response) => {
     } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Unknown error';
         console.error('PDF generation error:', err);
+        res.status(500).json({ error: errorMessage });
+        return;
+    }
+};
+
+export const getMonthlyAggregation = async (req: Request, res: Response) => {
+    const { year } = req.params;
+    try {
+        const start = new Date(Number(year), 0, 1);
+        const end = new Date(Number(year) + 1, 0, 1);
+
+        // Aggregate by month (1-12)
+        const aggregation = await Contribution.aggregate([
+            {
+                $match: {
+                    contributionDate: { $gte: start, $lt: end }
+                }
+            },
+            {
+                $group: {
+                    _id: { $month: "$contributionDate" },
+                    totalAmount: { $sum: "$amount" }
+                }
+            },
+            {
+                $sort: { _id: 1 }
+            }
+        ]);
+
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const formattedData = months.map((month, index) => {
+            const monthData = aggregation.find(item => item._id === index + 1);
+            return {
+                month,
+                totalAmount: monthData ? monthData.totalAmount : 0
+            };
+        });
+
+        res.status(200).json(formattedData);
+        return;
+    } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Unknown error';
         res.status(500).json({ error: errorMessage });
         return;
     }
