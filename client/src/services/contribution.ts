@@ -46,8 +46,12 @@ export async function deleteContribution(id: string) {
   return response.data;
 }
 
-export async function getMonthlyAggregation(year: number): Promise<{ month: string, totalAmount: number }[]> {
-  const response = await api.get(`/contributions/chart/monthly-aggregation/${year}`);
+export async function getMonthlyAggregation(
+  year: number
+): Promise<{ month: string; totalAmount: number }[]> {
+  const response = await api.get(
+    `/contributions/chart/monthly-aggregation/${year}`
+  );
   return response.data;
 }
 

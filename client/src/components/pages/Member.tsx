@@ -15,7 +15,9 @@ import ExpenseTable from './ExpenseTable';
 import SnakeGame from '../SnakeGame';
 import QuizSection from '../QuizSection';
 
-const MonthlyContributionChart = lazy(() => import('./MonthlyContributionChart'));
+const MonthlyContributionChart = lazy(
+  () => import('./MonthlyContributionChart')
+);
 
 export default function Member({
   refreshKey,
@@ -168,16 +170,20 @@ export default function Member({
           </div>
         </div>
       )}
-      
+
       <div className="px-1 mt-6">
-        <Suspense fallback={
-          <div className="w-full bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 mb-6 flex items-center justify-center h-[340px]">
-            <div className="flex flex-col items-center gap-3">
-              <div className="animate-spin rounded-full h-8 w-8 border-2 border-gray-200 border-t-blue-500"></div>
-              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Loading chart...</p>
+        <Suspense
+          fallback={
+            <div className="w-full bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 mb-6 flex items-center justify-center h-[340px]">
+              <div className="flex flex-col items-center gap-3">
+                <div className="animate-spin rounded-full h-8 w-8 border-2 border-gray-200 border-t-blue-500"></div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                  Loading chart...
+                </p>
+              </div>
             </div>
-          </div>
-        }>
+          }
+        >
           <MonthlyContributionChart />
         </Suspense>
       </div>

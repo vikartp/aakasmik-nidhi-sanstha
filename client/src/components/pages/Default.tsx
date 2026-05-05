@@ -32,25 +32,34 @@ const aboutSlides = [
 ];
 
 function AboutCarousel() {
-  const autoplay = useRef(Autoplay({ delay: 4000, stopOnInteraction: false }));
+  const autoplay = useRef(Autoplay({ delay: 5000, stopOnInteraction: false }));
   const [emblaRef] = useEmblaCarousel({ loop: true, align: 'center' }, [
     autoplay.current,
   ]);
   return (
-    <section className="w-full max-w-2xl mx-auto">
+    <section className="w-full max-w-2xl mx-auto my-4 relative">
+      <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-3xl blur opacity-20 dark:opacity-40 animate-pulse"></div>
       <div
         ref={emblaRef}
-        className="embla overflow-hidden rounded-2xl shadow-2xl border border-blue-200 dark:border-blue-900 bg-gradient-to-br from-green-50 via-white to-blue-50 dark:from-[#0f172a] dark:via-[#1e293b] dark:to-[#0e2235]"
+        className="embla overflow-hidden rounded-3xl relative bg-white/80 dark:bg-[#1e293b]/80 backdrop-blur-xl border border-white/40 dark:border-slate-700/50 shadow-2xl"
       >
         <div className="embla__container flex">
           {aboutSlides.map((text, idx) => (
             <div
-              className="embla__slide flex items-center justify-center min-h-[140px] px-6 py-10 md:py-14 w-full flex-[0_0_100%]"
+              className="embla__slide flex items-center justify-center min-h-[160px] px-8 py-8 w-full flex-[0_0_100%]"
               key={idx}
             >
-              <p className="text-lg md:text-2xl text-center font-semibold text-gray-800 dark:text-blue-100 leading-relaxed drop-shadow-lg dark:drop-shadow-xl">
-                {text}
-              </p>
+              <div className="relative">
+                <span className="absolute -top-4 -left-4 text-4xl text-blue-300 dark:text-blue-800 opacity-50 font-serif">
+                  "
+                </span>
+                <p className="text-base md:text-xl text-center font-medium text-slate-700 dark:text-slate-200 leading-relaxed relative z-10">
+                  {text}
+                </p>
+                <span className="absolute -bottom-6 -right-4 text-4xl text-blue-300 dark:text-blue-800 opacity-50 font-serif">
+                  "
+                </span>
+              </div>
             </div>
           ))}
         </div>
@@ -128,10 +137,15 @@ export function Default() {
   };
 
   return (
-    <div className="flex flex-col justify-center gap-2">
-      <h2 className="text-2xl text-center font-semibold bg-gradient-to-r from-green-400 via-blue-500 to-indigo-500 bg-clip-text text-transparent drop-shadow-lg dark:from-green-300 dark:via-blue-400 dark:to-indigo-400 py-2 rounded-xl shadow-md gap-2 animate-[fadeInScale_1s_ease-out] hover:scale-105 transition-transform duration-300">
-        आकस्मिक निधि युवा संस्था के ऑनलाइन पोर्टल में आपका स्वागत है
-      </h2>
+    <div className="flex flex-col justify-center gap-6 px-2 sm:px-0 pb-12">
+      <div className="text-center mt-2 mb-4">
+        <h2 className="text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-teal-500 via-blue-500 to-indigo-600 bg-clip-text text-transparent drop-shadow-sm py-2 px-4 leading-tight animate-[fadeInScale_1s_ease-out]">
+          आकस्मिक निधि युवा संस्था
+          <span className="block text-lg md:text-xl mt-1 text-slate-500 dark:text-slate-400 font-semibold bg-none text-current bg-clip-border">
+            ऑनलाइन पोर्टल में आपका स्वागत है
+          </span>
+        </h2>
+      </div>
 
       <AboutCarousel />
 
@@ -191,110 +205,115 @@ export function Default() {
 
       {/* Feedback Section */}
       {user && (
-        <div className="w-full mt-8 flex flex-col gap-6">
-          <div className="w-full max-w-4xl mx-auto bg-blue-50 dark:bg-zinc-800 border border-blue-200 dark:border-zinc-700 rounded p-5 shadow text-zinc-800 dark:text-zinc-100 text-center">
-            <h2 className="text-xl font-bold mb-2">
+        <div className="w-full mt-10 flex flex-col gap-6">
+          <div className="w-full max-w-4xl mx-auto bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-900 rounded-3xl p-6 md:p-8 shadow-sm border border-blue-100 dark:border-slate-700 text-center">
+            <h2 className="text-2xl font-bold mb-3 text-slate-800 dark:text-slate-100 flex items-center justify-center gap-2">
+              <MessageCircle className="w-6 h-6 text-blue-500" />
               We'd Love to Hear From You!
             </h2>
-            <p className="text-base">
-              If you have any suggestions, questions, feedback, or words of
-              appreciation for the Admin or the Creator of this portal, please
-              share them below. Your input helps us improve and motivates us to
-              keep building a better community experience. Every message is
-              valued and will be read with care. Thank you for helping us grow
-              together!
+            <p className="text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl mx-auto">
+              Got suggestions, questions, or just want to say hi? Share your
+              thoughts below. Every message is valued and helps us build a
+              better community experience!
             </p>
           </div>
-          <div className="w-full flex flex-col md:flex-row gap-8">
+          <div className="w-full max-w-4xl mx-auto flex flex-col md:flex-row gap-6">
             {/* Feedback to Admin */}
-            <div className="flex-1 bg-white dark:bg-zinc-900 rounded shadow p-6 flex flex-col gap-4 border border-zinc-200 dark:border-zinc-700">
-              <h2 className="text-lg font-semibold text-zinc-800 dark:text-zinc-100 text-center">
-                Feedback to Admin
+            <div className="flex-1 bg-white dark:bg-slate-900 rounded-3xl shadow-lg shadow-blue-500/5 p-6 flex flex-col gap-4 border border-slate-100 dark:border-slate-800 transition-all hover:-translate-y-1 duration-300">
+              <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                <span className="bg-blue-100 dark:bg-blue-900/50 p-2 rounded-xl text-blue-600 dark:text-blue-400">
+                  👋
+                </span>
+                Message to Admin
               </h2>
               <textarea
                 id="feedback-admin"
-                className="border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 rounded p-3 min-h-[80px] resize-y focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-600"
+                className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded-2xl p-4 min-h-[100px] resize-y focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-shadow"
                 value={feedbackAdmin}
                 onChange={e => setFeedbackAdmin(e.target.value)}
-                placeholder="Write your feedback for the Admin..."
+                placeholder="What's on your mind?..."
               />
               <Button
-                className="self-end bg-blue-600 hover:bg-blue-700 text-white rounded shadow"
+                className="self-end bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-md hover:shadow-lg transition-all px-6 font-semibold"
                 onClick={handleAdminFeedbackSubmit}
               >
-                Submit to Admin
+                Send to Admin
               </Button>
             </div>
             {/* Feedback to Creator */}
-            <div className="flex-1 bg-white dark:bg-zinc-900 rounded shadow p-6 flex flex-col gap-4 border border-zinc-200 dark:border-zinc-700">
-              <h2 className="text-lg font-semibold text-zinc-800 dark:text-zinc-100 text-center">
-                Feedback to Creator of the portal
+            <div className="flex-1 bg-white dark:bg-slate-900 rounded-3xl shadow-lg shadow-green-500/5 p-6 flex flex-col gap-4 border border-slate-100 dark:border-slate-800 transition-all hover:-translate-y-1 duration-300">
+              <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                <span className="bg-green-100 dark:bg-green-900/50 p-2 rounded-xl text-green-600 dark:text-green-400">
+                  💡
+                </span>
+                Message to Creator
               </h2>
               <textarea
                 id="feedback-creator"
-                className="border border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 rounded p-3 min-h-[80px] resize-y focus:outline-none focus:ring-2 focus:ring-green-400 dark:focus:ring-green-600"
+                className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded-2xl p-4 min-h-[100px] resize-y focus:outline-none focus:ring-2 focus:ring-green-500/50 transition-shadow"
                 value={feedbackCreator}
                 onChange={e => setFeedbackCreator(e.target.value)}
-                placeholder="Write your feedback for the Creator..."
+                placeholder="Got an idea for a new feature?..."
               />
               <Button
-                className="self-end bg-green-600 hover:bg-green-700 text-white rounded shadow"
+                className="self-end bg-green-600 hover:bg-green-700 text-white rounded-xl shadow-md hover:shadow-lg transition-all px-6 font-semibold"
                 onClick={handleCreatorFeedbackSubmit}
               >
-                Submit to Creator
+                Send to Creator
               </Button>
             </div>
           </div>
         </div>
       )}
       {/* Admin & Creator Section */}
-      <div className="w-full max-w-4xl mx-auto mt-2 flex flex-col md:flex-row gap-2">
-        <div className="flex-1 rounded shadow p-3 flex flex-col gap-4 items-center">
-          <h2 className="font-bold">
-            {' '}
-            क्या आप हमारे सदस्य बनना चाहते हैं? हमारे एडमिन से संपर्क करें।
-            👇🏻{' '}
+      <div className="w-full max-w-4xl mx-auto mt-8 flex flex-col md:flex-row gap-6">
+        <div className="flex-1 bg-white dark:bg-slate-900 rounded-3xl shadow-lg shadow-indigo-500/5 p-6 flex flex-col items-center border border-slate-100 dark:border-slate-800 transition-all hover:-translate-y-1 duration-300">
+          <div className="bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 text-xs font-bold uppercase tracking-widest py-1 px-3 rounded-full mb-4">
+            सदस्य बनें
+          </div>
+          <h2 className="text-center text-slate-600 dark:text-slate-400 text-sm font-medium mb-6">
+            क्या आप हमारे सदस्य बनना चाहते हैं? हमारे एडमिन से संपर्क करें। 👇🏻
           </h2>
-          <h2 className="text-lg font-bold text-blue-700 dark:text-blue-300 text-center">
-            Admins
-          </h2>
-          <div className="flex flex-wrap gap-6 justify-center">
+
+          <div className="flex flex-wrap gap-8 justify-center w-full">
             {admins.length === 0 && (
-              <div className="text-gray-500">No Admins found.</div>
+              <div className="text-slate-400 italic">No Admins found.</div>
             )}
             {admins.map(admin => (
-              <div key={admin._id} className="flex flex-col items-center gap-2">
-                <img
-                  src={
-                    admin.profileUrl ||
-                    'https://ui-avatars.com/api/?name=' +
-                      encodeURIComponent(admin.name)
-                  }
-                  alt={admin.name}
-                  className="w-20 h-20 rounded-full object-cover border border-gray-300 dark:border-gray-700"
-                />
-                <span className="font-semibold text-gray-800 dark:text-gray-100">
+              <div key={admin._id} className="flex flex-col items-center group">
+                <div className="relative p-1 rounded-full bg-gradient-to-tr from-blue-400 to-indigo-500 mb-3 transition-transform group-hover:scale-105">
+                  <img
+                    src={
+                      admin.profileUrl ||
+                      'https://ui-avatars.com/api/?name=' +
+                        encodeURIComponent(admin.name)
+                    }
+                    alt={admin.name}
+                    className="w-20 h-20 rounded-full object-cover border-4 border-white dark:border-slate-900"
+                  />
+                </div>
+                <span className="font-bold text-slate-800 dark:text-slate-100 mb-2">
                   {admin.name}
                 </span>
                 {admin.mobile && (
-                  <div className="flex gap-6 mt-1">
+                  <div className="flex gap-3">
                     <a
                       href={`tel:${admin.mobile}`}
                       title="Call"
-                      className="text-green-600 hover:text-green-800"
+                      className="bg-slate-100 dark:bg-slate-800 p-2.5 rounded-full text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white transition-colors shadow-sm"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      <Phone className="w-7 h-7" />
+                      <Phone className="w-5 h-5" />
                     </a>
                     <a
                       href={`https://wa.me/${admin.mobile}`}
                       title="WhatsApp"
-                      className="text-green-500 hover:text-green-700"
+                      className="bg-slate-100 dark:bg-slate-800 p-2.5 rounded-full text-green-600 dark:text-green-400 hover:bg-green-600 hover:text-white transition-colors shadow-sm"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      <MessageCircle className="w-7 h-7" />
+                      <MessageCircle className="w-5 h-5" />
                     </a>
                   </div>
                 )}
@@ -302,49 +321,52 @@ export function Default() {
             ))}
           </div>
         </div>
-        <div className="flex-1 rounded shadow p-3 flex flex-col gap-4 items-center">
-          <h2 className="text-lg font-bold text-green-700 dark:text-green-300 text-center">
-            Creator of the portal
-          </h2>
+
+        <div className="flex-1 bg-white dark:bg-slate-900 rounded-3xl shadow-lg shadow-emerald-500/5 p-6 flex flex-col items-center justify-center border border-slate-100 dark:border-slate-800 transition-all hover:-translate-y-1 duration-300">
+          <div className="bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 text-xs font-bold uppercase tracking-widest py-1 px-3 rounded-full mb-6">
+            Portal Creator
+          </div>
           {superAdmin ? (
-            <div className="flex flex-col items-center gap-2">
-              <img
-                src={
-                  superAdmin.profileUrl ||
-                  'https://ui-avatars.com/api/?name=' +
-                    encodeURIComponent(superAdmin.name)
-                }
-                alt={superAdmin.name}
-                className="w-20 h-20 rounded-full object-cover border border-gray-300 dark:border-gray-700"
-              />
-              <span className="font-semibold text-gray-800 dark:text-gray-100">
+            <div className="flex flex-col items-center group">
+              <div className="relative p-1 rounded-full bg-gradient-to-tr from-emerald-400 to-teal-500 mb-3 transition-transform group-hover:scale-105">
+                <img
+                  src={
+                    superAdmin.profileUrl ||
+                    'https://ui-avatars.com/api/?name=' +
+                      encodeURIComponent(superAdmin.name)
+                  }
+                  alt={superAdmin.name}
+                  className="w-24 h-24 rounded-full object-cover border-4 border-white dark:border-slate-900"
+                />
+              </div>
+              <span className="font-bold text-lg text-slate-800 dark:text-slate-100 mb-3">
                 {superAdmin.name}
               </span>
               {superAdmin.mobile && (
-                <div className="flex gap-6 mt-1">
+                <div className="flex gap-4">
                   <a
                     href={`tel:${superAdmin.mobile}`}
                     title="Call"
-                    className="text-green-600 hover:text-green-800"
+                    className="bg-slate-100 dark:bg-slate-800 p-3 rounded-full text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white transition-colors shadow-sm"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <Phone className="w-7 h-7" />
+                    <Phone className="w-5 h-5" />
                   </a>
                   <a
                     href={`https://wa.me/${superAdmin.mobile}`}
                     title="WhatsApp"
-                    className="text-green-500 hover:text-green-700"
+                    className="bg-slate-100 dark:bg-slate-800 p-3 rounded-full text-green-600 dark:text-green-400 hover:bg-green-600 hover:text-white transition-colors shadow-sm"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <MessageCircle className="w-7 h-7" />
+                    <MessageCircle className="w-5 h-5" />
                   </a>
                 </div>
               )}
             </div>
           ) : (
-            <div className="text-gray-500">No Creator found.</div>
+            <div className="text-slate-400 italic">No Creator found.</div>
           )}
         </div>
       </div>

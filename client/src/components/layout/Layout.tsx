@@ -52,11 +52,11 @@ export function Layout({ children }: { children: ReactNode }) {
     };
   }, []);
   return (
-    <div className="relative flex flex-col min-h-screen text-gray-800 dark:text-gray-100 overflow-hidden">
+    <div className="relative flex flex-col min-h-screen text-gray-800 dark:text-gray-100">
       {/* Premium gradient background */}
-      <div className="absolute inset-0 -z-10 bg-gradient-to-br from-blue-100 via-purple-100 to-pink-200 dark:from-gray-900 dark:via-indigo-900 dark:to-gray-950" />
+      <div className="fixed inset-0 -z-10 bg-gradient-to-br from-blue-100 via-purple-100 to-pink-200 dark:from-gray-900 dark:via-indigo-900 dark:to-gray-950" />
       {/* Subtle overlay for depth */}
-      <div className="absolute inset-0 -z-10 bg-white/60 dark:bg-black/40 backdrop-blur-sm" />
+      <div className="fixed inset-0 -z-10 bg-white/60 dark:bg-black/40 backdrop-blur-sm" />
       <Navbar />
       <main className="flex-grow px-4 py-6 relative z-0 bg-transparent">
         {children}
