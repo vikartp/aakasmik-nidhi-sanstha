@@ -94,7 +94,7 @@ export default function MonthlyContributionChart() {
                 top: 5,
                 right: 0,
                 left: -20,
-                bottom: 0,
+                bottom: 15,
               }}
             >
               <CartesianGrid
@@ -109,7 +109,10 @@ export default function MonthlyContributionChart() {
                 fontSize={10}
                 tickLine={false}
                 axisLine={false}
-                tickMargin={8}
+                tickMargin={12}
+                angle={-60}
+                textAnchor="end"
+                interval={0}
                 className="font-medium"
               />
               <YAxis
