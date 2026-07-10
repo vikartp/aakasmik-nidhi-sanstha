@@ -1,5 +1,14 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { MessageCircle, X, Send, Mic, MicOff, Volume2, Globe, Bot, User } from 'lucide-react';
+import {
+  MessageCircle,
+  X,
+  Send,
+  Mic,
+  MicOff,
+  Volume2,
+  Bot,
+  User,
+} from 'lucide-react';
 import { sendChatMessage, type ChatMessage } from '@/services/chatService';
 
 // ─── Types ───────────────────────────────────────────────────────────
@@ -70,14 +79,14 @@ const Chatbot = () => {
       timestamp: new Date(),
     };
 
-    setMessages((prev) => [...prev, userMsg]);
+    setMessages(prev => [...prev, userMsg]);
     setInput('');
     setIsLoading(true);
 
     // Build history for context (exclude welcome message)
     const history: ChatMessage[] = messages
-      .filter((m) => m.id !== 'welcome')
-      .map((m) => ({ role: m.role, content: m.content }));
+      .filter(m => m.id !== 'welcome')
+      .map(m => ({ role: m.role, content: m.content }));
     history.push({ role: 'user', content: trimmed });
 
     try {
@@ -88,7 +97,7 @@ const Chatbot = () => {
         content: reply,
         timestamp: new Date(),
       };
-      setMessages((prev) => [...prev, botMsg]);
+      setMessages(prev => [...prev, botMsg]);
     } catch {
       const errorMsg: DisplayMessage = {
         id: `error-${Date.now()}`,
@@ -96,7 +105,7 @@ const Chatbot = () => {
         content: 'Sorry, something went wrong. Please try again.',
         timestamp: new Date(),
       };
-      setMessages((prev) => [...prev, errorMsg]);
+      setMessages(prev => [...prev, errorMsg]);
     } finally {
       setIsLoading(false);
     }
@@ -151,7 +160,7 @@ const Chatbot = () => {
   };
 
   const toggleLang = () => {
-    setVoiceLang((prev) => (prev === 'en-IN' ? 'hi-IN' : 'en-IN'));
+    setVoiceLang(prev => (prev === 'en-IN' ? 'hi-IN' : 'en-IN'));
     if (isListening) {
       stopListening();
     }
@@ -182,7 +191,11 @@ const Chatbot = () => {
         return (
           <div key={i} className="flex gap-1.5 ml-2">
             <span className="text-indigo-400 shrink-0">•</span>
-            <span dangerouslySetInnerHTML={{ __html: formatted.replace(/^[-•]\s/, '') }} />
+            <span
+              dangerouslySetInnerHTML={{
+                __html: formatted.replace(/^[-•]\s/, ''),
+              }}
+            />
           </div>
         );
       }
@@ -191,7 +204,9 @@ const Chatbot = () => {
       if (numMatch) {
         return (
           <div key={i} className="flex gap-1.5 ml-2">
-            <span className="text-indigo-400 shrink-0 font-semibold">{numMatch[1]}.</span>
+            <span className="text-indigo-400 shrink-0 font-semibold">
+              {numMatch[1]}.
+            </span>
             <span
               dangerouslySetInnerHTML={{
                 __html: formatted.replace(/^\d+\.\s/, ''),
@@ -201,9 +216,7 @@ const Chatbot = () => {
         );
       }
       if (line.trim() === '') return <div key={i} className="h-2" />;
-      return (
-        <div key={i} dangerouslySetInnerHTML={{ __html: formatted }} />
-      );
+      return <div key={i} dangerouslySetInnerHTML={{ __html: formatted }} />;
     });
   };
 
@@ -233,7 +246,8 @@ const Chatbot = () => {
             flexDirection: 'column',
             borderRadius: '20px',
             overflow: 'hidden',
-            boxShadow: '0 20px 60px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.1)',
+            boxShadow:
+              '0 20px 60px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.1)',
             animation: 'chatSlideUp 0.3s ease-out',
           }}
         >
@@ -306,11 +320,13 @@ const Chatbot = () => {
                     fontWeight: 700,
                     transition: 'background 0.2s',
                   }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.background = 'rgba(255,255,255,0.25)')
+                  onMouseEnter={e =>
+                    (e.currentTarget.style.background =
+                      'rgba(255,255,255,0.25)')
                   }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.background = 'rgba(255,255,255,0.15)')
+                  onMouseLeave={e =>
+                    (e.currentTarget.style.background =
+                      'rgba(255,255,255,0.15)')
                   }
                 >
                   {voiceLang === 'hi-IN' ? 'हि' : 'En'}
@@ -332,10 +348,10 @@ const Chatbot = () => {
                   justifyContent: 'center',
                   transition: 'background 0.2s',
                 }}
-                onMouseEnter={(e) =>
+                onMouseEnter={e =>
                   (e.currentTarget.style.background = 'rgba(255,255,255,0.25)')
                 }
-                onMouseLeave={(e) =>
+                onMouseLeave={e =>
                   (e.currentTarget.style.background = 'rgba(255,255,255,0.15)')
                 }
               >
@@ -356,12 +372,13 @@ const Chatbot = () => {
               background: 'linear-gradient(180deg, #0f0f1a 0%, #1a1a2e 100%)',
             }}
           >
-            {messages.map((msg) => (
+            {messages.map(msg => (
               <div
                 key={msg.id}
                 style={{
                   display: 'flex',
-                  justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start',
+                  justifyContent:
+                    msg.role === 'user' ? 'flex-end' : 'flex-start',
                   alignItems: 'flex-end',
                   gap: '8px',
                 }}
@@ -402,7 +419,8 @@ const Chatbot = () => {
                     lineHeight: 1.6,
                     wordBreak: 'break-word',
                     position: 'relative',
-                    backdropFilter: msg.role === 'assistant' ? 'blur(10px)' : 'none',
+                    backdropFilter:
+                      msg.role === 'assistant' ? 'blur(10px)' : 'none',
                     border:
                       msg.role === 'assistant'
                         ? '1px solid rgba(255,255,255,0.06)'
@@ -433,13 +451,15 @@ const Chatbot = () => {
                         transition: 'all 0.2s',
                         opacity: 0.6,
                       }}
-                      onMouseEnter={(e) => {
+                      onMouseEnter={e => {
                         e.currentTarget.style.opacity = '1';
-                        e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
+                        e.currentTarget.style.background =
+                          'rgba(255,255,255,0.2)';
                       }}
-                      onMouseLeave={(e) => {
+                      onMouseLeave={e => {
                         e.currentTarget.style.opacity = '0.6';
-                        e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                        e.currentTarget.style.background =
+                          'rgba(255,255,255,0.1)';
                       }}
                     >
                       <Volume2 size={12} />
@@ -502,9 +522,18 @@ const Chatbot = () => {
                     alignItems: 'center',
                   }}
                 >
-                  <span className="chatbot-dot" style={{ animationDelay: '0s' }} />
-                  <span className="chatbot-dot" style={{ animationDelay: '0.2s' }} />
-                  <span className="chatbot-dot" style={{ animationDelay: '0.4s' }} />
+                  <span
+                    className="chatbot-dot"
+                    style={{ animationDelay: '0s' }}
+                  />
+                  <span
+                    className="chatbot-dot"
+                    style={{ animationDelay: '0.2s' }}
+                  />
+                  <span
+                    className="chatbot-dot"
+                    style={{ animationDelay: '0.4s' }}
+                  />
                 </div>
               </div>
             )}
@@ -528,7 +557,11 @@ const Chatbot = () => {
             {isSpeechSupported && (
               <button
                 onClick={toggleListening}
-                title={isListening ? 'Stop listening' : `Speak (${voiceLang === 'hi-IN' ? 'Hindi' : 'English'})`}
+                title={
+                  isListening
+                    ? 'Stop listening'
+                    : `Speak (${voiceLang === 'hi-IN' ? 'Hindi' : 'English'})`
+                }
                 style={{
                   width: '40px',
                   height: '40px',
@@ -556,14 +589,16 @@ const Chatbot = () => {
               ref={inputRef}
               type="text"
               value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={e => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
                   handleSend();
                 }
               }}
-              placeholder={isListening ? '🎤 Listening...' : 'Type your message...'}
+              placeholder={
+                isListening ? '🎤 Listening...' : 'Type your message...'
+              }
               disabled={isLoading}
               style={{
                 flex: 1,
@@ -577,8 +612,12 @@ const Chatbot = () => {
                 outline: 'none',
                 transition: 'border-color 0.2s',
               }}
-              onFocus={(e) => (e.currentTarget.style.borderColor = 'rgba(99,102,241,0.5)')}
-              onBlur={(e) => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)')}
+              onFocus={e =>
+                (e.currentTarget.style.borderColor = 'rgba(99,102,241,0.5)')
+              }
+              onBlur={e =>
+                (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)')
+              }
             />
 
             {/* Send Button */}
@@ -629,17 +668,22 @@ const Chatbot = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: '0 8px 32px rgba(79, 70, 229, 0.4), 0 0 0 1px rgba(255,255,255,0.1)',
+          boxShadow:
+            '0 8px 32px rgba(79, 70, 229, 0.4), 0 0 0 1px rgba(255,255,255,0.1)',
           zIndex: 9999,
           transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-          transform: isOpen ? 'rotate(0deg) scale(0.9)' : 'rotate(0deg) scale(1)',
+          transform: isOpen
+            ? 'rotate(0deg) scale(0.9)'
+            : 'rotate(0deg) scale(1)',
         }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.transform = isOpen ? 'scale(0.95)' : 'scale(1.08)';
+        onMouseEnter={e => {
+          e.currentTarget.style.transform = isOpen
+            ? 'scale(0.95)'
+            : 'scale(1.08)';
           e.currentTarget.style.boxShadow =
             '0 12px 40px rgba(79, 70, 229, 0.5), 0 0 0 1px rgba(255,255,255,0.15)';
         }}
-        onMouseLeave={(e) => {
+        onMouseLeave={e => {
           e.currentTarget.style.transform = isOpen ? 'scale(0.9)' : 'scale(1)';
           e.currentTarget.style.boxShadow =
             '0 8px 32px rgba(79, 70, 229, 0.4), 0 0 0 1px rgba(255,255,255,0.1)';

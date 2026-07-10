@@ -22,7 +22,9 @@ export const sendChatMessage = async (
         return 'Too many messages! Please wait a moment before trying again.';
       }
       if (status === 400) {
-        return error.response.data?.error || 'Invalid message. Please try again.';
+        return (
+          error.response.data?.error || 'Invalid message. Please try again.'
+        );
       }
       return 'Something went wrong. Please try again later.';
     }
