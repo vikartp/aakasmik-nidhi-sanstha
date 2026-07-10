@@ -301,7 +301,7 @@ export const generateContributionsPDF = async (req: Request, res: Response) => {
             styles: { fontSize: 10, cellPadding: 4 },
             headStyles: { fillColor: [41, 128, 185], textColor: 255 },
             margin: { left: 20, right: 20 },
-            didDrawPage: function () {
+            didDrawPage: function() {
                 doc.setFontSize(16);
                 doc.setTextColor(40, 128, 185);
                 doc.text(
