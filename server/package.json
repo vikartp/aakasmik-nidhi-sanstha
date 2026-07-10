@@ -29,7 +29,8 @@
     "lodash": "^4.17.21",
     "mongoose": "^8.15.1",
     "multer": "^2.0.1",
-    "node-cron": "^4.1.0"
+    "node-cron": "^4.1.0",
+    "openai": "^6.46.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",

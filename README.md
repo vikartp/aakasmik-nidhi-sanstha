@@ -80,6 +80,12 @@ The repository is divided into two primary workspaces:
 - Access secure secret keys for account password reset functionality.
 - *(Note: Admins and SuperAdmins inherit all Member privileges).*
 
+**AI Chatbot Assistant:**
+- Floating AI assistant available on all web pages.
+- Query database natively using natural language to get information on total funds, member profiles, contribution history, and more.
+- Voice input support (English & Hindi) with text-to-speech output.
+- Provider-agnostic agent architecture (supports OpenAI, OpenRouter, and custom endpoints). For more details, see [AI_ARCHITECTURE.md](./AI_ARCHITECTURE.md).
+
 ### 📱 ANidhi Mobile App Features
 - **Home Tab:** Quick glance at personal information, lifetime contributions, and secret key.
 - **Contribution Tab:** Filter and view member contributions by specific month and year.

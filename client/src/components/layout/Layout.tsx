@@ -3,6 +3,7 @@ import { Footer } from './Footer';
 import type { ReactNode } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import ScrollToTop from '../pages/ScrollToTop';
+import Chatbot from '../pages/Chatbot';
 import { useEffect, useRef } from 'react';
 
 export function Layout({ children }: { children: ReactNode }) {
@@ -64,6 +65,7 @@ export function Layout({ children }: { children: ReactNode }) {
       <Footer />
       <ToastContainer />
       <ScrollToTop />
+      <Chatbot />
     </div>
   );
 }

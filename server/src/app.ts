@@ -6,6 +6,7 @@ import userRoutes from "./routes/user";
 import screenshotRoutes from "./routes/screenshot";
 import contributionRoutes from "./routes/contribution";
 import feedbackRoutes from "./routes/feedback";
+import chatRoutes from "./routes/chat";
 import expenseRoutes from "./routes/expense";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -87,6 +88,7 @@ app.use("/feedback", authenticateToken, feedbackRoutes);
 app.use("/expense", authenticateToken, expenseRoutes);
 
 // Public Route
+app.use("/chat", chatRoutes); // AI Chatbot (public, no auth required)
 app.use("/public/users", getPublicUsers); // Gets information about users without authentication for home page
 app.use("/public/qr", getQrCode); // Gets public screenshot of a user
 app.use("/get-admins-superadmin", getAdminAndSuperAdmin); // Gets all admins for public view
