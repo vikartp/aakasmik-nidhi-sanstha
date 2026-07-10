@@ -5,9 +5,11 @@ import { ToastContainer, toast } from 'react-toastify';
 import ScrollToTop from '../pages/ScrollToTop';
 import Chatbot from '../pages/Chatbot';
 import { useEffect, useRef } from 'react';
+import { useAuth } from '@/context/AuthContext';
 
 export function Layout({ children }: { children: ReactNode }) {
   const isFirstLoad = useRef(true);
+  const { user } = useAuth();
 
   useEffect(() => {
     const handleOnline = () => {
@@ -65,7 +67,7 @@ export function Layout({ children }: { children: ReactNode }) {
       <Footer />
       <ToastContainer />
       <ScrollToTop />
-      <Chatbot />
+      {user && <Chatbot />}
     </div>
   );
 }

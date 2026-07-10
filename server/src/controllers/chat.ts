@@ -37,7 +37,10 @@ export const handleChatMessage = async (
                 .slice(-10) // Only keep last 10 messages for context
             : [];
 
-        const reply = await runChatAgent(message.trim(), validHistory);
+        const reply = await runChatAgent(message.trim(), validHistory, req.user);
+
+        // Log who is using the chat endpoint and what they are asking
+        console.log(`[Chat Log] User: ${req.user?.name} (Mobile: ${req.user?.mobile}, ID: ${req.user?._id}) asked: "${message.trim()}"`);
 
         res.status(200).json({ reply });
     } catch (error) {

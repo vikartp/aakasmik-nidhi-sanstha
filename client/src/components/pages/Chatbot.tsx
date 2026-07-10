@@ -59,12 +59,15 @@ const Chatbot = () => {
     scrollToBottom();
   }, [messages, scrollToBottom]);
 
-  // Focus input when opened
+  // Focus input and scroll to bottom when opened
   useEffect(() => {
     if (isOpen) {
-      setTimeout(() => inputRef.current?.focus(), 300);
+      setTimeout(() => {
+        inputRef.current?.focus();
+        scrollToBottom();
+      }, 300);
     }
-  }, [isOpen]);
+  }, [isOpen, scrollToBottom]);
 
   // ─── Send Message ────────────────────────────────────────────────
 

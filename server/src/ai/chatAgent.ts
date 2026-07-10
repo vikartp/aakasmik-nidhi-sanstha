@@ -31,7 +31,8 @@ const SYSTEM_PROMPT = `You are a helpful assistant for "आकस्मिक �
 Your role:
 - Answer questions about the sanstha, its members, contributions, expenses, and fund balance.
 - Be friendly, concise, and helpful.
-- If the user asks in Hindi, respond in Hindi. If they ask in English, respond in English.
+- The user might ask questions in Hindi, English, or Hinglish. Understand all of them seamlessly.
+- LANGUAGE RULE: If the user speaks in Hindi or Hinglish, you MUST reply in proper Hindi using the Devanagari script (e.g., नमस्ते, आपका योगदान...). If the user speaks in English, reply in English.
 - Format monetary amounts in Indian Rupees (₹).
 - When listing data, use clear formatting with bullet points or numbered lists.
 - If you don't know something or can't find the data, say so honestly.
@@ -74,13 +75,15 @@ const MAX_TOOL_ITERATIONS = 5;
 const parseToolCall = (text: string): { toolName: string; args: Record<string, any> } | null => {
     const trimmed = text.trim();
     // Match TOOL_CALL: tool_name({...})
-    const match = trimmed.match(/TOOL_CALL:\s*(\w+)\((\{[\s\S]*\})\)/);
+    // Used non-greedy match ([\s\S]*?) for JSON arguments to handle trailing text or multiple calls
+    const match = trimmed.match(/TOOL_CALL:\s*(\w+)\((\{[\s\S]*?\})\)/);
     if (match) {
         try {
             const toolName = match[1];
             const args = JSON.parse(match[2]);
             return { toolName, args };
-        } catch {
+        } catch (e) {
+            console.error("Failed to parse tool call JSON:", match[2], e);
             return null;
         }
     }
@@ -91,7 +94,8 @@ const parseToolCall = (text: string): { toolName: string; args: Record<string, a
 
 export const runChatAgent = async (
     userMessage: string,
-    conversationHistory: ConversationMessage[] = []
+    conversationHistory: ConversationMessage[] = [],
+    userProfile?: any
 ): Promise<string> => {
     if (!isAIConfigured()) {
         return "The AI chatbot is not configured yet. Please ask an admin to set up the OpenAI API key.";
@@ -104,9 +108,17 @@ export const runChatAgent = async (
         baseURL: aiConfig.baseURL,
     });
 
+    let dynamicSystemPrompt = SYSTEM_PROMPT;
+    if (userProfile) {
+        dynamicSystemPrompt += `\n\nInformation about the user you are talking to:
+- Name: ${userProfile.name || 'Unknown'}
+- Mobile: ${userProfile.mobile || 'Unknown'}
+- Role: ${userProfile.role || 'Unknown'}`;
+    }
+
     // Build messages array
     const messages: any[] = [
-        { role: "system", content: SYSTEM_PROMPT },
+        { role: "system", content: dynamicSystemPrompt },
     ];
 
     // Add recent conversation history (last 10 exchanges to keep context manageable)
