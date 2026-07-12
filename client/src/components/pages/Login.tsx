@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -9,6 +9,9 @@ import type { AxiosError } from 'axios';
 import Loader from './Loader';
 import { LogIn, Eye, EyeOff } from 'lucide-react';
 
+// Google Client ID — must match the one in server/.env
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+
 export function Login() {
   const [mobile, setMobile] = useState('');
   const [password, setPassword] = useState('');
@@ -17,6 +20,80 @@ export function Login() {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { login } = useAuth();
+  const googleButtonRef = useRef<HTMLDivElement>(null);
+
+  // Initialize Google Sign-In button
+  useEffect(() => {
+    if (!GOOGLE_CLIENT_ID || !googleButtonRef.current) return;
+
+    const initializeGoogle = () => {
+      if (!window.google?.accounts?.id) return;
+
+      window.google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: handleGoogleResponse,
+      });
+
+      window.google.accounts.id.renderButton(googleButtonRef.current!, {
+        theme: 'outline',
+        size: 'large',
+        text: 'signin_with',
+        shape: 'rectangular',
+        width: '100%',
+      });
+    };
+
+    // The GIS script may load after this component mounts
+    if (window.google?.accounts?.id) {
+      initializeGoogle();
+    } else {
+      // Poll until the script loads (it's loaded async in index.html)
+      const interval = setInterval(() => {
+        if (window.google?.accounts?.id) {
+          clearInterval(interval);
+          initializeGoogle();
+        }
+      }, 100);
+      return () => clearInterval(interval);
+    }
+  }, []);
+
+  const handleGoogleResponse = async (response: { credential: string }) => {
+    setError(null);
+    try {
+      setIsWaiting(true);
+      const res = await api.post('/auth/google-login', {
+        credential: response.credential,
+      });
+      localStorage.setItem('accessToken', res.data.accessToken);
+      await login();
+      navigate('/dashboard');
+      toast.success(res.data.message, { autoClose: 1000 });
+    } catch (err: unknown) {
+      let errorMessage = 'Google login failed. Please try again.';
+      if (err && typeof err === 'object' && 'isAxiosError' in err) {
+        const axiosError = err as AxiosError<{ message?: string }>;
+        const status = axiosError.response?.status;
+        if (status === 404) {
+          errorMessage =
+            axiosError.response?.data?.message ??
+            'No account found with this email.';
+        } else if (status === 403) {
+          errorMessage =
+            axiosError.response?.data?.message ??
+            'Your account is not verified yet.';
+        } else if (axiosError.response?.data?.message) {
+          errorMessage = axiosError.response.data.message;
+        }
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+      setError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setIsWaiting(false);
+    }
+  };
 
   const handleLogin = async () => {
     setError(null);
@@ -118,6 +195,25 @@ export function Login() {
           Forgot password?
         </span>
       </div>
+
+      {/* Google Sign-In Divider & Button */}
+      {GOOGLE_CLIENT_ID && (
+        <>
+          <div className="flex items-center gap-3 my-2">
+            <div className="flex-1 h-px bg-gray-300 dark:bg-gray-600" />
+            <span className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-widest font-medium">
+              or
+            </span>
+            <div className="flex-1 h-px bg-gray-300 dark:bg-gray-600" />
+          </div>
+          <div
+            ref={googleButtonRef}
+            id="google-signin-button"
+            className="flex justify-center"
+          />
+        </>
+      )}
+
       <div className="text-center">
         <p className="text-sm text-gray-500">
           Don't have an account?{' '}

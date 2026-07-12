@@ -1,6 +1,7 @@
 import { CookieOptions, Request, Response } from "express";
 import * as bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { OAuth2Client } from "google-auth-library";
 import User, { IUser } from "../models/User";
 import UserSecret from "../models/Secret";
 import dotenv from "dotenv";
@@ -8,6 +9,8 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || "access_secret";
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || "";
+const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 // 🔐 Generate tokens
 const generateAccessToken = (user: IUser) =>
@@ -165,3 +168,63 @@ export const forgotPassword = async (
     }
 }
 
+export const googleLogin = async (req: Request, res: Response): Promise<void> => {
+    const { credential } = req.body;
+
+    if (!credential) {
+        res.status(400).json({ message: "Google credential is required" });
+        return;
+    }
+
+    if (!GOOGLE_CLIENT_ID) {
+        console.error("GOOGLE_CLIENT_ID is not configured");
+        res.status(500).json({ message: "Google login is not configured on the server" });
+        return;
+    }
+
+    try {
+        // Verify the Google ID token
+        const ticket = await googleClient.verifyIdToken({
+            idToken: credential,
+            audience: GOOGLE_CLIENT_ID,
+        });
+
+        const payload = ticket.getPayload();
+        if (!payload || !payload.email) {
+            res.status(401).json({ message: "Invalid Google token" });
+            return;
+        }
+
+        const email = payload.email;
+
+        // Find user by email
+        const user = await User.findOne({ email });
+        if (!user) {
+            res.status(404).json({
+                message: "No account found with this email. Please register or login first using mobile number & password, update your email in your profile, or contact admin.",
+            });
+            return;
+        }
+
+        if (!user.verified) {
+            res.status(403).json({
+                message: "Please wait or contact admin to verify your account",
+            });
+            return;
+        }
+
+        // Issue the same JWT as the regular login
+        const accessToken = generateAccessToken(user);
+
+        res.cookie("accessToken", accessToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+            maxAge: 7 * 365 * 24 * 60 * 60 * 1000, // 7 years (matches JWT expiration)
+        })
+            .json({ message: "Login successful", accessToken });
+    } catch (err) {
+        console.error("Google login error:", err);
+        res.status(401).json({ message: "Google authentication failed. Please try again." });
+    }
+};
