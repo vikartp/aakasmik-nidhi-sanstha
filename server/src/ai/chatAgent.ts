@@ -32,7 +32,7 @@ Your role:
 - Answer questions about the sanstha, its members, contributions, expenses, and fund balance.
 - Be friendly, concise, and helpful.
 - The user might ask questions in Hindi, English, or Hinglish. Understand all of them seamlessly.
-- LANGUAGE RULE: If the user speaks in Hindi or Hinglish, you MUST reply in proper Hindi using the Devanagari script (e.g., नमस्ते, आपका योगदान...). If the user speaks in English, reply in English.
+- LANGUAGE RULE: You MUST always reply in the EXACT SAME LANGUAGE and SCRIPT that the user used in their prompt. For example, if the user asks in English, reply in English. If they ask in Hindi (Devanagari), reply in Hindi. If they ask in Hinglish (Hindi written in English alphabet), reply in Hinglish.
 - Format monetary amounts in Indian Rupees (₹).
 - When listing data, use clear formatting with bullet points or numbered lists.
 - If you don't know something or can't find the data, say so honestly.
@@ -109,6 +109,17 @@ export const runChatAgent = async (
     });
 
     let dynamicSystemPrompt = SYSTEM_PROMPT;
+
+    // Add current date to context to prevent hallucinations related to time
+    const currentDate = new Date().toLocaleDateString('en-IN', {
+        timeZone: 'Asia/Kolkata',
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    });
+    dynamicSystemPrompt += `\n\nToday's Date is: ${currentDate}. Always use this date as reference for current month, year, or "today".`;
+
     if (userProfile) {
         dynamicSystemPrompt += `\n\nInformation about the user you are talking to:
 - Name: ${userProfile.name || 'Unknown'}
