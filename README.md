@@ -3,8 +3,11 @@
 [![MERN Stack](https://img.shields.io/badge/Stack-MERN-blue.svg)](https://mern.com/)
 [![React](https://img.shields.io/badge/Frontend-React+Vite-61dafb.svg)](https://reactjs.org/)
 [![Node.js](https://img.shields.io/badge/Backend-Node.js-339933.svg)](https://nodejs.org/)
+[![AI Powered](https://img.shields.io/badge/AI-Powered-FF69B4.svg?style=flat&logo=openai)](https://openai.com/)
 
 A comprehensive digital solution built to manage the **Contingency Fund Youth Association Barkangango**. This project is completely free of cost, created and deployed for the betterment and transparent financial management of the village community.
+
+> 🤖 **New Feature:** Now supercharged with a provider-agnostic **AI Chatbot Assistant**! Users can naturally query the database using text or voice (English & Hindi) to check funds, member profiles, and contribution histories. Learn more in our [AI Architecture Documentation](./AI_ARCHITECTURE.md).
 
 This repository includes a fully-functional MERN stack web application, as well as an Expo project for building the mobile application.
 
@@ -157,6 +160,11 @@ CLOUDINARY_CLOUD_NAME=your_cloudinary_name
 CLOUDINARY_API_KEY=your_cloudinary_api_key
 CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 CLOUDINARY_URL=cloudinary://your_cloudinary_url
+
+# AI Configuration (OpenAI, OpenRouter, etc.)
+OPENAI_API_KEY=your_ai_api_key
+OPENAI_BASE_URL=https://api.openai.com/v1
+OPENAI_MODEL=gpt-4o-mini
 ```
 
 ### Running the Application
