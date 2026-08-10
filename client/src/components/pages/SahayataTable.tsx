@@ -1,8 +1,5 @@
 import { useEffect, useState } from 'react';
-import {
-  getSahayataRecords,
-  type Sahayata,
-} from '@/services/sahayata';
+import { getSahayataRecords, type Sahayata } from '@/services/sahayata';
 import {
   Table,
   TableBody,
@@ -83,7 +80,10 @@ export default function SahayataTable({
   };
 
   const totalGiven = records.reduce((sum, r) => sum + r.amount, 0);
-  const totalRepaid = records.reduce((sum, r) => sum + (r.repaidAmount || 0), 0);
+  const totalRepaid = records.reduce(
+    (sum, r) => sum + (r.repaidAmount || 0),
+    0
+  );
   const totalPending = totalGiven - totalRepaid;
 
   return (

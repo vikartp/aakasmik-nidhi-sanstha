@@ -40,12 +40,17 @@ export async function getSahayataRecords(): Promise<Sahayata[]> {
   return response.data;
 }
 
-export async function createSahayata(data: CreateSahayataPayload): Promise<Sahayata> {
+export async function createSahayata(
+  data: CreateSahayataPayload
+): Promise<Sahayata> {
   const response = await api.post<Sahayata>('/sahayata', data);
   return response.data;
 }
 
-export async function updateSahayata(id: string, data: UpdateSahayataPayload): Promise<Sahayata> {
+export async function updateSahayata(
+  id: string,
+  data: UpdateSahayataPayload
+): Promise<Sahayata> {
   const response = await api.put<Sahayata>(`/sahayata/${id}`, data);
   return response.data;
 }

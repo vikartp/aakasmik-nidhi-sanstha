@@ -190,7 +190,10 @@ export default function SahayataDashboard() {
             <label className="font-semibold text-emerald-700 dark:text-emerald-300 sm:w-32 text-sm">
               सदस्य:
             </label>
-            <Popover open={memberPopoverOpen} onOpenChange={setMemberPopoverOpen}>
+            <Popover
+              open={memberPopoverOpen}
+              onOpenChange={setMemberPopoverOpen}
+            >
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
@@ -202,9 +205,15 @@ export default function SahayataDashboard() {
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+              <PopoverContent
+                className="w-[--radix-popover-trigger-width] p-0"
+                align="start"
+              >
                 <Command>
-                  <CommandInput placeholder="नाम टाइप करें..." className="h-9" />
+                  <CommandInput
+                    placeholder="नाम टाइप करें..."
+                    className="h-9"
+                  />
                   <CommandList>
                     <CommandEmpty>कोई सदस्य नहीं मिला</CommandEmpty>
                     <CommandGroup>
@@ -312,15 +321,9 @@ export default function SahayataDashboard() {
                     <SelectValue placeholder="स्थिति चुनें..." />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="pending">
-                      लंबित (Pending)
-                    </SelectItem>
-                    <SelectItem value="partial">
-                      आंशिक (Partial)
-                    </SelectItem>
-                    <SelectItem value="repaid">
-                      चुकता (Repaid)
-                    </SelectItem>
+                    <SelectItem value="pending">लंबित (Pending)</SelectItem>
+                    <SelectItem value="partial">आंशिक (Partial)</SelectItem>
+                    <SelectItem value="repaid">चुकता (Repaid)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

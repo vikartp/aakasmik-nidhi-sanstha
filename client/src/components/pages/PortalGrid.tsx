@@ -25,7 +25,7 @@ export const PortalGrid: React.FC<PortalGridProps> = ({
   children,
   portalTitle,
 }) => {
-  const activeFeatureData = features.find((f) => f.id === activeFeature);
+  const activeFeatureData = features.find(f => f.id === activeFeature);
 
   if (activeFeature && activeFeatureData) {
     return (
@@ -37,14 +37,22 @@ export const PortalGrid: React.FC<PortalGridProps> = ({
             onClick={() => onSelectFeature(null)}
           >
             <ArrowLeft className="w-5 h-5" />
-            <span className="font-medium text-sm sm:text-base">Go to Portal</span>
+            <span className="font-medium text-sm sm:text-base">
+              Go to Portal
+            </span>
           </Button>
           <div className="flex flex-col">
             <div className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider">
               {portalTitle}
             </div>
             <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-              <span className={activeFeatureData.colorClass ? activeFeatureData.colorClass.split(' ')[0] : 'text-blue-500'}>
+              <span
+                className={
+                  activeFeatureData.colorClass
+                    ? activeFeatureData.colorClass.split(' ')[0]
+                    : 'text-blue-500'
+                }
+              >
                 {activeFeatureData.icon}
               </span>
               {activeFeatureData.title}
@@ -61,10 +69,14 @@ export const PortalGrid: React.FC<PortalGridProps> = ({
   return (
     <div className="w-full max-w-7xl mx-auto border border-blue-200/50 dark:border-blue-900/50 bg-white/40 dark:bg-zinc-950/40 rounded-2xl p-4 sm:p-6 mb-6 shadow-sm backdrop-blur-sm">
       <div className="mb-6 text-center">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">{portalTitle}</h2>
-        <p className="text-gray-600 dark:text-gray-400 text-sm">Select a feature to manage</p>
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">
+          {portalTitle}
+        </h2>
+        <p className="text-gray-600 dark:text-gray-400 text-sm">
+          Select a feature to manage
+        </p>
       </div>
-      
+
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-4">
         {features.map((feature, index) => (
           <button
@@ -73,8 +85,12 @@ export const PortalGrid: React.FC<PortalGridProps> = ({
             className={`group flex flex-col items-center justify-center p-3 sm:p-4 rounded-xl border border-gray-200/60 dark:border-gray-800/60 bg-white/60 dark:bg-zinc-900/60 hover:bg-white dark:hover:bg-zinc-800 backdrop-blur-sm transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-1 animate-staggered-fade-in`}
             style={{ animationDelay: `${index * 50}ms` }}
           >
-            <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center mb-2 transition-transform duration-300 group-hover:scale-110 ${feature.colorClass || 'text-blue-500 bg-blue-500/10'} dark:bg-opacity-20`}>
-              {React.cloneElement(feature.icon as React.ReactElement, { className: 'w-5 h-5 sm:w-6 sm:h-6' })}
+            <div
+              className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center mb-2 transition-transform duration-300 group-hover:scale-110 ${feature.colorClass || 'text-blue-500 bg-blue-500/10'} dark:bg-opacity-20`}
+            >
+              {React.cloneElement(feature.icon as any, {
+                className: 'w-5 h-5 sm:w-6 sm:h-6',
+              })}
             </div>
             <h3 className="font-semibold text-gray-900 dark:text-gray-100 text-xs sm:text-sm text-center mb-0.5 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
               {feature.title}

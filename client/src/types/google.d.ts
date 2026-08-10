@@ -12,7 +12,7 @@ interface GoogleIdConfiguration {
   callback: (response: GoogleCredentialResponse) => void;
   auto_select?: boolean;
   cancel_on_tap_outside?: boolean;
-  context?: "signin" | "signup" | "use";
+  context?: 'signin' | 'signup' | 'use';
   itp_support?: boolean;
   login_uri?: string;
   native_callback?: (response: GoogleCredentialResponse) => void;
@@ -21,12 +21,12 @@ interface GoogleIdConfiguration {
 }
 
 interface GoogleButtonConfiguration {
-  type?: "standard" | "icon";
-  theme?: "outline" | "filled_blue" | "filled_black";
-  size?: "large" | "medium" | "small";
-  text?: "signin_with" | "signup_with" | "continue_with" | "signin";
-  shape?: "rectangular" | "pill" | "circle" | "square";
-  logo_alignment?: "left" | "center";
+  type?: 'standard' | 'icon';
+  theme?: 'outline' | 'filled_blue' | 'filled_black';
+  size?: 'large' | 'medium' | 'small';
+  text?: 'signin_with' | 'signup_with' | 'continue_with' | 'signin';
+  shape?: 'rectangular' | 'pill' | 'circle' | 'square';
+  logo_alignment?: 'left' | 'center';
   width?: string | number;
   locale?: string;
 }
@@ -37,13 +37,13 @@ interface Google {
       initialize: (config: GoogleIdConfiguration) => void;
       renderButton: (
         element: HTMLElement,
-        config: GoogleButtonConfiguration,
+        config: GoogleButtonConfiguration
       ) => void;
       prompt: () => void;
       disableAutoSelect: () => void;
       revoke: (
         hint: string,
-        callback?: (response: { successful: boolean; error?: string }) => void,
+        callback?: (response: { successful: boolean; error?: string }) => void
       ) => void;
       cancel: () => void;
     };

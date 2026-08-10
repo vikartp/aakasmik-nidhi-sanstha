@@ -14,7 +14,13 @@ import { getMonthList } from '@/lib/utils';
 import type { Month } from '@/services/screenshot';
 import FeedbackList from './Feedback';
 import { PortalGrid, type PortalFeature } from './PortalGrid';
-import { Users, Image as ImageIcon, KeyRound, MessageSquare, QrCode } from 'lucide-react';
+import {
+  Users,
+  Image as ImageIcon,
+  KeyRound,
+  MessageSquare,
+  QrCode,
+} from 'lucide-react';
 
 export default function SuperAdmin() {
   const { user } = useAuth();
@@ -70,11 +76,41 @@ export default function SuperAdmin() {
   };
 
   const superAdminFeatures: PortalFeature[] = [
-    { id: 'users', title: 'Users', description: 'Manage members and roles', icon: <Users />, colorClass: 'text-blue-500 bg-blue-500/10' },
-    { id: 'screenshots', title: 'Screenshots', description: 'Verify payments & bulk delete', icon: <ImageIcon />, colorClass: 'text-green-500 bg-green-500/10' },
-    { id: 'secret', title: 'Secrets', description: 'Manage user secrets', icon: <KeyRound />, colorClass: 'text-purple-500 bg-purple-500/10' },
-    { id: 'qrcode', title: 'QR Code', description: 'Upload payment QR code', icon: <QrCode />, colorClass: 'text-teal-500 bg-teal-500/10' },
-    { id: 'feedback', title: 'Feedback', description: 'View member feedback', icon: <MessageSquare />, colorClass: 'text-pink-500 bg-pink-500/10' },
+    {
+      id: 'users',
+      title: 'Users',
+      description: 'Manage members and roles',
+      icon: <Users />,
+      colorClass: 'text-blue-500 bg-blue-500/10',
+    },
+    {
+      id: 'screenshots',
+      title: 'Screenshots',
+      description: 'Verify payments & bulk delete',
+      icon: <ImageIcon />,
+      colorClass: 'text-green-500 bg-green-500/10',
+    },
+    {
+      id: 'secret',
+      title: 'Secrets',
+      description: 'Manage user secrets',
+      icon: <KeyRound />,
+      colorClass: 'text-purple-500 bg-purple-500/10',
+    },
+    {
+      id: 'qrcode',
+      title: 'QR Code',
+      description: 'Upload payment QR code',
+      icon: <QrCode />,
+      colorClass: 'text-teal-500 bg-teal-500/10',
+    },
+    {
+      id: 'feedback',
+      title: 'Feedback',
+      description: 'View member feedback',
+      icon: <MessageSquare />,
+      colorClass: 'text-pink-500 bg-pink-500/10',
+    },
   ];
 
   return (
@@ -85,7 +121,7 @@ export default function SuperAdmin() {
       onSelectFeature={handleTabChange}
     >
       {activeTab === 'users' && <UserTable role={user?.role} />}
-      
+
       {activeTab === 'screenshots' && (
         <>
           <div className="flex flex-col sm:flex-row flex-wrap gap-4 items-center mb-2">
@@ -102,7 +138,9 @@ export default function SuperAdmin() {
             >
               {`Delete ${selectedMonth} screenshots`}
             </Button>
-            {isDeleting && <Loader text="Deleting screenshots, please wait..." />}
+            {isDeleting && (
+              <Loader text="Deleting screenshots, please wait..." />
+            )}
           </div>
           <div className="rounded-md border overflow-y-auto max-h-80 sm:max-h-[500px]">
             <ScreenshotTable
