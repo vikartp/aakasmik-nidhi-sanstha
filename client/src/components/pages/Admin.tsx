@@ -2,15 +2,16 @@ import { useAuth } from '@/context/AuthContext';
 import { ScreenshotTable } from './ScreenshotTable';
 import UserTable from './UserTable';
 import { useEffect, useState } from 'react';
-// import UserSecret from './UserSecret';
 import { Combobox } from './Combobox';
 import type { ComboboxOption } from './Combobox';
 import { getMonthList } from '@/lib/utils';
 import type { Month } from '@/services/screenshot';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import FeedbackList from './Feedback';
 import UserSecret from './UserSecret';
 import ExpenseDashboard from './ExpenseDasboard';
+import SahayataDashboard from './SahayataDashboard';
+import { PortalGrid, type PortalFeature } from './PortalGrid';
+import { Users, Image as ImageIcon, Banknote, KeyRound, MessageSquare, HandHeart } from 'lucide-react';
 
 /**
  * Notes: Admin has the ability to manage members and view screenshots.
@@ -31,89 +32,55 @@ export default function Admin() {
   };
 
   // Use localStorage to persist active tab
-  const [activeTab, setActiveTab] = useState(() => {
-    return localStorage.getItem('adminActiveTab') || 'users';
+  const [activeTab, setActiveTab] = useState<string | null>(() => {
+    const saved = localStorage.getItem('adminActiveTab');
+    return saved === 'null' ? null : saved;
   });
 
-  const handleTabChange = (tab: string) => {
+  const handleTabChange = (tab: string | null) => {
     setActiveTab(tab);
-    localStorage.setItem('adminActiveTab', tab);
+    localStorage.setItem('adminActiveTab', String(tab));
   };
 
-  useEffect(() => {});
+  useEffect(() => { });
+
+  const adminFeatures: PortalFeature[] = [
+    { id: 'users', title: 'Users', description: 'Manage members and roles', icon: <Users />, colorClass: 'text-blue-500 bg-blue-500/10' },
+    { id: 'screenshots', title: 'Screenshots', description: 'Verify monthly payments', icon: <ImageIcon />, colorClass: 'text-green-500 bg-green-500/10' },
+    { id: 'sahayata', title: 'Sahayata', description: 'Manage sahayata requests', icon: <HandHeart />, colorClass: 'text-teal-500 bg-teal-500/10' },
+    { id: 'expenses', title: 'Expenses', description: 'Track org expenses', icon: <Banknote />, colorClass: 'text-orange-500 bg-orange-500/10' },
+    { id: 'secret', title: 'Secrets', description: 'Manage user secrets', icon: <KeyRound />, colorClass: 'text-purple-500 bg-purple-500/10' },
+    { id: 'feedback', title: 'Feedback', description: 'View member feedback', icon: <MessageSquare />, colorClass: 'text-pink-500 bg-pink-500/10' },
+  ];
+
   return (
     <>
-      <Tabs
-        value={activeTab}
-        onValueChange={handleTabChange}
-        className="w-full max-w-full px-0 sm:px-2 md:px-4 bg-transparent"
+      <PortalGrid
+        portalTitle="Admin Portal"
+        features={adminFeatures}
+        activeFeature={activeTab}
+        onSelectFeature={handleTabChange}
       >
-        <TabsList className="w-full bg-muted border border-border rounded-t-lg flex justify-center gap-2 p-1 dark:bg-zinc-900 dark:border-zinc-700">
-          <TabsTrigger value="users" className="flex-1 min-w-0 cursor-pointer">
-            Users
-          </TabsTrigger>
-          <TabsTrigger
-            value="screenshots"
-            className="flex-1 min-w-0 cursor-pointer"
-          >
-            Screenshots
-          </TabsTrigger>
-          <TabsTrigger
-            value="expenses"
-            className="flex-1 min-w-0 cursor-pointer"
-          >
-            Expenses
-          </TabsTrigger>
-          <TabsTrigger value="secret" className="flex-1 min-w-0 cursor-pointer">
-            Secrets
-          </TabsTrigger>
-          <TabsTrigger
-            value="feedback"
-            className="flex-1 min-w-0 cursor-pointer"
-          >
-            Feedback
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent
-          value="users"
-          className="border border-border border-t-0 rounded-b-lg shadow-sm p-4 sm:p-6 w-full bg-white/60 dark:bg-black/40 backdrop-blur-md"
-        >
-          <UserTable role={user?.role} />
-        </TabsContent>
-        <TabsContent
-          value="screenshots"
-          className="border border-border border-t-0 rounded-b-lg shadow-sm p-4 sm:p-6 w-full bg-white/60 dark:bg-black/40 backdrop-blur-md"
-        >
-          <Combobox<Month>
-            frameworks={frameworks}
-            frameType="Month"
-            onValueChange={handleValueChange}
-          />
-          <p className="text-lg mt-4">
-            You can click on <strong>View</strong> to see the details and verify
-            that.
-          </p>
-          <ScreenshotTable role={user?.role} month={selectedMonth} />
-        </TabsContent>
-        <TabsContent
-          value="expenses"
-          className="border border-border border-t-0 rounded-b-lg shadow-sm p-4 sm:p-6 w-full bg-white/60 dark:bg-black/40 backdrop-blur-md"
-        >
-          <ExpenseDashboard />
-        </TabsContent>
-        <TabsContent
-          value="secret"
-          className="border border-border border-t-0 rounded-b-lg shadow-sm p-4 sm:p-6 w-full bg-white/60 dark:bg-black/40 backdrop-blur-md"
-        >
-          <UserSecret />
-        </TabsContent>
-        <TabsContent
-          value="feedback"
-          className="border border-border border-t-0 rounded-b-lg shadow-sm p-4 sm:p-6 w-full bg-white/60 dark:bg-black/40 backdrop-blur-md"
-        >
-          <FeedbackList />
-        </TabsContent>
-      </Tabs>
+        {activeTab === 'users' && <UserTable role={user?.role} />}
+        {activeTab === 'screenshots' && (
+          <>
+            <Combobox<Month>
+              frameworks={frameworks}
+              frameType="Month"
+              onValueChange={handleValueChange}
+            />
+            <p className="text-lg mt-4 text-gray-700 dark:text-gray-300">
+              You can click on <strong>View</strong> to see the details and verify
+              that.
+            </p>
+            <ScreenshotTable role={user?.role} month={selectedMonth} />
+          </>
+        )}
+        {activeTab === 'expenses' && <ExpenseDashboard />}
+        {activeTab === 'secret' && <UserSecret />}
+        {activeTab === 'feedback' && <FeedbackList />}
+        {activeTab === 'sahayata' && <SahayataDashboard />}
+      </PortalGrid>
     </>
   );
 }

@@ -1,0 +1,9 @@
+{
+  "name": "aakasmik-nidhi-sanstha",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "s:client": "npm run dev --prefix client",
+    "s:server": "npm run dev --prefix server"
+  }
+}

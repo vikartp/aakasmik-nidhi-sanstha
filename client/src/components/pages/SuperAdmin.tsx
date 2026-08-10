@@ -12,8 +12,9 @@ import { Combobox } from './Combobox';
 import type { ComboboxOption } from './Combobox';
 import { getMonthList } from '@/lib/utils';
 import type { Month } from '@/services/screenshot';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import FeedbackList from './Feedback';
+import { PortalGrid, type PortalFeature } from './PortalGrid';
+import { Users, Image as ImageIcon, KeyRound, MessageSquare, QrCode } from 'lucide-react';
 
 export default function SuperAdmin() {
   const { user } = useAuth();
@@ -58,84 +59,71 @@ export default function SuperAdmin() {
     selected: month === selectedMonth,
   }));
 
+  const [activeTab, setActiveTab] = useState<string | null>(() => {
+    const saved = localStorage.getItem('superAdminActiveTab');
+    return saved === 'null' ? null : saved;
+  });
+
+  const handleTabChange = (tab: string | null) => {
+    setActiveTab(tab);
+    localStorage.setItem('superAdminActiveTab', String(tab));
+  };
+
+  const superAdminFeatures: PortalFeature[] = [
+    { id: 'users', title: 'Users', description: 'Manage members and roles', icon: <Users />, colorClass: 'text-blue-500 bg-blue-500/10' },
+    { id: 'screenshots', title: 'Screenshots', description: 'Verify payments & bulk delete', icon: <ImageIcon />, colorClass: 'text-green-500 bg-green-500/10' },
+    { id: 'secret', title: 'Secrets', description: 'Manage user secrets', icon: <KeyRound />, colorClass: 'text-purple-500 bg-purple-500/10' },
+    { id: 'qrcode', title: 'QR Code', description: 'Upload payment QR code', icon: <QrCode />, colorClass: 'text-teal-500 bg-teal-500/10' },
+    { id: 'feedback', title: 'Feedback', description: 'View member feedback', icon: <MessageSquare />, colorClass: 'text-pink-500 bg-pink-500/10' },
+  ];
+
   return (
-    <Tabs
-      defaultValue="users"
-      className="w-full max-w-full px-0 sm:px-2 md:px-4"
+    <PortalGrid
+      portalTitle="Super Admin Portal"
+      features={superAdminFeatures}
+      activeFeature={activeTab}
+      onSelectFeature={handleTabChange}
     >
-      <TabsList className="w-full bg-muted border border-border rounded-t-lg flex justify-center gap-2 p-1 dark:bg-zinc-900 dark:border-zinc-700">
-        <TabsTrigger value="users" className="flex-1 min-w-0 cursor-pointer">
-          Users
-        </TabsTrigger>
-        <TabsTrigger
-          value="screenshots"
-          className="flex-1 min-w-0 cursor-pointer"
-        >
-          Screenshots
-        </TabsTrigger>
-        <TabsTrigger value="secret" className="flex-1 min-w-0 cursor-pointer">
-          Secrets
-        </TabsTrigger>
-        <TabsTrigger value="qrcode" className="flex-1 min-w-0 cursor-pointer">
-          QR Code
-        </TabsTrigger>
-        <TabsTrigger value="feedback" className="flex-1 min-w-0 cursor-pointer">
-          Feedback
-        </TabsTrigger>
-      </TabsList>
-      <TabsContent
-        value="users"
-        className="border border-border border-t-0 rounded-b-lg bg-background shadow-sm p-4 sm:p-6 dark:bg-zinc-900 dark:border-zinc-700 w-full"
-      >
-        <UserTable role={user?.role} />
-      </TabsContent>
-      <TabsContent
-        value="screenshots"
-        className="border border-border border-t-0 rounded-b-lg bg-background shadow-sm p-4 sm:p-6 dark:bg-zinc-900 dark:border-zinc-700 w-full"
-      >
-        <div className="flex flex-col sm:flex-row flex-wrap gap-4 items-center mb-2">
-          <Combobox<Month>
-            frameworks={frameworks}
-            frameType="Month"
-            onValueChange={setSelectedMonth}
-          />
-          <Button
-            onClick={() => deleteScreenshotByMonth(selectedMonth)}
-            variant={'destructive'}
-            className="max-w-md"
-            disabled={isDeleting}
-          >
-            {`Delete ${selectedMonth} screenshots`}
-          </Button>
-          {isDeleting && <Loader text="Deleting screenshots, please wait..." />}
+      {activeTab === 'users' && <UserTable role={user?.role} />}
+      
+      {activeTab === 'screenshots' && (
+        <>
+          <div className="flex flex-col sm:flex-row flex-wrap gap-4 items-center mb-2">
+            <Combobox<Month>
+              frameworks={frameworks}
+              frameType="Month"
+              onValueChange={setSelectedMonth}
+            />
+            <Button
+              onClick={() => deleteScreenshotByMonth(selectedMonth)}
+              variant={'destructive'}
+              className="max-w-md"
+              disabled={isDeleting}
+            >
+              {`Delete ${selectedMonth} screenshots`}
+            </Button>
+            {isDeleting && <Loader text="Deleting screenshots, please wait..." />}
+          </div>
+          <div className="rounded-md border overflow-y-auto max-h-80 sm:max-h-[500px]">
+            <ScreenshotTable
+              role={user?.role}
+              refreshKey={screenshotRefresh}
+              month={selectedMonth}
+            />
+          </div>
+        </>
+      )}
+
+      {activeTab === 'secret' && <UserSecret />}
+
+      {activeTab === 'qrcode' && (
+        <div className="flex flex-col items-center gap-4">
+          <p className="text-green-400">Upload QR Code</p>
+          <UploadScreenshot isQrCode={true} />
         </div>
-        <div className="rounded-md border overflow-y-auto max-h-80 sm:max-h-[500px]">
-          <ScreenshotTable
-            role={user?.role}
-            refreshKey={screenshotRefresh}
-            month={selectedMonth}
-          />
-        </div>
-      </TabsContent>
-      <TabsContent
-        value="secret"
-        className="border border-border border-t-0 rounded-b-lg bg-background shadow-sm p-4 sm:p-6 dark:bg-zinc-900 dark:border-zinc-700 w-full"
-      >
-        <UserSecret />
-      </TabsContent>
-      <TabsContent
-        value="qrcode"
-        className="border border-border border-t-0 rounded-b-lg bg-background shadow-sm p-4 sm:p-6 dark:bg-zinc-900 dark:border-zinc-700 w-full flex flex-col items-center gap-4"
-      >
-        <p className="text-green-400">Upload QR Code</p>
-        <UploadScreenshot isQrCode={true} />
-      </TabsContent>
-      <TabsContent
-        value="feedback"
-        className="border border-border border-t-0 rounded-b-lg bg-background shadow-sm p-4 sm:p-6 dark:bg-zinc-900 dark:border-zinc-700 w-full"
-      >
-        <FeedbackList />
-      </TabsContent>
-    </Tabs>
+      )}
+
+      {activeTab === 'feedback' && <FeedbackList />}
+    </PortalGrid>
   );
 }

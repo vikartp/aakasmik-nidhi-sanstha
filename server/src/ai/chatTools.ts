@@ -1,6 +1,7 @@
 import User from "../models/User";
 import Contribution from "../models/Contribution";
 import Expense from "../models/Expense";
+import Sahayata from "../models/Sahayata";
 
 // ─── Type Definitions ────────────────────────────────────────────────
 
@@ -186,6 +187,50 @@ export const toolDefinitions: ToolDefinition[] = [
             },
         },
     },
+    {
+        type: "function",
+        function: {
+            name: "get_all_sahayata",
+            description:
+                "Get all sahayata (financial assistance) records given by the sanstha to members. Shows who received help, amount, dates, repayment status, etc.",
+            parameters: {
+                type: "object",
+                properties: {},
+                required: [],
+            },
+        },
+    },
+    {
+        type: "function",
+        function: {
+            name: "get_sahayata_by_member",
+            description:
+                "Get sahayata (financial assistance) records for a specific member by name. Shows amount given, dates, repayment status.",
+            parameters: {
+                type: "object",
+                properties: {
+                    memberName: {
+                        type: "string",
+                        description: "The name (or partial name) of the member to search sahayata records for.",
+                    },
+                },
+                required: ["memberName"],
+            },
+        },
+    },
+    {
+        type: "function",
+        function: {
+            name: "get_sahayata_summary",
+            description:
+                "Get a summary of all sahayata (financial assistance) — total given, total repaid, total pending, and count by status (pending/partial/repaid).",
+            parameters: {
+                type: "object",
+                properties: {},
+                required: [],
+            },
+        },
+    },
 ];
 
 // ─── Tool Handlers ───────────────────────────────────────────────────
@@ -347,6 +392,7 @@ const toolHandlers: Record<string, ToolHandler> = {
                 "Contributions are tracked and verified by admins with payment screenshot proof.",
                 "The collected fund is used for emergency support to members in need.",
                 "All expenses from the fund are recorded with descriptions for transparency.",
+                "The sanstha also provides sahayata (financial assistance) to members in need, which is recovered after 3-6 months.",
             ],
             roles: {
                 member: "Regular member who contributes to the fund.",
@@ -355,7 +401,72 @@ const toolHandlers: Record<string, ToolHandler> = {
                     "Has full control including managing admins and all operations.",
             },
             transparency:
-                "All contributions and expenses are tracked digitally. Members can view their contribution history, and the overall fund status is transparent.",
+                "All contributions, expenses, and sahayata (assistance) records are tracked digitally. Members can view their contribution history, and the overall fund status is transparent.",
+        });
+    },
+
+    get_all_sahayata: async () => {
+        const records = await Sahayata.find().sort({ givenDate: -1 });
+        return JSON.stringify({
+            totalRecords: records.length,
+            sahayataRecords: records.map((r) => ({
+                memberName: r.memberName,
+                amount: r.amount,
+                givenDate: r.givenDate,
+                repaymentDate: r.repaymentDate,
+                repaidAmount: r.repaidAmount || 0,
+                status: r.status,
+                description: r.description || "",
+            })),
+        });
+    },
+
+    get_sahayata_by_member: async (args) => {
+        const { memberName } = args;
+        const records = await Sahayata.find({
+            memberName: { $regex: memberName, $options: "i" },
+        }).sort({ givenDate: -1 });
+        if (records.length === 0) {
+            return JSON.stringify({
+                message: `No sahayata records found for member matching "${memberName}".`,
+            });
+        }
+        const totalGiven = records.reduce((sum, r) => sum + r.amount, 0);
+        const totalRepaid = records.reduce((sum, r) => sum + (r.repaidAmount || 0), 0);
+        return JSON.stringify({
+            memberName: records[0].memberName,
+            totalGiven,
+            totalRepaid,
+            totalPending: totalGiven - totalRepaid,
+            recordCount: records.length,
+            records: records.map((r) => ({
+                amount: r.amount,
+                givenDate: r.givenDate,
+                repaymentDate: r.repaymentDate,
+                repaidAmount: r.repaidAmount || 0,
+                status: r.status,
+                description: r.description || "",
+            })),
+        });
+    },
+
+    get_sahayata_summary: async () => {
+        const records = await Sahayata.find();
+        const totalGiven = records.reduce((sum, r) => sum + r.amount, 0);
+        const totalRepaid = records.reduce((sum, r) => sum + (r.repaidAmount || 0), 0);
+        const pendingCount = records.filter((r) => r.status === "pending").length;
+        const partialCount = records.filter((r) => r.status === "partial").length;
+        const repaidCount = records.filter((r) => r.status === "repaid").length;
+        return JSON.stringify({
+            totalRecords: records.length,
+            totalGiven,
+            totalRepaid,
+            totalPending: totalGiven - totalRepaid,
+            statusBreakdown: {
+                pending: pendingCount,
+                partial: partialCount,
+                repaid: repaidCount,
+            },
         });
     },
 };

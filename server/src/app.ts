@@ -8,6 +8,7 @@ import contributionRoutes from "./routes/contribution";
 import feedbackRoutes from "./routes/feedback";
 import chatRoutes from "./routes/chat";
 import expenseRoutes from "./routes/expense";
+import sahayataRoutes from "./routes/sahayata";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { IUser } from "./models/User";
@@ -86,6 +87,7 @@ app.use("/screenshots", authenticateToken, screenshotRoutes);
 app.use("/contributions", authenticateToken, contributionRoutes);
 app.use("/feedback", authenticateToken, feedbackRoutes);
 app.use("/expense", authenticateToken, expenseRoutes);
+app.use("/sahayata", authenticateToken, sahayataRoutes);
 app.use("/chat", authenticateToken, chatRoutes); // AI Chatbot (now authenticated)
 
 // Public Route

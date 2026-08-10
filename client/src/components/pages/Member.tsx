@@ -12,6 +12,7 @@ import MonthlyStatusTable from './MonthlyStatusTable';
 import UserSecret from './UserSecret';
 import { BadgeX } from 'lucide-react';
 import ExpenseTable from './ExpenseTable';
+import SahayataTable from './SahayataTable';
 import SnakeGame from '../SnakeGame';
 import QuizSection from '../QuizSection';
 
@@ -189,6 +190,7 @@ export default function Member({
       </div>
 
       <ExpenseTable />
+      <SahayataTable />
       <UserSecret member={true} />
       <SnakeGame />
       <QuizSection />
