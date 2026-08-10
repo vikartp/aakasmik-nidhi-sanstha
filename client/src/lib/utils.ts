@@ -68,3 +68,10 @@ export function getCurrentMonth(): Month {
 export function getAvatarLink(name: string): string {
   return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}`;
 }
+
+export function getLocalDateString(): string {
+  const date = new Date();
+  return new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+    .toISOString()
+    .split('T')[0];
+}

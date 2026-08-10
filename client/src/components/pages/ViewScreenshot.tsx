@@ -12,6 +12,7 @@ import { createContribution } from '@/services/contribution';
 import Loader from './Loader';
 import { Input } from '../ui/input';
 import { SquareArrowLeft } from 'lucide-react';
+import { getLocalDateString } from '@/lib/utils';
 
 export default function ViewScreenshot() {
   const { id } = useParams<{ id: string }>();
@@ -22,6 +23,7 @@ export default function ViewScreenshot() {
   const [verifying, setVerifying] = useState(false);
   const [amount, setAmount] = useState('');
   const [rejectionReason, setRejectionReason] = useState('');
+  const [paymentDate, setPaymentDate] = useState<string>(getLocalDateString());
 
   useEffect(() => {
     async function fetchData() {
@@ -74,6 +76,10 @@ export default function ViewScreenshot() {
       toast.error('Please enter a valid amount.');
       return;
     }
+    if (!paymentDate) {
+      toast.error('Please select a payment date.');
+      return;
+    }
     if (
       !window.confirm(
         'Are you sure you want to verify this payment contribution?'
@@ -86,9 +92,7 @@ export default function ViewScreenshot() {
         userId: screenshot.userId,
         screenshotId: screenshot._id,
         amount: Number(amount),
-        contributionDate: new Date(
-          `${screenshot.uploadYear}-${screenshot.uploadMonth}-02`
-        ),
+        contributionDate: new Date(paymentDate),
       });
       toast.success('Payment contribution verified and recorded!');
       navigate('/dashboard');
@@ -183,6 +187,17 @@ export default function ViewScreenshot() {
           </div>
         </div>
         <div className="flex flex-col gap-1 justify-center items-center mt-4 sm:mt-0 flex-shrink-0 w-full sm:w-auto">
+          <label className="text-sm font-medium self-start w-full max-w-xs">
+            Payment Date:
+          </label>
+          <Input
+            type="date"
+            value={paymentDate}
+            onChange={e => setPaymentDate(e.target.value)}
+            className="mb-2 max-w-xs"
+            disabled={verifying || screenshot.verified}
+            max={getLocalDateString()}
+          />
           <Input
             type="number"
             min="1"

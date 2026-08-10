@@ -15,6 +15,7 @@ import ExpenseTable from './ExpenseTable';
 import SahayataTable from './SahayataTable';
 import SnakeGame from '../SnakeGame';
 import QuizSection from '../QuizSection';
+import CreditScoreCard from './CreditScoreCard';
 
 const MonthlyContributionChart = lazy(
   () => import('./MonthlyContributionChart')
@@ -72,6 +73,7 @@ export default function Member({
   return (
     <>
       <div className="max-w-md mx-auto mt-4 px-2">
+        <CreditScoreCard score={user?.creditScore || 100} />
         {currentMonthStatus === 'pending' && (
           <div className="mb-4 flex flex-col items-center border border-yellow-400 bg-yellow-100 dark:bg-yellow-900/60 rounded-lg p-4 shadow">
             <span className="text-yellow-800 dark:text-yellow-100 font-semibold mb-1 text-base flex items-center gap-2">

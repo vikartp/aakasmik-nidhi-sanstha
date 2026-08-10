@@ -4,6 +4,7 @@ import {
   getUsers,
   type User,
   type UserRole,
+  updateCreditScoreReq,
 } from '@/services/user';
 import { useEffect, useState } from 'react';
 import {
@@ -14,6 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Edit2 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { toast } from 'react-toastify';
 import { makeAdminReq, verifyMemberReq } from '@/services/approval';
@@ -106,6 +108,34 @@ export default function UserTable({
     }
   };
 
+  const editCreditScore = (user: User) => async () => {
+    if (role !== 'admin' && role !== 'superadmin') {
+      toast.error('Permission denied.');
+      return;
+    }
+    const newScore = prompt(
+      `Enter new credit score for ${user.name}:`,
+      user.creditScore?.toString() || '100'
+    );
+    if (newScore === null) return;
+    const scoreNum = Number(newScore);
+    if (isNaN(scoreNum) || scoreNum < 0) {
+      toast.error('Invalid credit score.');
+      return;
+    }
+    try {
+      await updateCreditScoreReq(user._id, scoreNum);
+      toast.success('Credit score updated.');
+      setUsers(
+        users.map(u =>
+          u._id === user._id ? { ...u, creditScore: scoreNum } : u
+        )
+      );
+    } catch (error) {
+      toast.error('Failed to update credit score.');
+    }
+  };
+
   // Define columns dynamically based on context
   const rawColumns = [
     {
@@ -175,6 +205,28 @@ export default function UserTable({
               day: 'numeric',
             })
           : '-',
+    },
+    !defaultPage && {
+      key: 'creditScore',
+      label: 'Score',
+      render: (user: User) => (
+        <div className="flex items-center gap-2 font-medium">
+          <span
+            className={`${(user.creditScore || 100) < 50 ? 'text-red-500' : (user.creditScore || 100) < 80 ? 'text-yellow-500' : 'text-green-500'}`}
+          >
+            {user.creditScore || 100}
+          </span>
+          {(role === 'admin' || role === 'superadmin') && (
+            <button
+              onClick={editCreditScore(user)}
+              className="text-gray-400 hover:text-blue-500"
+              title="Edit Score"
+            >
+              <Edit2 size={14} />
+            </button>
+          )}
+        </div>
+      ),
     },
     role === 'superadmin' &&
       !defaultPage && {

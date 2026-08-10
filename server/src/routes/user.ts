@@ -11,7 +11,8 @@ import {
     verifyMember,
     updateUserInfo,
     resetSecretKey,
-    getMySecretKey
+    getMySecretKey,
+    updateCreditScore
 } from "../controllers/user";
 import multer from "multer";
 
@@ -39,6 +40,8 @@ router.put("/membership/:userId", updateMembershipDate);
 router.put("/update-info", updateUserInfo);
 
 router.post("/upload-profile", upload.single("profile"), uploadProfileImage);
+
+router.put("/credit-score/:userId", updateCreditScore);
 
 router.delete("/:userId", deleteUser);
 

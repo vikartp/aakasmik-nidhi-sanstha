@@ -4,6 +4,9 @@
   "private": true,
   "scripts": {
     "s:client": "npm run dev --prefix client",
-    "s:server": "npm run dev --prefix server"
+    "s:server": "npm run dev --prefix server",
+    "bp:c": "npm run bp --prefix client",
+    "bp:s": "npm run bp --prefix server",
+    "bp": "npm run bp:c && npm run bp:s"
   }
 }

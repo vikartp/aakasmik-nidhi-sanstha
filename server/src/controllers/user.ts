@@ -401,3 +401,37 @@ export const updateUserInfo = async (req: Request, res: Response): Promise<void>
         res.status(500).json({ error: (err as Error).message });
     }
 };
+
+// Update credit score for a user (Admin/Superadmin only)
+export const updateCreditScore = async (req: Request, res: Response): Promise<void> => {
+    try {
+        if (!req.user || (req.user.role !== "admin" && req.user.role !== "superadmin")) {
+            res.status(403).json({ message: "Forbidden: Only admins can update credit score" });
+            return;
+        }
+
+        const userId = req.params.userId;
+        const { creditScore } = req.body;
+
+        if (creditScore === undefined || typeof creditScore !== 'number') {
+            res.status(400).json({ message: "Valid credit score is required" });
+            return;
+        }
+
+        const user = await User.findByIdAndUpdate(
+            userId,
+            { creditScore },
+            { new: true }
+        );
+
+        if (!user) {
+            res.status(404).json({ message: "User not found" });
+            return;
+        }
+
+        res.status(200).json({ message: "Credit score updated successfully", user });
+        return;
+    } catch (err) {
+        res.status(500).json({ error: (err as Error).message });
+    }
+};

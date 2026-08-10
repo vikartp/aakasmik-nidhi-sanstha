@@ -11,6 +11,7 @@ export interface IUser extends Document {
     membershipDate?: Date; // Optional, if you want to track when the user became a member
     profileUrl?: string; // Optional, if you want to store a profile picture URL
     verified: boolean;
+    creditScore: number;
     createdAt: Date;
 }
 
@@ -46,6 +47,7 @@ const userSchema = new Schema({
     occupation: { type: String },
     role: { type: String, enum: ['member', 'admin', 'superadmin'], default: 'member' },
     verified: { type: Boolean, default: false },
+    creditScore: { type: Number, default: 100 },
     createdAt: { type: Date, default: Date.now },
     membershipDate: { type: Date }, // Optional field to track membership date
     profileUrl: { type: String } // Optional field for profile picture URL

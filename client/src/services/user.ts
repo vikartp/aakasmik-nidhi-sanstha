@@ -12,6 +12,7 @@ export interface User {
   createdAt?: Date; // ISO date string
   profileUrl?: string; // URL for profile image
   membershipDate?: Date; // ISO date string
+  creditScore?: number;
 }
 
 export type UserRole = 'member' | 'admin' | 'superadmin';
@@ -67,5 +68,15 @@ export async function updateUserInfo(data: {
   occupation: string;
 }) {
   const response = await api.put('/users/update-info', data);
+  return response.data;
+}
+
+export async function updateCreditScoreReq(
+  userId: string,
+  creditScore: number
+) {
+  const response = await api.put(`/users/credit-score/${userId}`, {
+    creditScore,
+  });
   return response.data;
 }

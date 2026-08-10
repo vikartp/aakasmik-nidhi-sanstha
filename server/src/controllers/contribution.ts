@@ -55,6 +55,10 @@ export const createContribution = async (req: Request, res: Response) => {
             res.status(400).json({ error: 'Cannot create contribution for a future date' });
             return;
         }
+        // Check if this is a new contribution
+        const existingContribution = await Contribution.findOne({ userId, contributionDate });
+        const isNew = !existingContribution;
+
         // Upsert contribution (atomic)
         const contributionData = {
             userId,
@@ -68,6 +72,24 @@ export const createContribution = async (req: Request, res: Response) => {
             { $set: contributionData },
             { new: true, upsert: true, setDefaultsOnInsert: true }
         );
+
+        // Apply credit score deduction if it's a new contribution
+        if (isNew) {
+            const day = contribDate.getDate();
+            let deduction = 0;
+            if (day >= 8 && day <= 10) deduction = 2;
+            else if (day >= 11 && day <= 15) deduction = 5;
+            else if (day > 15) deduction = 8;
+
+            if (deduction > 0) {
+                const user = await User.findById(userId);
+                if (user) {
+                    user.creditScore = Math.max(0, (user.creditScore || 100) - deduction);
+                    await user.save();
+                }
+            }
+        }
+
         // If screenshotId is present, mark screenshot as verified
         if (screenshotId) {
             await Screenshot.findByIdAndUpdate(screenshotId, { verified: true });
