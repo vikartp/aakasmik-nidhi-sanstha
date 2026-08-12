@@ -248,14 +248,20 @@ const toolHandlers: Record<string, ToolHandler> = {
                 name: { $regex: name, $options: "i" },
                 verified: true,
             },
-            "name fatherName occupation membershipDate role email profileUrl"
-        );
+            "name fatherName occupation membershipDate role email profileUrl creditScore"
+        ).lean();
         if (members.length === 0) {
             return JSON.stringify({
                 message: `No verified member found with name matching "${name}".`,
             });
         }
-        return JSON.stringify({ members });
+
+        const formattedMembers = members.map((m: any) => ({
+            ...m,
+            creditScore: m.creditScore ?? 100,
+        }));
+
+        return JSON.stringify({ members: formattedMembers });
     },
 
     get_all_members: async () => {
