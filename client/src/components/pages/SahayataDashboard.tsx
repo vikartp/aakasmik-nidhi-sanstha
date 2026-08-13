@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import {
   createSahayata,
   updateSahayata,
   deleteSahayata,
+  uploadSahayataProof,
+  deleteSahayataProof,
   type Sahayata,
 } from '@/services/sahayata';
 import { getUsers, type User } from '@/services/user';
@@ -16,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Check, ChevronsUpDown } from 'lucide-react';
+import { Check, ChevronsUpDown, Upload, Trash2, FileText, ImageIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   Command,
@@ -54,6 +56,15 @@ const initialFormData: FormData = {
   status: 'pending',
 };
 
+const MAX_PROOF_SIZE = 2 * 1024 * 1024; // 2MB
+const ALLOWED_PROOF_TYPES = [
+  'application/pdf',
+  'image/jpeg',
+  'image/jpg',
+  'image/png',
+  'image/webp',
+];
+
 export default function SahayataDashboard() {
   const [formData, setFormData] = useState<FormData>(initialFormData);
   const [editingRecord, setEditingRecord] = useState<Sahayata | null>(null);
@@ -61,6 +72,10 @@ export default function SahayataDashboard() {
   const [users, setUsers] = useState<User[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [memberPopoverOpen, setMemberPopoverOpen] = useState(false);
+  const [proofUploading, setProofUploading] = useState(false);
+  const [proofDeleting, setProofDeleting] = useState(false);
+  const [pendingProofFile, setPendingProofFile] = useState<File | null>(null);
+  const proofInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     // Fetch users for the member dropdown
@@ -113,7 +128,7 @@ export default function SahayataDashboard() {
         toast.success('सहायता रिकॉर्ड अपडेट किया गया');
       } else {
         // Create new record
-        await createSahayata({
+        const newRecord = await createSahayata({
           memberId: formData.memberId,
           memberName: formData.memberName,
           amount: parseFloat(formData.amount),
@@ -121,10 +136,20 @@ export default function SahayataDashboard() {
           description: formData.description,
           repaymentDate: formData.repaymentDate || undefined,
         });
+        // Upload proof if a file was selected during creation
+        if (pendingProofFile) {
+          try {
+            await uploadSahayataProof(newRecord._id, pendingProofFile);
+          } catch {
+            toast.error('रिकॉर्ड बना लेकिन प्रमाण अपलोड विफल। Edit करके पुनः अपलोड करें।');
+          }
+        }
         toast.success('नया सहायता रिकॉर्ड जोड़ा गया');
       }
       setFormData(initialFormData);
       setEditingRecord(null);
+      setPendingProofFile(null);
+      if (proofInputRef.current) proofInputRef.current.value = '';
       setRefreshKey(prev => prev + 1);
     } catch {
       toast.error('सहायता रिकॉर्ड सेव करने में विफल');
@@ -168,6 +193,64 @@ export default function SahayataDashboard() {
   const handleCancel = () => {
     setEditingRecord(null);
     setFormData(initialFormData);
+    setPendingProofFile(null);
+    if (proofInputRef.current) proofInputRef.current.value = '';
+  };
+
+  const handleProofUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!ALLOWED_PROOF_TYPES.includes(file.type)) {
+      toast.error('केवल PDF, JPEG, PNG, या WebP फ़ाइलें अनुमत हैं');
+      if (proofInputRef.current) proofInputRef.current.value = '';
+      return;
+    }
+
+    // Validate file size
+    if (file.size > MAX_PROOF_SIZE) {
+      toast.error('फ़ाइल का आकार 2MB से कम होना चाहिए');
+      if (proofInputRef.current) proofInputRef.current.value = '';
+      return;
+    }
+
+    if (editingRecord) {
+      // Edit mode: upload immediately
+      setProofUploading(true);
+      try {
+        const updated = await uploadSahayataProof(editingRecord._id, file);
+        setEditingRecord(updated);
+        setRefreshKey(prev => prev + 1);
+        toast.success('प्रमाण अपलोड हो गया');
+      } catch {
+        toast.error('प्रमाण अपलोड करने में विफल');
+      } finally {
+        setProofUploading(false);
+        if (proofInputRef.current) proofInputRef.current.value = '';
+      }
+    } else {
+      // Create mode: stage file for upload after record creation
+      setPendingProofFile(file);
+    }
+  };
+
+  const handleProofDelete = async () => {
+    if (!editingRecord) return;
+    const confirmDelete = window.confirm('क्या आप प्रमाण हटाना चाहते हैं?');
+    if (!confirmDelete) return;
+
+    setProofDeleting(true);
+    try {
+      const updated = await deleteSahayataProof(editingRecord._id);
+      setEditingRecord(updated);
+      setRefreshKey(prev => prev + 1);
+      toast.success('प्रमाण हटा दिया गया');
+    } catch {
+      toast.error('प्रमाण हटाने में विफल');
+    } finally {
+      setProofDeleting(false);
+    }
   };
 
   const isFormValid =
@@ -330,6 +413,126 @@ export default function SahayataDashboard() {
             </>
           )}
 
+          {/* Proof Upload Section — available in both create and edit modes */}
+          <div className="flex flex-col gap-2">
+            <label className="font-semibold text-emerald-700 dark:text-emerald-300 text-sm">
+              📎 प्रमाण (PDF / Image):
+            </label>
+            <div className="flex flex-col gap-2 p-3 border border-dashed border-emerald-400 rounded-lg bg-emerald-50/50 dark:bg-zinc-800/50">
+              {/* Edit mode: existing proof uploaded */}
+              {editingRecord?.proofUrl ? (
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2 text-sm text-emerald-700 dark:text-emerald-300">
+                    {editingRecord.proofType === 'pdf' ? (
+                      <FileText className="w-4 h-4" />
+                    ) : (
+                      <ImageIcon className="w-4 h-4" />
+                    )}
+                    <span className="font-medium">
+                      प्रमाण अपलोड है ({editingRecord.proofType === 'pdf' ? 'PDF' : 'Image'})
+                    </span>
+                  </div>
+                  {editingRecord.proofType === 'image' && (
+                    <img
+                      src={editingRecord.proofUrl}
+                      alt="Proof preview"
+                      className="max-h-32 rounded border border-emerald-200 dark:border-emerald-700 object-contain"
+                    />
+                  )}
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      onClick={() => proofInputRef.current?.click()}
+                      disabled={proofUploading}
+                      className="flex-1 px-3 py-1.5 rounded bg-blue-500 hover:bg-blue-600 text-white font-semibold text-sm transition-colors"
+                    >
+                      <Upload className="w-3.5 h-3.5 mr-1.5" />
+                      {proofUploading ? 'अपलोड हो रहा...' : 'बदलें'}
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={handleProofDelete}
+                      disabled={proofDeleting}
+                      className="px-3 py-1.5 rounded bg-red-500 hover:bg-red-600 text-white font-semibold text-sm transition-colors"
+                    >
+                      <Trash2 className="w-3.5 h-3.5 mr-1.5" />
+                      {proofDeleting ? 'हटा रहा...' : 'हटाएं'}
+                    </Button>
+                  </div>
+                </div>
+              ) : pendingProofFile ? (
+                /* Create mode: file staged for upload */
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2 text-sm text-emerald-700 dark:text-emerald-300">
+                    {pendingProofFile.type === 'application/pdf' ? (
+                      <FileText className="w-4 h-4" />
+                    ) : (
+                      <ImageIcon className="w-4 h-4" />
+                    )}
+                    <span className="font-medium truncate">
+                      {pendingProofFile.name}
+                    </span>
+                    <span className="text-xs text-gray-400">
+                      ({(pendingProofFile.size / 1024).toFixed(0)} KB)
+                    </span>
+                  </div>
+                  {pendingProofFile.type.startsWith('image/') && (
+                    <img
+                      src={URL.createObjectURL(pendingProofFile)}
+                      alt="Proof preview"
+                      className="max-h-32 rounded border border-emerald-200 dark:border-emerald-700 object-contain"
+                    />
+                  )}
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      onClick={() => proofInputRef.current?.click()}
+                      className="flex-1 px-3 py-1.5 rounded bg-blue-500 hover:bg-blue-600 text-white font-semibold text-sm transition-colors"
+                    >
+                      <Upload className="w-3.5 h-3.5 mr-1.5" />
+                      बदलें
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        setPendingProofFile(null);
+                        if (proofInputRef.current) proofInputRef.current.value = '';
+                      }}
+                      className="px-3 py-1.5 rounded bg-red-500 hover:bg-red-600 text-white font-semibold text-sm transition-colors"
+                    >
+                      <Trash2 className="w-3.5 h-3.5 mr-1.5" />
+                      हटाएं
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                /* No proof selected yet */
+                <div className="flex flex-col items-center gap-2 py-2">
+                  <Upload className="w-8 h-8 text-emerald-400 dark:text-emerald-600" />
+                  <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                    PDF, JPEG, PNG, या WebP (अधिकतम 2MB)
+                  </p>
+                  <Button
+                    type="button"
+                    onClick={() => proofInputRef.current?.click()}
+                    disabled={proofUploading}
+                    className="px-4 py-1.5 rounded bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-sm transition-colors"
+                  >
+                    <Upload className="w-3.5 h-3.5 mr-1.5" />
+                    {proofUploading ? 'अपलोड हो रहा...' : 'प्रमाण अपलोड करें'}
+                  </Button>
+                </div>
+              )}
+              <input
+                ref={proofInputRef}
+                type="file"
+                accept=".pdf,.jpg,.jpeg,.png,.webp"
+                className="hidden"
+                onChange={handleProofUpload}
+              />
+            </div>
+          </div>
+
           {/* Description */}
           <div className="flex flex-col sm:flex-row gap-2 sm:items-start">
             <label className="font-semibold text-emerald-700 dark:text-emerald-300 sm:w-32 text-sm mt-2">
@@ -382,3 +585,4 @@ export default function SahayataDashboard() {
     </>
   );
 }
+

@@ -10,6 +10,9 @@ export interface Sahayata {
   repaymentDate?: string; // ISO date string
   repaidAmount?: number;
   status: 'pending' | 'partial' | 'repaid';
+  proofUrl?: string;
+  proofPublicId?: string;
+  proofType?: 'pdf' | 'image';
   updatedBy: string;
   createdAt?: string;
   updatedAt?: string;
@@ -58,3 +61,21 @@ export async function updateSahayata(
 export async function deleteSahayata(id: string): Promise<void> {
   await api.delete(`/sahayata/${id}`);
 }
+
+export async function uploadSahayataProof(
+  id: string,
+  file: File
+): Promise<Sahayata> {
+  const formData = new FormData();
+  formData.append('proof', file);
+  const response = await api.post<Sahayata>(`/sahayata/${id}/proof`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return response.data;
+}
+
+export async function deleteSahayataProof(id: string): Promise<Sahayata> {
+  const response = await api.delete<Sahayata>(`/sahayata/${id}/proof`);
+  return response.data;
+}
+

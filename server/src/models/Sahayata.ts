@@ -9,6 +9,9 @@ export interface ISahayata extends Document {
     repaymentDate?: Date;
     repaidAmount?: number;
     status: 'pending' | 'partial' | 'repaid';
+    proofUrl?: string;
+    proofPublicId?: string;
+    proofType?: 'pdf' | 'image';
     updatedBy: string;
 }
 
@@ -48,6 +51,19 @@ const sahayataSchema: Schema<ISahayata> = new Schema(
             type: String,
             enum: ['pending', 'partial', 'repaid'],
             default: 'pending',
+        },
+        proofUrl: {
+            type: String,
+            required: false,
+        },
+        proofPublicId: {
+            type: String,
+            required: false,
+        },
+        proofType: {
+            type: String,
+            enum: ['pdf', 'image'],
+            required: false,
         },
         updatedBy: {
             type: String,

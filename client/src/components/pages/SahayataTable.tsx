@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/accordion';
 import { toast } from 'react-toastify';
 import { Button } from '../ui/button';
-import { HandHeart } from 'lucide-react';
+import { HandHeart, Eye, X, FileText, ImageIcon } from 'lucide-react';
 
 interface SahayataTableProps {
   showActions?: boolean;
@@ -53,6 +53,70 @@ function formatDate(dateStr?: string): string {
   });
 }
 
+// Proof viewer modal component
+function ProofViewerModal({
+  proofUrl,
+  proofType,
+  memberName,
+  onClose,
+}: {
+  proofUrl: string;
+  proofType: 'pdf' | 'image';
+  memberName: string;
+  onClose: () => void;
+}) {
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-2 sm:p-4"
+      onClick={onClose}
+    >
+      <div
+        className="relative bg-white dark:bg-zinc-900 rounded-xl shadow-2xl w-full max-w-3xl max-h-[95vh] flex flex-col overflow-hidden border border-emerald-200 dark:border-emerald-800"
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Modal Header */}
+        <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/60 dark:to-teal-950/60 border-b border-emerald-200 dark:border-emerald-800 shrink-0">
+          <div className="flex items-center gap-2 min-w-0">
+            {proofType === 'pdf' ? (
+              <FileText className="w-5 h-5 text-red-500 shrink-0" />
+            ) : (
+              <ImageIcon className="w-5 h-5 text-blue-500 shrink-0" />
+            )}
+            <span className="font-semibold text-sm text-emerald-800 dark:text-emerald-200 truncate">
+              {memberName} — प्रमाण ({proofType === 'pdf' ? 'PDF' : 'Image'})
+            </span>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-full hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors shrink-0"
+            aria-label="Close"
+          >
+            <X className="w-5 h-5 text-red-500" />
+          </button>
+        </div>
+
+        {/* Modal Content */}
+        <div className="flex-1 overflow-auto p-2 sm:p-4 flex items-center justify-center min-h-0">
+          {proofType === 'image' ? (
+            <img
+              src={proofUrl}
+              alt={`Proof for ${memberName}`}
+              className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-md"
+            />
+          ) : (
+            <iframe
+              src={`https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(proofUrl)}`}
+              title={`PDF Proof for ${memberName}`}
+              className="w-full rounded-lg border border-gray-200 dark:border-gray-700"
+              style={{ height: '80vh', minHeight: '400px' }}
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function SahayataTable({
   showActions = false,
   onEdit,
@@ -61,6 +125,11 @@ export default function SahayataTable({
 }: SahayataTableProps) {
   const [records, setRecords] = useState<Sahayata[]>([]);
   const [loading, setLoading] = useState(false);
+  const [viewingProof, setViewingProof] = useState<{
+    url: string;
+    type: 'pdf' | 'image';
+    name: string;
+  } | null>(null);
 
   useEffect(() => {
     fetchRecords();
@@ -85,6 +154,15 @@ export default function SahayataTable({
     0
   );
   const totalPending = totalGiven - totalRepaid;
+
+  const handleViewProof = (record: Sahayata) => {
+    if (!record.proofUrl || !record.proofType) return;
+    setViewingProof({
+      url: record.proofUrl,
+      type: record.proofType,
+      name: record.memberName,
+    });
+  };
 
   return (
     <div className="mt-8 rounded-xl overflow-hidden shadow-lg bg-white/80 dark:bg-zinc-900/80 border border-emerald-200 dark:border-emerald-800/50">
@@ -128,6 +206,9 @@ export default function SahayataTable({
                 स्थिति
               </TableHead>
               <TableHead className="text-sm font-semibold whitespace-normal break-words">
+                प्रमाण
+              </TableHead>
+              <TableHead className="text-sm font-semibold whitespace-normal break-words">
                 विवरण
               </TableHead>
               {showActions && (
@@ -141,7 +222,7 @@ export default function SahayataTable({
             {records.length === 0 && !loading ? (
               <TableRow>
                 <TableCell
-                  colSpan={showActions ? 8 : 7}
+                  colSpan={showActions ? 9 : 8}
                   className="text-center py-8 text-gray-500 dark:text-gray-400"
                 >
                   कोई सहायता रिकॉर्ड नहीं मिला.
@@ -174,6 +255,19 @@ export default function SahayataTable({
                     >
                       {statusConfig[record.status].label}
                     </span>
+                  </TableCell>
+                  <TableCell className="whitespace-normal break-words">
+                    {record.proofUrl && record.proofType ? (
+                      <Button
+                        onClick={() => handleViewProof(record)}
+                        className="px-2.5 py-1 rounded bg-blue-500 hover:bg-blue-600 text-white font-semibold text-xs transition-colors"
+                      >
+                        <Eye className="w-3.5 h-3.5 mr-1" />
+                        देखें
+                      </Button>
+                    ) : (
+                      <span className="text-gray-400 dark:text-gray-500 text-xs">—</span>
+                    )}
                   </TableCell>
                   <TableCell className="text-gray-600 dark:text-gray-300 whitespace-normal break-words max-w-[200px]">
                     {record.description || '—'}
@@ -274,6 +368,22 @@ export default function SahayataTable({
                         <p className="font-medium">{record.description}</p>
                       </div>
                     )}
+                    {/* Proof View Button */}
+                    {record.proofUrl && record.proofType && (
+                      <div className="col-span-2 mt-1">
+                        <Button
+                          onClick={() => handleViewProof(record)}
+                          className="w-full px-3 py-2 rounded bg-blue-500 hover:bg-blue-600 text-white font-semibold text-sm transition-colors"
+                        >
+                          {record.proofType === 'pdf' ? (
+                            <FileText className="w-4 h-4 mr-2" />
+                          ) : (
+                            <ImageIcon className="w-4 h-4 mr-2" />
+                          )}
+                          📄 प्रमाण देखें
+                        </Button>
+                      </div>
+                    )}
                     {showActions && onEdit && onDelete && (
                       <div className="col-span-2 flex gap-2 mt-2">
                         <Button
@@ -314,6 +424,17 @@ export default function SahayataTable({
           </div>
         </div>
       )}
+
+      {/* Proof Viewer Modal */}
+      {viewingProof && (
+        <ProofViewerModal
+          proofUrl={viewingProof.url}
+          proofType={viewingProof.type}
+          memberName={viewingProof.name}
+          onClose={() => setViewingProof(null)}
+        />
+      )}
     </div>
   );
 }
+
