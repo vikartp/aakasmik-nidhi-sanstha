@@ -151,22 +151,22 @@ export default function MonthlyStatusTable() {
   };
 
   return (
-    <div className="mt-8 flex flex-col items-center w-full">
+    <div className="mt-4 sm:mt-8 flex flex-col items-center w-full">
       {/* Month/Year Selectors Row */}
-      <h1 className="flex items-center justify-center text-2xl font-extrabold mb-4 text-center bg-gradient-to-r from-green-400 via-blue-500 to-indigo-500 bg-clip-text text-transparent drop-shadow-lg dark:from-green-300 dark:via-blue-400 dark:to-indigo-400 py-2 rounded-xl shadow-md gap-2 select-none">
-        <span className="inline-flex items-center bg-white/70 dark:bg-gray-900/70 rounded-full px-2 py-1 mr-2 shadow-sm">
-          <HandCoins className="text-green-600 dark:text-green-400 w-7 h-7" />
+      <h1 className="flex flex-wrap items-center justify-center text-lg sm:text-2xl font-extrabold mb-4 text-center bg-gradient-to-r from-green-400 via-blue-500 to-indigo-500 bg-clip-text text-transparent drop-shadow-lg dark:from-green-300 dark:via-blue-400 dark:to-indigo-400 py-2 rounded-xl shadow-md gap-1 sm:gap-2 select-none w-full">
+        <span className="inline-flex items-center bg-white/70 dark:bg-gray-900/70 rounded-full px-1.5 sm:px-2 py-1 mr-1 sm:mr-2 shadow-sm">
+          <HandCoins className="text-green-600 dark:text-green-400 w-5 h-5 sm:w-7 sm:h-7" />
         </span>
-        <span className="">मासिक भुगतान स्थिति</span>
-        <span className="inline-flex items-center bg-white/70 dark:bg-gray-900/70 rounded-full px-2 py-1 ml-2 shadow-sm">
-          <IndianRupee className="text-blue-600 dark:text-blue-400 w-7 h-7" />
+        <span>मासिक भुगतान स्थिति</span>
+        <span className="inline-flex items-center bg-white/70 dark:bg-gray-900/70 rounded-full px-1.5 sm:px-2 py-1 ml-1 sm:ml-2 shadow-sm">
+          <IndianRupee className="text-blue-600 dark:text-blue-400 w-5 h-5 sm:w-7 sm:h-7" />
         </span>
       </h1>
-      <div className="flex flex-row items-center gap-6 mb-4 w-full max-w-2xl justify-center bg-gradient-to-r from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-xl py-4 shadow-md">
-        <div className="flex flex-col items-start">
+      <div className="flex flex-row items-center gap-3 sm:gap-6 mb-4 w-full max-w-2xl justify-center bg-gradient-to-r from-blue-50 via-white to-green-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 rounded-xl p-3 sm:py-4 shadow-md">
+        <div className="flex flex-col items-start flex-1 sm:flex-none">
           <label
             htmlFor="month-select"
-            className="text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200 tracking-wide drop-shadow"
+            className="text-xs sm:text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200 tracking-wide drop-shadow"
           >
             Month
           </label>
@@ -174,7 +174,7 @@ export default function MonthlyStatusTable() {
             id="month-select"
             value={selectedMonth}
             onChange={e => setSelectedMonth(e.target.value)}
-            className="w-48 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-600 text-base bg-white dark:bg-gray-900 dark:text-white shadow-sm transition-all duration-200 hover:border-blue-400 dark:hover:border-blue-400"
+            className="w-full sm:w-48 px-2 sm:px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-600 text-sm sm:text-base bg-white dark:bg-gray-900 dark:text-white shadow-sm transition-all duration-200 hover:border-blue-400 dark:hover:border-blue-400"
           >
             {monthList.map(month => (
               <option key={month} value={month}>
@@ -183,10 +183,10 @@ export default function MonthlyStatusTable() {
             ))}
           </select>
         </div>
-        <div className="flex flex-col items-start">
+        <div className="flex flex-col items-start flex-1 sm:flex-none">
           <label
             htmlFor="year-select"
-            className="text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200 tracking-wide drop-shadow"
+            className="text-xs sm:text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200 tracking-wide drop-shadow"
           >
             Year
           </label>
@@ -194,7 +194,7 @@ export default function MonthlyStatusTable() {
             id="year-select"
             value={selectedYear}
             onChange={e => setSelectedYear(e.target.value)}
-            className="w-36 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-400 dark:focus:ring-green-600 text-base bg-white dark:bg-gray-900 dark:text-white shadow-sm transition-all duration-200 hover:border-green-400 dark:hover:border-green-400"
+            className="w-full sm:w-36 px-2 sm:px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-400 dark:focus:ring-green-600 text-sm sm:text-base bg-white dark:bg-gray-900 dark:text-white shadow-sm transition-all duration-200 hover:border-green-400 dark:hover:border-green-400"
           >
             {yearList.map(year => (
               <option key={year} value={year}>
