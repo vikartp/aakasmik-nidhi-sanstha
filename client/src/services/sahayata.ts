@@ -78,4 +78,3 @@ export async function deleteSahayataProof(id: string): Promise<Sahayata> {
   const response = await api.delete<Sahayata>(`/sahayata/${id}/proof`);
   return response.data;
 }
-

@@ -18,7 +18,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Check, ChevronsUpDown, Upload, Trash2, FileText, ImageIcon } from 'lucide-react';
+import {
+  Check,
+  ChevronsUpDown,
+  Upload,
+  Trash2,
+  FileText,
+  ImageIcon,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   Command,
@@ -141,7 +148,9 @@ export default function SahayataDashboard() {
           try {
             await uploadSahayataProof(newRecord._id, pendingProofFile);
           } catch {
-            toast.error('रिकॉर्ड बना लेकिन प्रमाण अपलोड विफल। Edit करके पुनः अपलोड करें।');
+            toast.error(
+              'रिकॉर्ड बना लेकिन प्रमाण अपलोड विफल। Edit करके पुनः अपलोड करें।'
+            );
           }
         }
         toast.success('नया सहायता रिकॉर्ड जोड़ा गया');
@@ -429,7 +438,8 @@ export default function SahayataDashboard() {
                       <ImageIcon className="w-4 h-4" />
                     )}
                     <span className="font-medium">
-                      प्रमाण अपलोड है ({editingRecord.proofType === 'pdf' ? 'PDF' : 'Image'})
+                      प्रमाण अपलोड है (
+                      {editingRecord.proofType === 'pdf' ? 'PDF' : 'Image'})
                     </span>
                   </div>
                   {editingRecord.proofType === 'image' && (
@@ -496,7 +506,8 @@ export default function SahayataDashboard() {
                       type="button"
                       onClick={() => {
                         setPendingProofFile(null);
-                        if (proofInputRef.current) proofInputRef.current.value = '';
+                        if (proofInputRef.current)
+                          proofInputRef.current.value = '';
                       }}
                       className="px-3 py-1.5 rounded bg-red-500 hover:bg-red-600 text-white font-semibold text-sm transition-colors"
                     >
@@ -585,4 +596,3 @@ export default function SahayataDashboard() {
     </>
   );
 }
-

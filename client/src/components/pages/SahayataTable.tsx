@@ -266,7 +266,9 @@ export default function SahayataTable({
                         देखें
                       </Button>
                     ) : (
-                      <span className="text-gray-400 dark:text-gray-500 text-xs">—</span>
+                      <span className="text-gray-400 dark:text-gray-500 text-xs">
+                        —
+                      </span>
                     )}
                   </TableCell>
                   <TableCell className="text-gray-600 dark:text-gray-300 whitespace-normal break-words max-w-[200px]">
@@ -437,4 +439,3 @@ export default function SahayataTable({
     </div>
   );
 }
-
