@@ -65,14 +65,10 @@ export default function SuperAdmin() {
     selected: month === selectedMonth,
   }));
 
-  const [activeTab, setActiveTab] = useState<string | null>(() => {
-    const saved = localStorage.getItem('superAdminActiveTab');
-    return saved === 'null' ? null : saved;
-  });
+  const [activeTab, setActiveTab] = useState<string | null>(null);
 
   const handleTabChange = (tab: string | null) => {
     setActiveTab(tab);
-    localStorage.setItem('superAdminActiveTab', String(tab));
   };
 
   const superAdminFeatures: PortalFeature[] = [

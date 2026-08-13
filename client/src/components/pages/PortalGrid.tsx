@@ -35,16 +35,23 @@ export const PortalGrid: React.FC<PortalGridProps> = ({
     return (
       <div className="w-full max-w-7xl mx-auto animate-fade-in-up border border-blue-200/50 dark:border-blue-900/50 bg-white/40 dark:bg-zinc-950/40 rounded-xl sm:rounded-2xl p-3 sm:p-6 mb-4 sm:mb-6 shadow-sm backdrop-blur-sm">
         <div className="flex flex-col sm:flex-row items-start sm:items-center mb-4 sm:mb-6 gap-2 sm:gap-4 border-b border-gray-200 dark:border-gray-800 pb-3 sm:pb-4">
-          <Button
-            variant="ghost"
-            className="flex items-center gap-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors rounded-full px-2 sm:px-3 py-1.5 sm:py-2 h-auto"
-            onClick={() => onSelectFeature(null)}
-          >
-            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-            <span className="font-medium text-xs sm:text-base">
-              {backButtonText}
-            </span>
-          </Button>
+          <div className="relative group">
+            {/* Pulsing ring to draw attention */}
+            <div
+              className="absolute inset-0 rounded-full bg-blue-400/40 dark:bg-blue-500/40 animate-ping"
+              style={{ animationDuration: '3s' }}
+            ></div>
+            <Button
+              variant="outline"
+              className="relative flex items-center gap-1.5 bg-white dark:bg-zinc-900 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800 transition-all duration-300 rounded-full px-3 sm:px-4 py-1.5 sm:py-2 h-auto shadow-sm hover:shadow-md"
+              onClick={() => onSelectFeature(null)}
+            >
+              <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-300 group-hover:-translate-x-1" />
+              <span className="font-medium text-xs sm:text-base">
+                {backButtonText}
+              </span>
+            </Button>
+          </div>
           <div className="flex flex-col">
             <div className="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider">
               {portalTitle}

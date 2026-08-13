@@ -38,15 +38,10 @@ export default function Admin() {
     setSelectedMonth(newValue);
   };
 
-  // Use localStorage to persist active tab
-  const [activeTab, setActiveTab] = useState<string | null>(() => {
-    const saved = localStorage.getItem('adminActiveTab');
-    return saved === 'null' ? null : saved;
-  });
+  const [activeTab, setActiveTab] = useState<string | null>(null);
 
   const handleTabChange = (tab: string | null) => {
     setActiveTab(tab);
-    localStorage.setItem('adminActiveTab', String(tab));
   };
 
   useEffect(() => {});

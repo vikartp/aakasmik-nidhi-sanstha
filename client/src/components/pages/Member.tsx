@@ -59,15 +59,11 @@ export default function Member({
   const [contributions, setContributions] = useState<Contribution[]>([]);
   const [total, setTotal] = useState<number>(0);
 
-  // Portal active tab with localStorage persistence
-  const [activeTab, setActiveTab] = useState<string | null>(() => {
-    const saved = localStorage.getItem('memberActiveTab');
-    return saved === 'null' ? null : saved;
-  });
+  // Portal active tab
+  const [activeTab, setActiveTab] = useState<string | null>(null);
 
   const handleTabChange = (tab: string | null) => {
     setActiveTab(tab);
-    localStorage.setItem('memberActiveTab', String(tab));
   };
 
   useEffect(() => {
