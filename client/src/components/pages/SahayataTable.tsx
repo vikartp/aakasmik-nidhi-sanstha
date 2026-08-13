@@ -15,6 +15,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { toast } from 'react-toastify';
+import { getTotal } from '@/services/contribution';
 import { Button } from '../ui/button';
 import { HandHeart, Eye, X, FileText, ImageIcon } from 'lucide-react';
 
@@ -125,6 +126,7 @@ export default function SahayataTable({
 }: SahayataTableProps) {
   const [records, setRecords] = useState<Sahayata[]>([]);
   const [loading, setLoading] = useState(false);
+  const [sansthaTotal, setSansthaTotal] = useState<number>(0);
   const [viewingProof, setViewingProof] = useState<{
     url: string;
     type: 'pdf' | 'image';
@@ -133,6 +135,9 @@ export default function SahayataTable({
 
   useEffect(() => {
     fetchRecords();
+    getTotal()
+      .then(setSansthaTotal)
+      .catch(() => console.error('Failed to fetch sanstha total'));
   }, [refreshKey]);
 
   const fetchRecords = async () => {
@@ -154,6 +159,7 @@ export default function SahayataTable({
     0
   );
   const totalPending = totalGiven - totalRepaid;
+  const availableFund = sansthaTotal - totalPending;
 
   const handleViewProof = (record: Sahayata) => {
     if (!record.proofUrl || !record.proofType) return;
@@ -422,6 +428,9 @@ export default function SahayataTable({
             </span>
             <span className="inline-block bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200 px-4 py-2 rounded-lg text-sm font-bold shadow">
               शेष बकाया: ₹{totalPending.toLocaleString('en-IN')}
+            </span>
+            <span className="inline-block bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-4 py-2 rounded-lg text-sm font-bold shadow">
+              💰 संस्था में उपलब्ध: ₹{availableFund.toLocaleString('en-IN')}
             </span>
           </div>
         </div>
