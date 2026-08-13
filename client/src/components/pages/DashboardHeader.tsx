@@ -81,7 +81,7 @@ export default function DashboardHeader({
           onClick={() => navigate('/')}
         >
           <HomeIcon className="w-5 h-5" />
-          होम पेज पर जाएं
+          होम पेज
         </Button>
         <EditProfile />
         <Button

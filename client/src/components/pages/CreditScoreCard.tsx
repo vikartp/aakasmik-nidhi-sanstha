@@ -40,14 +40,14 @@ export default function CreditScoreCard({ score = 100 }: { score?: number }) {
 
   return (
     <div
-      className={`mt-4 mb-4 mx-2 flex flex-col items-center border rounded-2xl p-6 shadow-sm backdrop-blur-sm ${bg} ${border}`}
+      className={`mt-2 mb-2 mx-1 flex flex-col items-center border rounded-xl p-3 sm:p-5 shadow-sm backdrop-blur-sm ${bg} ${border}`}
     >
-      <div className="flex items-center gap-2 mb-2 relative w-full justify-center">
-        <Target className={`w-5 h-5 ${color}`} />
+      <div className="flex items-center gap-1.5 mb-1 relative w-full justify-center">
+        <Target className={`w-4 h-4 ${color}`} />
         <span
-          className={`font-semibold uppercase tracking-wider text-xs ${color}`}
+          className={`font-semibold uppercase tracking-wider text-[10px] sm:text-xs ${color}`}
         >
-          Credit Score
+          Your Credit Score
         </span>
         <Popover>
           <PopoverTrigger asChild>
@@ -55,7 +55,7 @@ export default function CreditScoreCard({ score = 100 }: { score?: number }) {
               className={`absolute right-0 ${color} hover:opacity-70 transition-opacity`}
               aria-label="Credit Score Info"
             >
-              <Info className="w-5 h-5" />
+              <Info className="w-4 h-4" />
             </button>
           </PopoverTrigger>
           <PopoverContent
@@ -129,16 +129,16 @@ export default function CreditScoreCard({ score = 100 }: { score?: number }) {
         </Popover>
       </div>
       <div
-        className={`text-6xl font-black mb-1 ${color} tracking-tight drop-shadow-sm`}
+        className={`text-4xl sm:text-5xl font-black mb-0.5 ${color} tracking-tight drop-shadow-sm`}
       >
         {score}
       </div>
-      <div className={`text-sm font-bold uppercase tracking-wider ${color}`}>
+      <div className={`text-xs font-bold uppercase tracking-wider ${color}`}>
         {category}
       </div>
 
       {/* Visual Bar */}
-      <div className="w-full max-w-xs bg-black/10 dark:bg-black/20 h-2.5 rounded-full mt-5 overflow-hidden shadow-inner">
+      <div className="w-full max-w-[200px] sm:max-w-xs bg-black/10 dark:bg-black/20 h-2 rounded-full mt-3 overflow-hidden shadow-inner">
         <div
           className={`h-full ${progressColor} transition-all duration-1000 ease-out`}
           style={{ width: `${Math.min(100, Math.max(0, score))}%` }}
