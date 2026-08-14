@@ -90,7 +90,10 @@ export const streamChatMessage = async (
 
     const reader = response.body?.getReader();
     if (!reader) {
-      onEvent({ type: 'error', message: 'Streaming not supported by browser.' });
+      onEvent({
+        type: 'error',
+        message: 'Streaming not supported by browser.',
+      });
       return;
     }
 

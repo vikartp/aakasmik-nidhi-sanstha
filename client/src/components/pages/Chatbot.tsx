@@ -109,19 +109,17 @@ const ThinkingPanel = ({
           width: 'fit-content',
           fontFamily: 'inherit',
         }}
-        onMouseEnter={(e) => {
+        onMouseEnter={e => {
           e.currentTarget.style.background = 'rgba(139, 92, 246, 0.14)';
           e.currentTarget.style.borderColor = 'rgba(139, 92, 246, 0.3)';
         }}
-        onMouseLeave={(e) => {
+        onMouseLeave={e => {
           e.currentTarget.style.background = 'rgba(139, 92, 246, 0.08)';
           e.currentTarget.style.borderColor = 'rgba(139, 92, 246, 0.15)';
         }}
       >
         <Sparkles size={12} />
-        <span>
-          Thought for {(totalDuration / 1000).toFixed(1)}s
-        </span>
+        <span>Thought for {(totalDuration / 1000).toFixed(1)}s</span>
         <ChevronRight size={12} />
       </button>
     );
@@ -194,7 +192,7 @@ const ThinkingPanel = ({
       </div>
 
       {/* Steps */}
-      {steps.map((step) => (
+      {steps.map(step => (
         <div
           key={step.id}
           style={{
@@ -209,23 +207,31 @@ const ThinkingPanel = ({
         >
           {step.type === 'tool_call' && (
             <>
-              <Wrench
-                size={11}
-                style={{ color: '#a78bfa', flexShrink: 0 }}
-              />
+              <Wrench size={11} style={{ color: '#a78bfa', flexShrink: 0 }} />
               <span style={{ color: '#c4b5fd' }}>
                 {toolDisplayName(step.tool || '')}
               </span>
               {step.args && Object.keys(step.args).length > 0 && (
-                <span style={{ color: 'rgba(148, 163, 184, 0.8)', fontSize: '10.5px', marginLeft: '2px' }}>
-                  ({Object.entries(step.args)
+                <span
+                  style={{
+                    color: 'rgba(148, 163, 184, 0.8)',
+                    fontSize: '10.5px',
+                    marginLeft: '2px',
+                  }}
+                >
+                  (
+                  {Object.entries(step.args)
                     .map(([k, v]) => `${k}: ${v}`)
-                    .join(', ')})
+                    .join(', ')}
+                  )
                 </span>
               )}
               {/* Show spinner if no matching tool_result yet */}
               {!steps.some(
-                (s) => s.type === 'tool_result' && s.tool === step.tool && s.timestamp > step.timestamp
+                s =>
+                  s.type === 'tool_result' &&
+                  s.tool === step.tool &&
+                  s.timestamp > step.timestamp
               ) && (
                 <Loader2
                   size={10}
@@ -233,7 +239,7 @@ const ThinkingPanel = ({
                     animation: 'spinLoader 1s linear infinite',
                     color: '#a78bfa',
                     flexShrink: 0,
-                    marginLeft: '4px'
+                    marginLeft: '4px',
                   }}
                 />
               )}
@@ -248,7 +254,9 @@ const ThinkingPanel = ({
               <span style={{ color: '#6ee7b7' }}>
                 {toolDisplayName(step.tool || '')}
               </span>
-              <span style={{ color: 'rgba(148, 163, 184, 0.6)', fontSize: '10px' }}>
+              <span
+                style={{ color: 'rgba(148, 163, 184, 0.6)', fontSize: '10px' }}
+              >
                 {step.duration_ms}ms
               </span>
             </>
@@ -327,7 +335,7 @@ const Chatbot = () => {
 
     const botMsgId = `bot-${Date.now()}`;
 
-    setMessages((prev) => [...prev, userMsg]);
+    setMessages(prev => [...prev, userMsg]);
     setInput('');
     setIsLoading(true);
     setIsThinking(true);
@@ -337,8 +345,8 @@ const Chatbot = () => {
 
     // Build history for context (exclude welcome message)
     const history: ChatMessage[] = messages
-      .filter((m) => m.id !== 'welcome')
-      .map((m) => ({ role: m.role, content: m.content }));
+      .filter(m => m.id !== 'welcome')
+      .map(m => ({ role: m.role, content: m.content }));
     history.push({ role: 'user', content: trimmed });
 
     const localSteps: ThinkingStep[] = [];
@@ -389,12 +397,16 @@ const Chatbot = () => {
               setIsThinking(false);
               streamTextRef.current += event.delta;
               // Update the message in-place
-              setMessages((prev) => {
-                const existing = prev.find((m) => m.id === botMsgId);
+              setMessages(prev => {
+                const existing = prev.find(m => m.id === botMsgId);
                 if (existing) {
-                  return prev.map((m) =>
+                  return prev.map(m =>
                     m.id === botMsgId
-                      ? { ...m, content: streamTextRef.current, isStreaming: true }
+                      ? {
+                          ...m,
+                          content: streamTextRef.current,
+                          isStreaming: true,
+                        }
                       : m
                   );
                 } else {
@@ -417,10 +429,10 @@ const Chatbot = () => {
             case 'done': {
               setIsThinking(false);
               // Finalize the message
-              setMessages((prev) => {
-                const existing = prev.find((m) => m.id === botMsgId);
+              setMessages(prev => {
+                const existing = prev.find(m => m.id === botMsgId);
                 if (existing) {
-                  return prev.map((m) =>
+                  return prev.map(m =>
                     m.id === botMsgId
                       ? {
                           ...m,
@@ -443,9 +455,7 @@ const Chatbot = () => {
                         streamTextRef.current ||
                         "I'm sorry, I couldn't generate a response.",
                       timestamp: new Date(),
-                      thinkingSteps: hadToolCalls
-                        ? [...localSteps]
-                        : undefined,
+                      thinkingSteps: hadToolCalls ? [...localSteps] : undefined,
                       totalDuration: event.total_ms,
                       isStreaming: false,
                     },
@@ -454,7 +464,7 @@ const Chatbot = () => {
               });
               // Auto-collapse thinking after completion
               if (hadToolCalls) {
-                setCollapsedThinking((prev) => ({
+                setCollapsedThinking(prev => ({
                   ...prev,
                   [botMsgId]: true,
                 }));
@@ -467,8 +477,8 @@ const Chatbot = () => {
 
             case 'error': {
               setIsThinking(false);
-              setMessages((prev) => [
-                ...prev.filter((m) => m.id !== botMsgId),
+              setMessages(prev => [
+                ...prev.filter(m => m.id !== botMsgId),
                 {
                   id: botMsgId,
                   role: 'assistant' as const,
@@ -495,8 +505,8 @@ const Chatbot = () => {
         setThinkingSteps([]);
       }
     } catch {
-      setMessages((prev) => [
-        ...prev.filter((m) => m.id !== botMsgId),
+      setMessages(prev => [
+        ...prev.filter(m => m.id !== botMsgId),
         {
           id: `error-${Date.now()}`,
           role: 'assistant',
@@ -560,7 +570,7 @@ const Chatbot = () => {
   };
 
   const toggleLang = () => {
-    setVoiceLang((prev) => (prev === 'en-IN' ? 'hi-IN' : 'en-IN'));
+    setVoiceLang(prev => (prev === 'en-IN' ? 'hi-IN' : 'en-IN'));
     if (isListening) {
       stopListening();
     }
@@ -720,11 +730,11 @@ const Chatbot = () => {
                     fontWeight: 700,
                     transition: 'background 0.2s',
                   }}
-                  onMouseEnter={(e) =>
+                  onMouseEnter={e =>
                     (e.currentTarget.style.background =
                       'rgba(255,255,255,0.25)')
                   }
-                  onMouseLeave={(e) =>
+                  onMouseLeave={e =>
                     (e.currentTarget.style.background =
                       'rgba(255,255,255,0.15)')
                   }
@@ -748,10 +758,10 @@ const Chatbot = () => {
                   justifyContent: 'center',
                   transition: 'background 0.2s',
                 }}
-                onMouseEnter={(e) =>
+                onMouseEnter={e =>
                   (e.currentTarget.style.background = 'rgba(255,255,255,0.25)')
                 }
-                onMouseLeave={(e) =>
+                onMouseLeave={e =>
                   (e.currentTarget.style.background = 'rgba(255,255,255,0.15)')
                 }
               >
@@ -772,7 +782,7 @@ const Chatbot = () => {
               background: 'linear-gradient(180deg, #0f0f1a 0%, #1a1a2e 100%)',
             }}
           >
-            {messages.map((msg) => (
+            {messages.map(msg => (
               <div key={msg.id}>
                 {/* Thinking panel for this message */}
                 {msg.role === 'assistant' &&
@@ -793,7 +803,7 @@ const Chatbot = () => {
                         totalDuration={msg.totalDuration}
                         collapsed={collapsedThinking[msg.id] ?? false}
                         onToggleCollapse={() =>
-                          setCollapsedThinking((prev) => ({
+                          setCollapsedThinking(prev => ({
                             ...prev,
                             [msg.id]: !prev[msg.id],
                           }))
@@ -818,8 +828,7 @@ const Chatbot = () => {
                         width: '28px',
                         height: '28px',
                         borderRadius: '10px',
-                        background:
-                          'linear-gradient(135deg, #4f46e5, #7c3aed)',
+                        background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -897,12 +906,12 @@ const Chatbot = () => {
                             transition: 'all 0.2s',
                             opacity: 0.6,
                           }}
-                          onMouseEnter={(e) => {
+                          onMouseEnter={e => {
                             e.currentTarget.style.opacity = '1';
                             e.currentTarget.style.background =
                               'rgba(255,255,255,0.2)';
                           }}
-                          onMouseLeave={(e) => {
+                          onMouseLeave={e => {
                             e.currentTarget.style.opacity = '0.6';
                             e.currentTarget.style.background =
                               'rgba(255,255,255,0.1)';
@@ -920,8 +929,7 @@ const Chatbot = () => {
                         width: '28px',
                         height: '28px',
                         borderRadius: '10px',
-                        background:
-                          'linear-gradient(135deg, #06b6d4, #0891b2)',
+                        background: 'linear-gradient(135deg, #06b6d4, #0891b2)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -1040,8 +1048,8 @@ const Chatbot = () => {
               ref={inputRef}
               type="text"
               value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={e => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
                   handleSend();
@@ -1063,10 +1071,10 @@ const Chatbot = () => {
                 outline: 'none',
                 transition: 'border-color 0.2s',
               }}
-              onFocus={(e) =>
+              onFocus={e =>
                 (e.currentTarget.style.borderColor = 'rgba(99,102,241,0.5)')
               }
-              onBlur={(e) =>
+              onBlur={e =>
                 (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)')
               }
             />
@@ -1127,14 +1135,14 @@ const Chatbot = () => {
             ? 'rotate(0deg) scale(0.9)'
             : 'rotate(0deg) scale(1)',
         }}
-        onMouseEnter={(e) => {
+        onMouseEnter={e => {
           e.currentTarget.style.transform = isOpen
             ? 'scale(0.95)'
             : 'scale(1.08)';
           e.currentTarget.style.boxShadow =
             '0 12px 40px rgba(79, 70, 229, 0.5), 0 0 0 1px rgba(255,255,255,0.15)';
         }}
-        onMouseLeave={(e) => {
+        onMouseLeave={e => {
           e.currentTarget.style.transform = isOpen ? 'scale(0.9)' : 'scale(1)';
           e.currentTarget.style.boxShadow =
             '0 8px 32px rgba(79, 70, 229, 0.4), 0 0 0 1px rgba(255,255,255,0.1)';
