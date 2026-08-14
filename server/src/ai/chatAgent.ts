@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { observeOpenAI } from "@langfuse/openai";
 import { aiConfig, isAIConfigured } from "../config/aiConfig";
 import { toolDefinitions, executeTool } from "./chatTools";
 
@@ -113,9 +114,12 @@ export const runChatAgent = async (
 
     console.log(`🤖 AI Config → model: "${aiConfig.model}", baseURL: "${aiConfig.baseURL}"`);
 
-    const openai = new OpenAI({
+    const openai = observeOpenAI(new OpenAI({
         apiKey: aiConfig.apiKey,
         baseURL: aiConfig.baseURL,
+    }), {
+        userId: userProfile?.mobile?.toString() || "anonymous",
+        sessionId: userProfile?.name?.toString() || "anonymous",
     });
 
     let dynamicSystemPrompt = SYSTEM_PROMPT;
@@ -222,9 +226,12 @@ export const runChatAgentStream = async (
 
     console.log(`🤖 [Stream] AI Config → model: "${aiConfig.model}", baseURL: "${aiConfig.baseURL}"`);
 
-    const openai = new OpenAI({
+    const openai = observeOpenAI(new OpenAI({
         apiKey: aiConfig.apiKey,
         baseURL: aiConfig.baseURL,
+    }), {
+        userId: userProfile?.mobile?.toString() || "anonymous",
+        sessionId: userProfile?.name?.toString() || "anonymous",
     });
 
     let dynamicSystemPrompt = SYSTEM_PROMPT;
