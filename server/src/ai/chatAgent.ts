@@ -9,6 +9,16 @@ interface ConversationMessage {
     content: string;
 }
 
+// ─── Stream Event Types ──────────────────────────────────────────────
+
+export type StreamEvent =
+    | { type: "status"; message: string }
+    | { type: "tool_call"; tool: string; args: Record<string, any> }
+    | { type: "tool_result"; tool: string; duration_ms: number }
+    | { type: "text_delta"; delta: string }
+    | { type: "done"; total_ms: number }
+    | { type: "error"; message: string };
+
 // ─── Build Tools Description for System Prompt ───────────────────────
 
 const buildToolsDescription = (): string => {
@@ -193,4 +203,134 @@ export const runChatAgent = async (
 
     // If we hit the max iterations, return what we have
     return "I needed too many steps to answer your question. Could you try asking in a simpler way?";
+};
+
+// ─── Run Agent (Streaming) ───────────────────────────────────────────
+
+export const runChatAgentStream = async (
+    userMessage: string,
+    conversationHistory: ConversationMessage[] = [],
+    userProfile: any | undefined,
+    onEvent: (event: StreamEvent) => void
+): Promise<void> => {
+    const startTime = Date.now();
+
+    if (!isAIConfigured()) {
+        onEvent({ type: "error", message: "The AI chatbot is not configured yet. Please ask an admin to set up the OpenAI API key." });
+        return;
+    }
+
+    console.log(`🤖 [Stream] AI Config → model: "${aiConfig.model}", baseURL: "${aiConfig.baseURL}"`);
+
+    const openai = new OpenAI({
+        apiKey: aiConfig.apiKey,
+        baseURL: aiConfig.baseURL,
+    });
+
+    let dynamicSystemPrompt = SYSTEM_PROMPT;
+
+    const currentDate = new Date().toLocaleDateString('en-IN', {
+        timeZone: 'Asia/Kolkata',
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+    });
+    dynamicSystemPrompt += `\n\nToday's Date is: ${currentDate}. Always use this date as reference for current month, year, or "today".`;
+
+    if (userProfile) {
+        dynamicSystemPrompt += `\n\nInformation about the user you are talking to:
+- Name: ${userProfile.name || 'Unknown'}
+- Mobile: ${userProfile.mobile || 'Unknown'}
+- Role: ${userProfile.role || 'Unknown'}`;
+    }
+
+    const messages: any[] = [
+        { role: "system", content: dynamicSystemPrompt },
+    ];
+
+    const recentHistory = conversationHistory.slice(-10);
+    for (const msg of recentHistory) {
+        messages.push({ role: msg.role, content: msg.content });
+    }
+
+    messages.push({ role: "user", content: userMessage });
+
+    onEvent({ type: "status", message: "Thinking..." });
+
+    // Agent loop — tool calls use non-streaming, final answer uses streaming
+    for (let iteration = 0; iteration < MAX_TOOL_ITERATIONS; iteration++) {
+        try {
+            // Non-streaming call to check for tool calls
+            const response = await openai.chat.completions.create({
+                model: aiConfig.model,
+                messages,
+            });
+
+            const choice = response.choices[0];
+            const assistantText = choice.message.content || "";
+
+            const toolCall = parseToolCall(assistantText);
+
+            if (toolCall) {
+                // Emit tool_call event
+                onEvent({ type: "tool_call", tool: toolCall.toolName, args: toolCall.args });
+
+                console.log(`🔧 [Stream] Executing tool: ${toolCall.toolName}`, toolCall.args);
+                const toolStartTime = Date.now();
+                const toolResult = await executeTool(toolCall.toolName, toolCall.args);
+                const toolDuration = Date.now() - toolStartTime;
+                console.log(`✅ [Stream] Tool result for ${toolCall.toolName} (${toolDuration}ms):`, toolResult.substring(0, 200));
+
+                // Emit tool_result event
+                onEvent({ type: "tool_result", tool: toolCall.toolName, duration_ms: toolDuration });
+
+                // Add to messages and continue the loop
+                messages.push({ role: "assistant", content: assistantText });
+                messages.push({
+                    role: "user",
+                    content: `Tool "${toolCall.toolName}" returned the following data:\n${toolResult}\n\nNow please use this data to answer the user's original question in a natural, helpful way.`,
+                });
+
+                continue;
+            }
+
+            // No tool call — we have final text. Re-issue with streaming.
+            onEvent({ type: "status", message: "Generating response..." });
+
+            const stream = await openai.chat.completions.create({
+                model: aiConfig.model,
+                messages,
+                stream: true,
+            });
+
+            for await (const chunk of stream) {
+                const delta = chunk.choices[0]?.delta?.content;
+                if (delta) {
+                    onEvent({ type: "text_delta", delta });
+                }
+            }
+
+            onEvent({ type: "done", total_ms: Date.now() - startTime });
+            return;
+        } catch (error) {
+            console.error("[Stream] Error in chat agent:", error);
+            const errorMessage = (error as Error).message;
+
+            let userError = "I'm sorry, something went wrong while processing your request. Please try again later.";
+            if (errorMessage.includes("401") || errorMessage.includes("Unauthorized")) {
+                userError = "The AI service authentication failed. Please check the API key configuration.";
+            } else if (errorMessage.includes("429") || errorMessage.includes("Rate limit")) {
+                userError = "The AI service is currently rate limited. Please try again in a moment.";
+            } else if (errorMessage.includes("model")) {
+                userError = `The configured AI model "${aiConfig.model}" may not be available. Please check the model configuration.`;
+            }
+
+            onEvent({ type: "error", message: userError });
+            return;
+        }
+    }
+
+    // Hit max iterations
+    onEvent({ type: "error", message: "I needed too many steps to answer your question. Could you try asking in a simpler way?" });
 };

@@ -8,14 +8,37 @@ import {
   Volume2,
   Bot,
   User,
+  ChevronDown,
+  ChevronRight,
+  Wrench,
+  CheckCircle2,
+  Sparkles,
+  Loader2,
 } from 'lucide-react';
-import { sendChatMessage, type ChatMessage } from '@/services/chatService';
+import {
+  streamChatMessage,
+  type ChatMessage,
+  type StreamEvent,
+} from '@/services/chatService';
 
 // ─── Types ───────────────────────────────────────────────────────────
+
+interface ThinkingStep {
+  id: string;
+  type: 'tool_call' | 'tool_result' | 'status';
+  tool?: string;
+  args?: Record<string, any>;
+  duration_ms?: number;
+  message?: string;
+  timestamp: number;
+}
 
 interface DisplayMessage extends ChatMessage {
   id: string;
   timestamp: Date;
+  thinkingSteps?: ThinkingStep[];
+  totalDuration?: number;
+  isStreaming?: boolean;
 }
 
 type VoiceLang = 'en-IN' | 'hi-IN';
@@ -26,6 +49,215 @@ const SpeechRecognition =
   (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
 const isSpeechSupported = !!SpeechRecognition;
+
+// ─── Tool name → friendly label ──────────────────────────────────────
+
+const toolDisplayName = (tool: string): string => {
+  const map: Record<string, string> = {
+    get_total_members: 'Counting members',
+    get_member_info: 'Looking up member',
+    get_all_members: 'Fetching all members',
+    get_total_contributions: 'Calculating total contributions',
+    get_member_contributions: 'Fetching member contributions',
+    get_monthly_contributions: 'Checking monthly contributions',
+    get_total_expenses: 'Calculating total expenses',
+    get_recent_expenses: 'Fetching recent expenses',
+    get_fund_balance: 'Calculating fund balance',
+    get_admins: 'Looking up admins',
+    get_sanstha_info: 'Getting sanstha info',
+    get_all_sahayata: 'Fetching all sahayata records',
+    get_sahayata_by_member: 'Looking up member sahayata',
+    get_sahayata_summary: 'Summarizing sahayata data',
+  };
+  return map[tool] || tool.replace(/_/g, ' ');
+};
+
+// ─── Thinking Panel Component ────────────────────────────────────────
+
+const ThinkingPanel = ({
+  steps,
+  isActive,
+  totalDuration,
+  collapsed,
+  onToggleCollapse,
+}: {
+  steps: ThinkingStep[];
+  isActive: boolean;
+  totalDuration?: number;
+  collapsed: boolean;
+  onToggleCollapse: () => void;
+}) => {
+  if (steps.length === 0 && !isActive) return null;
+
+  // Collapsed view — single line summary
+  if (collapsed && totalDuration !== undefined) {
+    return (
+      <button
+        onClick={onToggleCollapse}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+          padding: '6px 12px',
+          background: 'rgba(139, 92, 246, 0.08)',
+          border: '1px solid rgba(139, 92, 246, 0.15)',
+          borderRadius: '10px',
+          color: 'rgba(167, 139, 250, 0.9)',
+          fontSize: '12px',
+          cursor: 'pointer',
+          transition: 'all 0.2s',
+          width: 'fit-content',
+          fontFamily: 'inherit',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = 'rgba(139, 92, 246, 0.14)';
+          e.currentTarget.style.borderColor = 'rgba(139, 92, 246, 0.3)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = 'rgba(139, 92, 246, 0.08)';
+          e.currentTarget.style.borderColor = 'rgba(139, 92, 246, 0.15)';
+        }}
+      >
+        <Sparkles size={12} />
+        <span>
+          Thought for {(totalDuration / 1000).toFixed(1)}s
+        </span>
+        <ChevronRight size={12} />
+      </button>
+    );
+  }
+
+  // Expanded / active view
+  return (
+    <div
+      style={{
+        padding: '8px 12px',
+        background: 'rgba(139, 92, 246, 0.06)',
+        border: '1px solid rgba(139, 92, 246, 0.12)',
+        borderRadius: '12px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '6px',
+        animation: 'thinkingPanelIn 0.3s ease-out',
+        maxWidth: '90%',
+      }}
+    >
+      {/* Header */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '8px',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            color: 'rgba(167, 139, 250, 0.9)',
+            fontSize: '12px',
+            fontWeight: 600,
+          }}
+        >
+          {isActive ? (
+            <Loader2
+              size={13}
+              style={{ animation: 'spinLoader 1s linear infinite' }}
+            />
+          ) : (
+            <Sparkles size={13} />
+          )}
+          <span>
+            {isActive
+              ? 'Thinking...'
+              : `Thought for ${totalDuration !== undefined ? (totalDuration / 1000).toFixed(1) + 's' : ''}`}
+          </span>
+        </div>
+        {!isActive && totalDuration !== undefined && (
+          <button
+            onClick={onToggleCollapse}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'rgba(167, 139, 250, 0.7)',
+              cursor: 'pointer',
+              padding: '2px',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            <ChevronDown size={14} />
+          </button>
+        )}
+      </div>
+
+      {/* Steps */}
+      {steps.map((step) => (
+        <div
+          key={step.id}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            fontSize: '11.5px',
+            color: 'rgba(203, 213, 225, 0.8)',
+            paddingLeft: '4px',
+            animation: 'stepSlideIn 0.25s ease-out',
+          }}
+        >
+          {step.type === 'tool_call' && (
+            <>
+              <Wrench
+                size={11}
+                style={{ color: '#a78bfa', flexShrink: 0 }}
+              />
+              <span style={{ color: '#c4b5fd' }}>
+                {toolDisplayName(step.tool || '')}
+              </span>
+              {step.args && Object.keys(step.args).length > 0 && (
+                <span style={{ color: 'rgba(148, 163, 184, 0.8)', fontSize: '10.5px', marginLeft: '2px' }}>
+                  ({Object.entries(step.args)
+                    .map(([k, v]) => `${k}: ${v}`)
+                    .join(', ')})
+                </span>
+              )}
+              {/* Show spinner if no matching tool_result yet */}
+              {!steps.some(
+                (s) => s.type === 'tool_result' && s.tool === step.tool && s.timestamp > step.timestamp
+              ) && (
+                <Loader2
+                  size={10}
+                  style={{
+                    animation: 'spinLoader 1s linear infinite',
+                    color: '#a78bfa',
+                    flexShrink: 0,
+                    marginLeft: '4px'
+                  }}
+                />
+              )}
+            </>
+          )}
+          {step.type === 'tool_result' && (
+            <>
+              <CheckCircle2
+                size={11}
+                style={{ color: '#34d399', flexShrink: 0 }}
+              />
+              <span style={{ color: '#6ee7b7' }}>
+                {toolDisplayName(step.tool || '')}
+              </span>
+              <span style={{ color: 'rgba(148, 163, 184, 0.6)', fontSize: '10px' }}>
+                {step.duration_ms}ms
+              </span>
+            </>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+};
 
 // ─── Component ───────────────────────────────────────────────────────
 
@@ -46,9 +278,20 @@ const Chatbot = () => {
   const [voiceLang, setVoiceLang] = useState<VoiceLang>('hi-IN');
   const [showPulse, setShowPulse] = useState(true);
 
+  // Streaming state
+  const [streamingMsgId, setStreamingMsgId] = useState<string | null>(null);
+  const [thinkingSteps, setThinkingSteps] = useState<ThinkingStep[]>([]);
+  const [isThinking, setIsThinking] = useState(false);
+  const [collapsedThinking, setCollapsedThinking] = useState<
+    Record<string, boolean>
+  >({});
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<any>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  // Ref to accumulate streamed text without depending on state inside callback
+  const streamTextRef = useRef('');
 
   // Auto-scroll to bottom
   const scrollToBottom = useCallback(() => {
@@ -57,7 +300,7 @@ const Chatbot = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, scrollToBottom]);
+  }, [messages, thinkingSteps, scrollToBottom]);
 
   // Focus input and scroll to bottom when opened
   useEffect(() => {
@@ -69,7 +312,7 @@ const Chatbot = () => {
     }
   }, [isOpen, scrollToBottom]);
 
-  // ─── Send Message ────────────────────────────────────────────────
+  // ─── Send Message (Streaming) ─────────────────────────────────────
 
   const handleSend = async () => {
     const trimmed = input.trim();
@@ -82,35 +325,189 @@ const Chatbot = () => {
       timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMsg]);
+    const botMsgId = `bot-${Date.now()}`;
+
+    setMessages((prev) => [...prev, userMsg]);
     setInput('');
     setIsLoading(true);
+    setIsThinking(true);
+    setThinkingSteps([]);
+    setStreamingMsgId(botMsgId);
+    streamTextRef.current = '';
 
     // Build history for context (exclude welcome message)
     const history: ChatMessage[] = messages
-      .filter(m => m.id !== 'welcome')
-      .map(m => ({ role: m.role, content: m.content }));
+      .filter((m) => m.id !== 'welcome')
+      .map((m) => ({ role: m.role, content: m.content }));
     history.push({ role: 'user', content: trimmed });
 
+    const localSteps: ThinkingStep[] = [];
+    let hadToolCalls = false;
+
+    // Create abort controller for cancellation
+    abortControllerRef.current = new AbortController();
+
     try {
-      const reply = await sendChatMessage(trimmed, history);
-      const botMsg: DisplayMessage = {
-        id: `bot-${Date.now()}`,
-        role: 'assistant',
-        content: reply,
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, botMsg]);
+      await streamChatMessage(
+        trimmed,
+        history,
+        (event: StreamEvent) => {
+          switch (event.type) {
+            case 'status':
+              // Status updates are shown via the thinking panel
+              break;
+
+            case 'tool_call': {
+              hadToolCalls = true;
+              const step: ThinkingStep = {
+                id: `tc-${Date.now()}-${Math.random()}`,
+                type: 'tool_call',
+                tool: event.tool,
+                args: event.args,
+                timestamp: Date.now(),
+              };
+              localSteps.push(step);
+              setThinkingSteps([...localSteps]);
+              break;
+            }
+
+            case 'tool_result': {
+              const step: ThinkingStep = {
+                id: `tr-${Date.now()}-${Math.random()}`,
+                type: 'tool_result',
+                tool: event.tool,
+                duration_ms: event.duration_ms,
+                timestamp: Date.now(),
+              };
+              localSteps.push(step);
+              setThinkingSteps([...localSteps]);
+              break;
+            }
+
+            case 'text_delta': {
+              // Stop thinking, start streaming text
+              setIsThinking(false);
+              streamTextRef.current += event.delta;
+              // Update the message in-place
+              setMessages((prev) => {
+                const existing = prev.find((m) => m.id === botMsgId);
+                if (existing) {
+                  return prev.map((m) =>
+                    m.id === botMsgId
+                      ? { ...m, content: streamTextRef.current, isStreaming: true }
+                      : m
+                  );
+                } else {
+                  return [
+                    ...prev,
+                    {
+                      id: botMsgId,
+                      role: 'assistant' as const,
+                      content: streamTextRef.current,
+                      timestamp: new Date(),
+                      thinkingSteps: hadToolCalls ? [...localSteps] : undefined,
+                      isStreaming: true,
+                    },
+                  ];
+                }
+              });
+              break;
+            }
+
+            case 'done': {
+              setIsThinking(false);
+              // Finalize the message
+              setMessages((prev) => {
+                const existing = prev.find((m) => m.id === botMsgId);
+                if (existing) {
+                  return prev.map((m) =>
+                    m.id === botMsgId
+                      ? {
+                          ...m,
+                          content: streamTextRef.current,
+                          isStreaming: false,
+                          thinkingSteps: hadToolCalls
+                            ? [...localSteps]
+                            : undefined,
+                          totalDuration: event.total_ms,
+                        }
+                      : m
+                  );
+                } else {
+                  return [
+                    ...prev,
+                    {
+                      id: botMsgId,
+                      role: 'assistant' as const,
+                      content:
+                        streamTextRef.current ||
+                        "I'm sorry, I couldn't generate a response.",
+                      timestamp: new Date(),
+                      thinkingSteps: hadToolCalls
+                        ? [...localSteps]
+                        : undefined,
+                      totalDuration: event.total_ms,
+                      isStreaming: false,
+                    },
+                  ];
+                }
+              });
+              // Auto-collapse thinking after completion
+              if (hadToolCalls) {
+                setCollapsedThinking((prev) => ({
+                  ...prev,
+                  [botMsgId]: true,
+                }));
+              }
+              setStreamingMsgId(null);
+              setIsLoading(false);
+              setThinkingSteps([]);
+              break;
+            }
+
+            case 'error': {
+              setIsThinking(false);
+              setMessages((prev) => [
+                ...prev.filter((m) => m.id !== botMsgId),
+                {
+                  id: botMsgId,
+                  role: 'assistant' as const,
+                  content: event.message,
+                  timestamp: new Date(),
+                  isStreaming: false,
+                },
+              ]);
+              setStreamingMsgId(null);
+              setIsLoading(false);
+              setThinkingSteps([]);
+              break;
+            }
+          }
+        },
+        abortControllerRef.current.signal
+      );
+
+      // In case done event was not received (e.g. stream ended abruptly)
+      if (streamingMsgId === botMsgId) {
+        setIsLoading(false);
+        setIsThinking(false);
+        setStreamingMsgId(null);
+        setThinkingSteps([]);
+      }
     } catch {
-      const errorMsg: DisplayMessage = {
-        id: `error-${Date.now()}`,
-        role: 'assistant',
-        content: 'Sorry, something went wrong. Please try again.',
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, errorMsg]);
-    } finally {
+      setMessages((prev) => [
+        ...prev.filter((m) => m.id !== botMsgId),
+        {
+          id: `error-${Date.now()}`,
+          role: 'assistant',
+          content: 'Sorry, something went wrong. Please try again.',
+          timestamp: new Date(),
+        },
+      ]);
       setIsLoading(false);
+      setIsThinking(false);
+      setStreamingMsgId(null);
+      setThinkingSteps([]);
     }
   };
 
@@ -163,7 +560,7 @@ const Chatbot = () => {
   };
 
   const toggleLang = () => {
-    setVoiceLang(prev => (prev === 'en-IN' ? 'hi-IN' : 'en-IN'));
+    setVoiceLang((prev) => (prev === 'en-IN' ? 'hi-IN' : 'en-IN'));
     if (isListening) {
       stopListening();
     }
@@ -323,11 +720,11 @@ const Chatbot = () => {
                     fontWeight: 700,
                     transition: 'background 0.2s',
                   }}
-                  onMouseEnter={e =>
+                  onMouseEnter={(e) =>
                     (e.currentTarget.style.background =
                       'rgba(255,255,255,0.25)')
                   }
-                  onMouseLeave={e =>
+                  onMouseLeave={(e) =>
                     (e.currentTarget.style.background =
                       'rgba(255,255,255,0.15)')
                   }
@@ -351,10 +748,10 @@ const Chatbot = () => {
                   justifyContent: 'center',
                   transition: 'background 0.2s',
                 }}
-                onMouseEnter={e =>
+                onMouseEnter={(e) =>
                   (e.currentTarget.style.background = 'rgba(255,255,255,0.25)')
                 }
-                onMouseLeave={e =>
+                onMouseLeave={(e) =>
                   (e.currentTarget.style.background = 'rgba(255,255,255,0.15)')
                 }
               >
@@ -375,127 +772,175 @@ const Chatbot = () => {
               background: 'linear-gradient(180deg, #0f0f1a 0%, #1a1a2e 100%)',
             }}
           >
-            {messages.map(msg => (
-              <div
-                key={msg.id}
-                style={{
-                  display: 'flex',
-                  justifyContent:
-                    msg.role === 'user' ? 'flex-end' : 'flex-start',
-                  alignItems: 'flex-end',
-                  gap: '8px',
-                }}
-              >
-                {/* Bot avatar */}
-                {msg.role === 'assistant' && (
-                  <div
-                    style={{
-                      width: '28px',
-                      height: '28px',
-                      borderRadius: '10px',
-                      background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0,
-                    }}
-                  >
-                    <Bot size={14} color="white" />
-                  </div>
-                )}
+            {messages.map((msg) => (
+              <div key={msg.id}>
+                {/* Thinking panel for this message */}
+                {msg.role === 'assistant' &&
+                  msg.thinkingSteps &&
+                  msg.thinkingSteps.length > 0 && (
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: '8px',
+                        marginBottom: '8px',
+                        paddingLeft: '36px',
+                      }}
+                    >
+                      <ThinkingPanel
+                        steps={msg.thinkingSteps}
+                        isActive={false}
+                        totalDuration={msg.totalDuration}
+                        collapsed={collapsedThinking[msg.id] ?? false}
+                        onToggleCollapse={() =>
+                          setCollapsedThinking((prev) => ({
+                            ...prev,
+                            [msg.id]: !prev[msg.id],
+                          }))
+                        }
+                      />
+                    </div>
+                  )}
 
-                {/* Message bubble */}
                 <div
                   style={{
-                    maxWidth: '80%',
-                    padding: '10px 14px',
-                    borderRadius:
-                      msg.role === 'user'
-                        ? '16px 16px 4px 16px'
-                        : '16px 16px 16px 4px',
-                    background:
-                      msg.role === 'user'
-                        ? 'linear-gradient(135deg, #4f46e5, #6d28d9)'
-                        : 'rgba(255,255,255,0.08)',
-                    color: msg.role === 'user' ? 'white' : '#e2e8f0',
-                    fontSize: '13.5px',
-                    lineHeight: 1.6,
-                    wordBreak: 'break-word',
-                    position: 'relative',
-                    backdropFilter:
-                      msg.role === 'assistant' ? 'blur(10px)' : 'none',
-                    border:
-                      msg.role === 'assistant'
-                        ? '1px solid rgba(255,255,255,0.06)'
-                        : 'none',
+                    display: 'flex',
+                    justifyContent:
+                      msg.role === 'user' ? 'flex-end' : 'flex-start',
+                    alignItems: 'flex-end',
+                    gap: '8px',
                   }}
                 >
-                  {formatContent(msg.content)}
-
-                  {/* Speak button for bot messages */}
-                  {msg.role === 'assistant' && msg.id !== 'welcome' && (
-                    <button
-                      onClick={() => speakText(msg.content)}
-                      title="Listen"
+                  {/* Bot avatar */}
+                  {msg.role === 'assistant' && (
+                    <div
                       style={{
-                        position: 'absolute',
-                        top: '6px',
-                        right: '6px',
-                        width: '24px',
-                        height: '24px',
-                        borderRadius: '8px',
-                        border: 'none',
-                        background: 'rgba(255,255,255,0.1)',
-                        color: 'rgba(255,255,255,0.5)',
-                        cursor: 'pointer',
+                        width: '28px',
+                        height: '28px',
+                        borderRadius: '10px',
+                        background:
+                          'linear-gradient(135deg, #4f46e5, #7c3aed)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        transition: 'all 0.2s',
-                        opacity: 0.6,
-                      }}
-                      onMouseEnter={e => {
-                        e.currentTarget.style.opacity = '1';
-                        e.currentTarget.style.background =
-                          'rgba(255,255,255,0.2)';
-                      }}
-                      onMouseLeave={e => {
-                        e.currentTarget.style.opacity = '0.6';
-                        e.currentTarget.style.background =
-                          'rgba(255,255,255,0.1)';
+                        flexShrink: 0,
                       }}
                     >
-                      <Volume2 size={12} />
-                    </button>
+                      <Bot size={14} color="white" />
+                    </div>
                   )}
-                </div>
 
-                {/* User avatar */}
-                {msg.role === 'user' && (
+                  {/* Message bubble */}
                   <div
                     style={{
-                      width: '28px',
-                      height: '28px',
-                      borderRadius: '10px',
-                      background: 'linear-gradient(135deg, #06b6d4, #0891b2)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0,
+                      maxWidth: '80%',
+                      padding: '10px 14px',
+                      borderRadius:
+                        msg.role === 'user'
+                          ? '16px 16px 4px 16px'
+                          : '16px 16px 16px 4px',
+                      background:
+                        msg.role === 'user'
+                          ? 'linear-gradient(135deg, #4f46e5, #6d28d9)'
+                          : 'rgba(255,255,255,0.08)',
+                      color: msg.role === 'user' ? 'white' : '#e2e8f0',
+                      fontSize: '13.5px',
+                      lineHeight: 1.6,
+                      wordBreak: 'break-word',
+                      position: 'relative',
+                      backdropFilter:
+                        msg.role === 'assistant' ? 'blur(10px)' : 'none',
+                      border:
+                        msg.role === 'assistant'
+                          ? '1px solid rgba(255,255,255,0.06)'
+                          : 'none',
                     }}
                   >
-                    <User size={14} color="white" />
+                    {formatContent(msg.content)}
+
+                    {/* Streaming cursor */}
+                    {msg.isStreaming && (
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          width: '2px',
+                          height: '14px',
+                          background: '#a78bfa',
+                          marginLeft: '2px',
+                          verticalAlign: 'text-bottom',
+                          animation: 'blinkCursor 0.8s infinite',
+                        }}
+                      />
+                    )}
+
+                    {/* Speak button for bot messages */}
+                    {msg.role === 'assistant' &&
+                      msg.id !== 'welcome' &&
+                      !msg.isStreaming && (
+                        <button
+                          onClick={() => speakText(msg.content)}
+                          title="Listen"
+                          style={{
+                            position: 'absolute',
+                            top: '6px',
+                            right: '6px',
+                            width: '24px',
+                            height: '24px',
+                            borderRadius: '8px',
+                            border: 'none',
+                            background: 'rgba(255,255,255,0.1)',
+                            color: 'rgba(255,255,255,0.5)',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            transition: 'all 0.2s',
+                            opacity: 0.6,
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.opacity = '1';
+                            e.currentTarget.style.background =
+                              'rgba(255,255,255,0.2)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.opacity = '0.6';
+                            e.currentTarget.style.background =
+                              'rgba(255,255,255,0.1)';
+                          }}
+                        >
+                          <Volume2 size={12} />
+                        </button>
+                      )}
                   </div>
-                )}
+
+                  {/* User avatar */}
+                  {msg.role === 'user' && (
+                    <div
+                      style={{
+                        width: '28px',
+                        height: '28px',
+                        borderRadius: '10px',
+                        background:
+                          'linear-gradient(135deg, #06b6d4, #0891b2)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                      }}
+                    >
+                      <User size={14} color="white" />
+                    </div>
+                  )}
+                </div>
               </div>
             ))}
 
-            {/* Loading indicator */}
-            {isLoading && (
+            {/* Active thinking panel (before first text_delta arrives) */}
+            {isLoading && isThinking && (
               <div
                 style={{
                   display: 'flex',
-                  alignItems: 'flex-end',
+                  alignItems: 'flex-start',
                   gap: '8px',
                 }}
               >
@@ -513,31 +958,34 @@ const Chatbot = () => {
                 >
                   <Bot size={14} color="white" />
                 </div>
-                <div
-                  style={{
-                    padding: '12px 18px',
-                    borderRadius: '16px 16px 16px 4px',
-                    background: 'rgba(255,255,255,0.08)',
-                    backdropFilter: 'blur(10px)',
-                    border: '1px solid rgba(255,255,255,0.06)',
-                    display: 'flex',
-                    gap: '5px',
-                    alignItems: 'center',
-                  }}
-                >
-                  <span
-                    className="chatbot-dot"
-                    style={{ animationDelay: '0s' }}
+                {thinkingSteps.length > 0 ? (
+                  <ThinkingPanel
+                    steps={thinkingSteps}
+                    isActive={true}
+                    collapsed={false}
+                    onToggleCollapse={() => {}}
                   />
-                  <span
-                    className="chatbot-dot"
-                    style={{ animationDelay: '0.2s' }}
-                  />
-                  <span
-                    className="chatbot-dot"
-                    style={{ animationDelay: '0.4s' }}
-                  />
-                </div>
+                ) : (
+                  <div
+                    style={{
+                      padding: '10px 16px',
+                      borderRadius: '16px 16px 16px 4px',
+                      background: 'rgba(139, 92, 246, 0.06)',
+                      border: '1px solid rgba(139, 92, 246, 0.12)',
+                      display: 'flex',
+                      gap: '6px',
+                      alignItems: 'center',
+                      color: 'rgba(167, 139, 250, 0.9)',
+                      fontSize: '12px',
+                    }}
+                  >
+                    <Loader2
+                      size={13}
+                      style={{ animation: 'spinLoader 1s linear infinite' }}
+                    />
+                    <span>Thinking...</span>
+                  </div>
+                )}
               </div>
             )}
 
@@ -592,8 +1040,8 @@ const Chatbot = () => {
               ref={inputRef}
               type="text"
               value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={e => {
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
                   handleSend();
@@ -615,10 +1063,10 @@ const Chatbot = () => {
                 outline: 'none',
                 transition: 'border-color 0.2s',
               }}
-              onFocus={e =>
+              onFocus={(e) =>
                 (e.currentTarget.style.borderColor = 'rgba(99,102,241,0.5)')
               }
-              onBlur={e =>
+              onBlur={(e) =>
                 (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)')
               }
             />
@@ -679,14 +1127,14 @@ const Chatbot = () => {
             ? 'rotate(0deg) scale(0.9)'
             : 'rotate(0deg) scale(1)',
         }}
-        onMouseEnter={e => {
+        onMouseEnter={(e) => {
           e.currentTarget.style.transform = isOpen
             ? 'scale(0.95)'
             : 'scale(1.08)';
           e.currentTarget.style.boxShadow =
             '0 12px 40px rgba(79, 70, 229, 0.5), 0 0 0 1px rgba(255,255,255,0.15)';
         }}
-        onMouseLeave={e => {
+        onMouseLeave={(e) => {
           e.currentTarget.style.transform = isOpen ? 'scale(0.9)' : 'scale(1)';
           e.currentTarget.style.boxShadow =
             '0 8px 32px rgba(79, 70, 229, 0.4), 0 0 0 1px rgba(255,255,255,0.1)';
@@ -744,6 +1192,38 @@ const Chatbot = () => {
           background: #6366f1;
           display: inline-block;
           animation: chatDotBounce 1.2s ease-in-out infinite;
+        }
+
+        @keyframes blinkCursor {
+          0%, 50% { opacity: 1; }
+          51%, 100% { opacity: 0; }
+        }
+
+        @keyframes spinLoader {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+
+        @keyframes thinkingPanelIn {
+          from {
+            opacity: 0;
+            transform: translateY(4px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes stepSlideIn {
+          from {
+            opacity: 0;
+            transform: translateX(-6px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
         }
 
         #chatbot-panel::-webkit-scrollbar {

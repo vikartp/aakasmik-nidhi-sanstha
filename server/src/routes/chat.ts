@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import { handleChatMessage } from "../controllers/chat";
+import { handleChatMessage, handleChatMessageStream } from "../controllers/chat";
 
 const router = Router();
 
@@ -57,5 +57,7 @@ const rateLimiter = (req: Request, res: Response, next: Function): void => {
 // ─── Routes ──────────────────────────────────────────────────────────
 
 router.post("/message", rateLimiter, handleChatMessage);
+router.post("/stream", rateLimiter, handleChatMessageStream);
 
 export default router;
+
