@@ -2,7 +2,6 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../ui/button';
 import { useEffect, useState, useRef } from 'react';
 import { getQrCode, type Screenshot } from '@/services/screenshot';
-import { downloadImage } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import UserTable from './UserTable';
 import Loader from './Loader';
