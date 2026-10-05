@@ -191,12 +191,12 @@ export function Default() {
               alt="QR Code to scan and pay"
               className="w-auto h-auto"
             />
-            <Button
+            {/* <Button
               onClick={() => downloadImage(qrCode.url, 'qr-code.png')}
               className="mt-2 bg-blue-600 text-white rounded"
             >
               Download QR Code
-            </Button>
+            </Button> */}
           </>
         )}
       </div>
