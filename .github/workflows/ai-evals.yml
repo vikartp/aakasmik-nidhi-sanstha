@@ -1,0 +1,99 @@
+name: AI Evals
+
+on:
+  # Run manually from GitHub Actions tab
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: 'Number of traces to evaluate (for prod traces)'
+        required: false
+        default: '5'
+      hours:
+        description: 'Only traces from last N hours (leave empty for all)'
+        required: false
+        default: ''
+
+  # Run on schedule (weekly — every Monday at 6:00 AM IST / 00:30 UTC)
+  schedule:
+    - cron: '30 0 * * 1'
+
+  # Run on PRs that touch AI-related files
+  pull_request:
+    branches: [main]
+    paths:
+      - 'server/src/ai/**'
+      - 'evals/**'
+
+jobs:
+  golden-tests:
+    name: Regression Tests (Golden Suite)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Run on PRs to catch regressions before merge, or on manual dispatch
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Install dependencies
+        run: uv sync
+        working-directory: ./evals
+
+      - name: Run golden test suite
+        working-directory: ./evals
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_BASE: https://openrouter.ai/api/v1
+          DEEPEVAL_MODEL: deepseek/deepseek-v4-flash
+          CHATBOT_MODEL: deepseek/deepseek-v4-flash
+        run: |
+          uv run python test_chatbot.py
+
+  production-evals:
+    name: Evaluate Production Traces
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # Run ONLY on schedule (to monitor live data) or manual dispatch, NOT on PRs
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Install dependencies
+        run: uv sync
+        working-directory: ./evals
+
+      - name: Evaluate Langfuse traces
+        working-directory: ./evals
+        env:
+          LANGFUSE_SECRET_KEY: ${{ secrets.LANGFUSE_SECRET_KEY }}
+          LANGFUSE_PUBLIC_KEY: ${{ secrets.LANGFUSE_PUBLIC_KEY }}
+          LANGFUSE_HOST: https://cloud.langfuse.com
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_BASE: https://openrouter.ai/api/v1
+          DEEPEVAL_MODEL: deepseek/deepseek-v4-flash
+        run: |
+          ARGS="--limit ${{ github.event.inputs.limit || '5' }}"
+          
+          if [ -n "${{ github.event.inputs.hours }}" ]; then
+            ARGS="$ARGS --hours ${{ github.event.inputs.hours }}"
+          fi
+          
+          # If running on schedule (weekly), evaluate up to 5 traces from the last 7 days
+          if [ "${{ github.event_name }}" == "schedule" ]; then
+            ARGS="--limit 5 --hours 168"
+          fi
+          
+          uv run python run_evals.py $ARGS

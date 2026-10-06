@@ -1,0 +1,18 @@
+[project]
+name = "anidhi-evals"
+version = "0.1.0"
+description = "DeepEval evaluation pipeline for Aakasmik Nidhi Sanstha AI Chatbot"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "deepeval>=4.0.0",
+    "langfuse>=4.0.0",
+    "python-dotenv>=1.0.0",
+    "openai>=3.0.0",
+]
+
+[project.scripts]
+run-evals = "run_evals:main"
+
+[tool.deepeval]
+model = "deepseek/deepseek-v4-flash"
